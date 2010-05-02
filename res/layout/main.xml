@@ -40,7 +40,7 @@
 						android:id="@+id/IncomeBuilding1Number"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:digits="1"
+						android:digits="0123456789"
 						android:text="000"
 						android:padding="5dp">
 					</EditText>
@@ -48,7 +48,7 @@
 						android:id="@+id/IncomeBuilding1Value"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:digits="1"
+						android:digits="0123456789."
 						android:text="100.02"
 						android:padding="5dp">
 					</TextView>
@@ -70,12 +70,14 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:text="001"
+						android:digits="0123456789"
 						android:padding="5dp">
 					</EditText>
 					<TextView
 						android:id="@+id/IncomeBuilding2Value"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:digits="0123456789."
 						android:text="140.02"
 						android:padding="5dp">
 					</TextView>
