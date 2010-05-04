@@ -5,11 +5,12 @@ import android.widget.TabHost;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.EditText;
-import android.text.TextWatcher;
-import android.text.Editable;
+import android.view.View;
+import android.view.View.OnKeyListener;
+import android.view.KeyEvent;
 import android.util.Log;
 
-public class WorldWarCalc extends Activity implements TextWatcher
+public class WorldWarCalc extends Activity implements OnKeyListener
 {
     /** Called when the activity is first created. */
     @Override
@@ -35,30 +36,36 @@ public class WorldWarCalc extends Activity implements TextWatcher
         tabs.setCurrentTab(0);
         
         m_value1 = (TextView)findViewById(R.id.IncomeBuilding1Value);
-        EditText value = (EditText)findViewById(R.id.IncomeBuilding1Number);
-        value.addTextChangedListener(this);
-        
+        m_number1 = (EditText)findViewById(R.id.IncomeBuilding1Number);
+        m_number1.setOnKeyListener(this);
     }
     
-    public void beforeTextChanged(CharSequence s, int start, int count, int after)
+    public boolean onKey(View v, int key, KeyEvent event)
     {
-    }
-    
-    public void onTextChanged(CharSequence s, int start, int count, int after)
-    {
-    }
-    
-    public void afterTextChanged(Editable e)
-    {
-    	if (e.length() > 0)
+    	int number = -1;
+    	if (v==m_number1)
     	{
-    		int number = Integer.parseInt(e.toString());
-    		Log.i(TAG, "value="+Integer.toString(number));
+    		String text = m_number1.getText().toString();
+    		
+    		number = 0;
+    		if (text.length() > 0)
+    		{
+    			number = Integer.decode(text);
+    			int cost = 10 + number/10;
+    			int income = 3;
+    			float value = cost/(income+0.0f);
+    			value = Math.round(value * 100.0f)/100.0f;
+    			String valueString = Float.toString(value);
+    			m_value1.setText(valueString);
+    			Log.i(TAG,"onKey number = " + number + " value = " + value);
+    		}
     	}
-    	
+    	return false;
     }
+    // OR could use afterTextChanged() and compare Editable e with m_number1.getText()
     
     private TextView m_value1;
     private static final String TAG = "WWCALC";
+    private EditText m_number1;
     
 }
