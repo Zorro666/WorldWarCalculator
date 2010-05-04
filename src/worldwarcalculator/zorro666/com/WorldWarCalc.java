@@ -27,15 +27,20 @@ public class WorldWarCalc extends Activity implements OnKeyListener
     	m_numDefenceBuildings = 0;
     	m_numIncomeBuildings = 0;
     	
-    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("Bunker", 3000, 3);
-    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("DefBuild2", 6000, 10);
-    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("DefBuild3", 100000, 25);
-    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("DefBuild4", 10000000, 75);
+    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("Bunker", 					30000, 		3);
+    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("Guard Tower", 			200000, 	10);
+    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("Anti-Aircraft Launcher", 	560000, 	15);
+    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("Turret", 					2800000, 	32);
+    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("Landmine Field", 			10000000, 	50);
+    	m_defenceBuildings[m_numDefenceBuildings++] = new WWBuilding("Automated Sentry Gun", 	24000000, 	75);
     	
-    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Sat Dish", 30000, 3000);
-    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("IncBuild2", 56000, 16500);
-    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("IncBuild3", 270000, 56000);
-    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("IncBuild4", 150000000, 700000);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Supply Depot", 				18000, 		1000);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Refinery", 					150000, 	6500);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Weapons Factor", 			540000, 	16500);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Power Plant", 				2700000, 	56000);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Oil Rig", 					20000000, 	270000);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Military Research Lab", 	60000000, 	500000);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Nuclear Testing Facility", 	100000000, 	700000);
     	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -116,7 +121,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener
     	TextView name = new TextView(row.getContext());
     	name.setText(building.GetName());
     	name.setPadding(5,5,5,5);
-    	name.setWidth(96);
+    	name.setWidth(128);
     	name.setTag(building);
     	row.addView(name);
     	
@@ -164,6 +169,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener
     private int m_numDefenceBuildings;
     private int m_numIncomeBuildings;
     
-    static private int NUM_DEFENCE_BUILDINGS = 6;
-    static private int NUM_INCOME_BUILDINGS = 6;
+    static private int NUM_DEFENCE_BUILDINGS = 7;
+    static private int NUM_INCOME_BUILDINGS = 7;
 }

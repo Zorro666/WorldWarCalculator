@@ -1,10 +1,9 @@
-Use TAG object to point to link the different view elements together (perhaps an ArrayAdapter and list scroll?))
-Fix edit text hassle on the number box which goes big and small
+Some way to format value for defence or income buildings (multiplier)
+Per row show: reward, current cost, base cost
 Put +/- buttons UI system in place for number
 Scrolling view (vertical & horizontal)
+Fix edit text hassle on the number box which goes big and small
 Display image of building
-Per row show: name, number, value, reward, current cost, base cost
-Some way to format value for defence or income buildings (multiplier)
 Really sounds like income & defence should have a derived class to set some defaults in them
 
 
