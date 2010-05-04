@@ -24,106 +24,13 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="5dp">
-				<LinearLayout
-					android:orientation="horizontal"
-					android:layout_width="fill_parent"
-					android:layout_height="fill_parent"
-					android:layout_weight="1">
-					<TextView
-						android:id="@+id/IncomeBuilding1Name"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:text="Inc_Building1"
-						android:padding="5dp">
-					</TextView>
-					<EditText
-						android:id="@+id/IncomeBuilding1Number"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:digits="0123456789"
-						android:inputType="number"
-						android:singleLine="true"
-						android:minWidth="64px"
-						android:width="64px"
-						android:maxWidth="64px"
-						android:maxLines="1"
-						android:maxLength="5"
-						android:lines="1"
-						android:text="000"
-						android:padding="5dp"
-						android:tag="Income1"
-					>
-					</EditText>
-					<TextView
-						android:id="@+id/IncomeBuilding1Value"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:digits="0123456789."
-						android:inputType="number"
-						android:singleLine="true"
-						android:minWidth="64px"
-						android:width="64px"
-						android:maxWidth="64px"
-						android:maxLines="1"
-						android:maxLength="8"
-						android:lines="1"
-						android:text="100.02"
-						android:padding="5dp">
-					</TextView>
-				</LinearLayout>
-				<LinearLayout
-					android:orientation="horizontal"
-					android:layout_width="fill_parent"
-					android:layout_height="fill_parent"
-					android:layout_weight="1">
-					<TextView
-						android:id="@+id/IncomeBuilding2Name"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:text="Inc_Building2"
-						android:padding="5dp">
-					</TextView>
-					<EditText
-						android:id="@+id/IncomeBuilding2Number"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:text="001"
-						android:digits="0123456789"
-						android:inputType="number"
-						android:singleLine="true"
-						android:minWidth="64px"
-						android:width="64px"
-						android:maxWidth="64px"
-						android:maxLines="1"
-						android:maxLength="5"
-						android:lines="1"
-						android:padding="5dp"
-						android:tag="Income2"
-					>
-					</EditText>
-					<TextView
-						android:id="@+id/IncomeBuilding2Value"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:digits="0123456789."
-						android:inputType="number"
-						android:singleLine="true"
-						android:text="140.02"
-						android:padding="5dp">
-					</TextView>
-				</LinearLayout>
 			</LinearLayout>
 			<LinearLayout 
 				android:id="@+id/DefenceView"
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent"
+				android:orientation="vertical"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:padding="5dp">
-				<TextView
-					android:id="@+id/DefenceBuilding1"
-					android:layout_width="fill_parent"
-					android:layout_height="fill_parent"
-					android:text="DefenceBuilding1">
-				</TextView>
 			</LinearLayout>
 		</FrameLayout>
 	</TabHost>
