@@ -38,6 +38,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener
         m_value1 = (TextView)findViewById(R.id.IncomeBuilding1Value);
         m_number1 = (EditText)findViewById(R.id.IncomeBuilding1Number);
         m_number1.setOnKeyListener(this);
+        m_number1.setTag(m_value1);
     }
     
     public boolean onKey(View v, int key, KeyEvent event)
@@ -45,7 +46,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener
     	int number = -1;
     	if (v==m_number1)
     	{
-    		String text = m_number1.getText().toString();
+    		EditText numberText = (EditText)v;
+    		String text = numberText.getText().toString();
     		
     		number = 0;
     		if (text.length() > 0)
@@ -56,7 +58,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener
     			float value = cost/(income+0.0f);
     			value = Math.round(value * 100.0f)/100.0f;
     			String valueString = Float.toString(value);
-    			m_value1.setText(valueString);
+    			TextView valueText = (TextView)v.getTag();
+    			valueText.setText(valueString);
     			Log.i(TAG,"onKey number = " + number + " value = " + value);
     		}
     	}
