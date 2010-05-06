@@ -5,12 +5,13 @@ import android.widget.EditText;
 
 public class WWBuilding 
 {
-	public WWBuilding( final String name, final int baseCost, final int reward )
+	public WWBuilding( final String name, final int baseCost, final int reward, final float valueMultiplier )
 	{
 		m_name = name;
-		m_baseCost = baseCost;
+		m_baseCostInK = baseCost/1000;
 		m_reward = reward;
 		m_numOwned = 0;
+		m_valueMultiplier = valueMultiplier;
 	}
 	public String GetName()
 	{
@@ -19,13 +20,19 @@ public class WWBuilding
 	
 	public int GetBaseCost()
 	{
-		return m_baseCost;
+		return m_baseCostInK * 1000;
 	}
 	
-	public int GetCurrentCost()
+	public long GetCurrentCost()
 	{
-		int cost = m_baseCost + ( m_numOwned * m_baseCost ) / 10;
+		long costInK = GetCurrentCostInK();
+		long cost = costInK * 1000;
 		return cost;
+	}
+	public int GetCurrentCostInK()
+	{
+		int costInK = m_baseCostInK + ( m_numOwned * m_baseCostInK ) / 10;
+		return costInK;
 	}
 	
 	public int GetReward()
@@ -39,10 +46,17 @@ public class WWBuilding
 	}
 	public float GetValue()
 	{
-		int cost = GetCurrentCost();
-		int reward = GetReward();
-		float value = cost/(reward+0.0f);
+		float rawValue = GetRawValue();
+		float value = rawValue * m_valueMultiplier;
     	value = Math.round(value * 100.0f)/100.0f;
+		return value;
+	}
+	public float GetRawValue()
+	{
+		int costInK = GetCurrentCostInK();
+		int reward = GetReward();
+		float value = costInK/(reward+0.0f);
+		value *= 1000.0f;
 		return value;
 	}
 	
@@ -78,9 +92,10 @@ public class WWBuilding
 	}
 	
 	private String m_name;
-	private int m_baseCost;
+	private int m_baseCostInK;
 	private int m_reward;
 	private int m_numOwned;
+	private float m_valueMultiplier;;
 	private EditText m_viewNumOwned;
 	private TextView m_viewValue;
 	private TextView m_viewCurrentCost;
