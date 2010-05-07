@@ -52,8 +52,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Military Research Lab", 	60000000, 	500000,	0.1f);
     	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Nuclear Testing Facility", 	100000000, 	700000,	0.1f);
     	
+    	// Temp save a fake profile to test the loading profile save & load code
+    	try
+    	{
+    		SaveProfile("JakeProfile");
+    	}
+    	catch (IOException e)
+    	{
+    	}
+    	
     	// Load the profile files in
-    	SaveProfile("JakeProfile");
     	LoadProfiles();
     	
         super.onCreate(savedInstanceState);
@@ -262,66 +270,82 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	if (numFiles>0)
     	{
     		String profileFileName = fileNames[0];
-    		if ( LoadProfile(profileFileName)==true)
+    		try
     		{
-    			numProfiles++;
+    			if (LoadProfile(profileFileName)==true)
+    			{
+    				numProfiles++;
+    			}
+    		}
+    		catch (IOException e)
+    		{
     		}
     	}
     	return numProfiles;
     }
     
-    private boolean LoadProfile(String profileFileName)
+    private boolean LoadProfile(String profileFileName) throws IOException
     {
     	try
     	{
     		BufferedInputStream bufferedInput = new BufferedInputStream(openFileInput(profileFileName));
     		try
     		{
-    			int result;
-    			result = bufferedInput.read();
-    			if (result>0)
-    			{
-    				int length = result;
-   					Log.i(TAG, "IN: length = " + length);
-    				byte[] byteBuffer = new byte[length];
-    				result = bufferedInput.read(byteBuffer, 0, length);
-    				if (result==length)
-    				{
-    					String name = new String(byteBuffer);
-    					m_profileName = name;
-    					Log.i(TAG, "IN: name = " + m_profileName);
-    				}
-    			}
+    			String name = ReadString(bufferedInput);
+				m_profileName = name;
+				int value = ReadInt(bufferedInput);
     		}
     		catch (IOException e)
     		{
-    			try
-    			{
-    				bufferedInput.close();
-    			}
-    			catch (IOException ex)
-    			{
-    			}
+   				bufferedInput.close();
     			return false;
     		}
+    		return true;
     	} 
     	catch (FileNotFoundException e)
     	{
     		return false;
     	}
-    	return true;
     }
     	
-    private void writeString(String str)
+    private int ReadInt(BufferedInputStream inputStream) throws IOException
+    {
+    	String tempStr = ReadString(inputStream);
+    	int value = Integer.parseInt(tempStr);
+    	Log.i(TAG, "IN: value = " + value);
+    	return value;
+    }
+    private String ReadString(BufferedInputStream inputStream) throws IOException
+    {
+   		int length = inputStream.read();
+    	Log.i(TAG, "IN: length = " + length);
+		byte[] byteBuffer = new byte[length];
+		int result = inputStream.read(byteBuffer, 0, length);
+		if (result==length)
+    	{
+    		String str = new String(byteBuffer);
+    		Log.i(TAG, "IN: str = " + str);
+    		return str;
+    	}
+		return "";
+    }
+    
+    private void WriteInt(BufferedOutputStream outputStream, int value) throws IOException
+    {
+    	String tempStr = Integer.toString(value);
+    	Log.i(TAG, "OUT: value = " + value);
+    	WriteString(outputStream,tempStr);
+    }
+    private void WriteString(BufferedOutputStream outputStream, String str) throws IOException
     {
     	int length = str.length();
     	Log.i(TAG, "OUT: length = " + length);
-    	outputStream.(length);
-    	Log.i(TAG, "OUT: name = " + name);
-    	outputStream.write(str.getBytes(),0,str.length());
+    	outputStream.write(length);
+    	Log.i(TAG, "OUT: str = " + str);
+    	outputStream.write(str.getBytes(),0,length);
     }
     
-    private boolean SaveProfile(String profileName)
+    private boolean SaveProfile(String profileName) throws IOException
     {
     	try
     	{
@@ -332,34 +356,24 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     		try
     		{
     			// Profile name
-    			writeString(name);
+    			WriteString(outputStream,name);
     			
     			// Number of each income building
+    			WriteInt(outputStream,666);
     			// Number of each defence building
     		}
     		catch (IOException e)
     		{
-    			try 
-    			{ 
-    				outputStream.close(); 
-    			}
-    			catch (IOException ex) { }
+   				outputStream.close(); 
     			return false;
     		}
-    		try 
-    		{ 
-    			outputStream.close(); 
-   			} 
-    		catch (IOException e) 
-    		{ 
-    			return false;
-    		}
+   			outputStream.close(); 
+   			return true;
     	} 
     	catch (FileNotFoundException e)
     	{
     		return false;
     	}
-    	return true;
     }
     	
     private static final String TAG = "WWCALC";

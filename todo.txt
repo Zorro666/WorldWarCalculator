@@ -1,9 +1,16 @@
-Fix integer number decode problem with strings starting with 0
-Save and Load profile data - then it will be useful
+helper class for saving values (string,int) as text
+helper class for loading values (string.int) as text
+class for the profile data - save & load function
+need button to save profile
+capture out of memory event - save current active profile (state data)
+capture close activity event - save the current profile
+THEN IT WILL BE USEFUL - USE IT - TEST IT OUT - SHOW IT/GIVE IT TO SAM
 Put +/- buttons UI system in place for number
-Make best buy BOLD and Green
+need way of choosing different profiles to load
+Make best buy BOLD and Green - flashing ?
 Really sounds like income & defence should have a derived class to set some defaults in them
 Try to get a header row working - with linked scrolling
+show hint data (new tab?) - how many of the best buildings to buy
 Display image of building
 
 
