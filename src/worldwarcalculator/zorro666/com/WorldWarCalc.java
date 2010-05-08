@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.widget.TabHost;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
+import android.view.View.OnClickListener;
 import android.widget.HorizontalScrollView;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -23,10 +25,9 @@ import android.text.method.DigitsKeyListener;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 
-public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener
+public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener
+
 {
     /** Called when the activity is first created. */
     @Override
@@ -51,25 +52,40 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Oil Rig", 					20000000, 	270000,	0.1f);
     	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Military Research Lab", 	60000000, 	500000,	0.1f);
     	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Nuclear Testing Facility", 	100000000, 	700000,	0.1f);
+    	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Solar Satellite Network", 	340000000, 1200000,	0.1f);
     	
+    	m_profiles = new WWProfile[2];
+    	m_profiles[0] = new WWProfile();
+    	m_profiles[1] = new WWProfile();
+    	m_activeProfile = m_profiles[0];
+        
     	// Temp save a fake profile to test the loading profile save & load code
-    	try
-    	{
-    		SaveProfile("JakeProfile");
-    	}
-    	catch (IOException e)
-    	{
-    	}
+    	//ProfileSave();
     	
     	// Load the profile files in
     	LoadProfiles();
     	
+    	// Update building count from profile
+        for (int i=0; i<m_numDefenceBuildings; i++)
+        {
+        	int number = m_activeProfile.GetNumDefenceBuilding(i);
+        	m_defenceBuildings[i].SetNumOwned(number);
+        }
+        for (int i=0; i<m_numIncomeBuildings; i++)
+        {
+        	int number = m_activeProfile.GetNumIncomeBuilding(i);
+        	m_incomeBuildings[i].SetNumOwned(number);
+        }
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+    	Button saveProfile = (Button)findViewById(R.id.profileSave);
+    	saveProfile.setOnClickListener(this);
+        
         TextView profileNameView = (TextView)findViewById(R.id.profileName);
-        profileNameView.setText(m_profileName);
-        Log.i(TAG,"m_profileName="+m_profileName);
+        profileNameView.setText(m_activeProfile.GetName());
+        Log.i(TAG,"m_activeProfile.Name="+m_activeProfile.GetName());
         
         TableLayout defenceView = (TableLayout)findViewById(R.id.DefenceView);
         for (int i=0; i<m_numDefenceBuildings; i++)
@@ -95,6 +111,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
         
         TabHost.TabSpec spec;
         
+        spec = tabs.newTabSpec("Profile");
+        spec.setContent(R.id.ProfileViewTab);
+        spec.setIndicator("Profile");
+        tabs.addTab(spec);
+        
         spec = tabs.newTabSpec("Income");
         spec.setContent(R.id.IncomeViewTab);
         spec.setIndicator("Income");
@@ -104,7 +125,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
         spec.setContent(R.id.DefenceView);
         spec.setIndicator("Defence");
         tabs.addTab(spec);
-        tabs.setCurrentTab(0);
+        tabs.setCurrentTab(1);
     }
     
     public boolean onTouch(View v, MotionEvent event)
@@ -120,6 +141,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
         return v.onTouchEvent(event);
     }
     
+    public void onClick(View v)
+    {
+    	if (v.getId()==R.id.profileSave)
+    	{
+    		ProfileSave();
+    	}
+    }
     public boolean onKey(View v, int key, KeyEvent event)
     {
     	int number = -1;
@@ -138,6 +166,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     				number = Integer.parseInt(text);
     			}
     			building.SetNumOwned(number);
+    			// Ugly - do it properly
+    			UpdateProfile();
     			
     			float value = building.GetValue();
     			String valueString = Float.toString(value);
@@ -262,6 +292,20 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	
     	parent.addView(row);
     }
+    // This is ugly should only update the changed building entry
+    private void UpdateProfile()
+    {
+        for (int i=0; i<m_numDefenceBuildings; i++)
+        {
+        	int number = m_defenceBuildings[i].GetNumOwned();
+        	m_activeProfile.SetNumDefenceBuilding(i, number);
+        }
+        for (int i=0; i<m_numIncomeBuildings; i++)
+        {
+        	int number = m_incomeBuildings[i].GetNumOwned();
+        	m_activeProfile.SetNumIncomeBuilding(i, number);
+        }
+    }
     private int LoadProfiles()
     {
     	int numProfiles = 0;
@@ -269,16 +313,19 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	int numFiles = fileNames.length;
     	if (numFiles>0)
     	{
-    		String profileFileName = fileNames[0];
-    		try
+    		for (int file=0; file<numFiles;file++)
     		{
-    			if (LoadProfile(profileFileName)==true)
+    			String profileFileName = fileNames[file];
+    			try
     			{
-    				numProfiles++;
+    				if (LoadProfile(profileFileName)==true)
+    				{
+    					numProfiles++;
+    				}
     			}
-    		}
-    		catch (IOException e)
-    		{
+    			catch (IOException e)
+    			{
+    			}
     		}
     	}
     	return numProfiles;
@@ -288,16 +335,30 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     {
     	try
     	{
-    		BufferedInputStream bufferedInput = new BufferedInputStream(openFileInput(profileFileName));
+    		TextFileInput inFile = new TextFileInput(openFileInput(profileFileName));
     		try
     		{
-    			String name = ReadString(bufferedInput);
-				m_profileName = name;
-				int value = ReadInt(bufferedInput);
+    			// Profile name
+    			String name = inFile.ReadString();
+				m_activeProfile.SetName(name);
+    			// Number of each defence building
+				int numDefenceBuildings = inFile.ReadInt();
+				for (int i=0; i<numDefenceBuildings;i++)
+				{
+					int number = inFile.ReadInt();
+					m_activeProfile.SetNumDefenceBuilding(i,number);
+				}
+    			// Number of each income building
+				int numIncomeBuildings = inFile.ReadInt();
+				for (int i=0; i<numIncomeBuildings;i++)
+				{
+					int number = inFile.ReadInt();
+					m_activeProfile.SetNumIncomeBuilding(i,number);
+				}
     		}
     		catch (IOException e)
     		{
-   				bufferedInput.close();
+   				inFile.Close();
     			return false;
     		}
     		return true;
@@ -308,66 +369,43 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	}
     }
     	
-    private int ReadInt(BufferedInputStream inputStream) throws IOException
-    {
-    	String tempStr = ReadString(inputStream);
-    	int value = Integer.parseInt(tempStr);
-    	Log.i(TAG, "IN: value = " + value);
-    	return value;
-    }
-    private String ReadString(BufferedInputStream inputStream) throws IOException
-    {
-   		int length = inputStream.read();
-    	Log.i(TAG, "IN: length = " + length);
-		byte[] byteBuffer = new byte[length];
-		int result = inputStream.read(byteBuffer, 0, length);
-		if (result==length)
-    	{
-    		String str = new String(byteBuffer);
-    		Log.i(TAG, "IN: str = " + str);
-    		return str;
-    	}
-		return "";
-    }
-    
-    private void WriteInt(BufferedOutputStream outputStream, int value) throws IOException
-    {
-    	String tempStr = Integer.toString(value);
-    	Log.i(TAG, "OUT: value = " + value);
-    	WriteString(outputStream,tempStr);
-    }
-    private void WriteString(BufferedOutputStream outputStream, String str) throws IOException
-    {
-    	int length = str.length();
-    	Log.i(TAG, "OUT: length = " + length);
-    	outputStream.write(length);
-    	Log.i(TAG, "OUT: str = " + str);
-    	outputStream.write(str.getBytes(),0,length);
-    }
-    
     private boolean SaveProfile(String profileName) throws IOException
     {
     	try
     	{
     		String profileFileName = "Profile_" + profileName;
-    		BufferedOutputStream outputStream = new BufferedOutputStream(openFileOutput(profileFileName, MODE_PRIVATE));
+    		TextFileOutput outFile = new TextFileOutput(openFileOutput(profileFileName, MODE_PRIVATE));
     		
-    		String name = profileName;
     		try
     		{
-    			// Profile name
-    			WriteString(outputStream,name);
+    			String name = m_activeProfile.GetName();
     			
-    			// Number of each income building
-    			WriteInt(outputStream,666);
+    			// Profile name
+    			outFile.WriteString(name);
+    			
     			// Number of each defence building
+				int numDefenceBuildings = m_activeProfile.GetNumDefenceBuildings();
+				outFile.WriteInt(numDefenceBuildings);
+				for (int i=0; i<numDefenceBuildings;i++)
+				{
+					int number = m_activeProfile.GetNumDefenceBuilding(i);
+					outFile.WriteInt(number);
+				}
+    			// Number of each income building
+				int numIncomeBuildings = m_activeProfile.GetNumIncomeBuildings();
+				outFile.WriteInt(numIncomeBuildings);
+				for (int i=0; i<numIncomeBuildings;i++)
+				{
+					int number = m_activeProfile.GetNumIncomeBuilding(i);
+					outFile.WriteInt(number);
+				}
     		}
     		catch (IOException e)
     		{
-   				outputStream.close(); 
+    			outFile.Close();
     			return false;
     		}
-   			outputStream.close(); 
+   			outFile.Close();
    			return true;
     	} 
     	catch (FileNotFoundException e)
@@ -375,17 +413,82 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     		return false;
     	}
     }
+    private void ProfileSave()
+    {
+    	try
+    	{
+    		String profileFileName = m_activeProfile.GetName()+"Profile";
+    		SaveProfile(profileFileName);
+    	}
+    	catch (IOException e)
+    	{
+    	}
+    }
+    
+    class WWProfile
+    {
+    	WWProfile()
+    	{
+    		m_numIncomeBuildings=new int[WorldWarCalc.NUM_INCOME_BUILDINGS];
+    		m_numDefenceBuildings=new int[WorldWarCalc.NUM_DEFENCE_BUILDINGS];
+    	}
+    	public String GetName()
+    	{
+    		return m_name;
+    	}
+    	public int GetNumIncomeBuildings()
+    	{
+    		return m_numIncomeBuildings.length;
+    	}
+    	public int GetNumDefenceBuildings()
+    	{
+    		return m_numDefenceBuildings.length;
+    	}
+    	public int GetNumIncomeBuilding(int index)
+    	{
+    		return m_numIncomeBuildings[index];
+    	}
+    	public int GetNumDefenceBuilding(int index)
+    	{
+    		return m_numDefenceBuildings[index];
+    	}
+    	
+    	public void SetName(String name)
+    	{
+    		m_name = name;
+    	}
+    	public void SetNumIncomeBuilding(int index,int number)
+    	{
+    		if ((index>=0) && (index<WorldWarCalc.NUM_INCOME_BUILDINGS))
+    		{
+    			m_numIncomeBuildings[index]=number;
+    		}
+    	}
+    	public void SetNumDefenceBuilding(int index,int number)
+    	{
+    		if ((index>=0) && (index<WorldWarCalc.NUM_DEFENCE_BUILDINGS))
+    		{
+    			m_numDefenceBuildings[index]=number;
+    		}
+    	}
+    	
+    	private String m_name;
+    	private int[] m_numIncomeBuildings;
+    	private int[] m_numDefenceBuildings;
+    }
     	
     private static final String TAG = "WWCALC";
     
-    private static final int NUM_DEFENCE_BUILDINGS = 7;
-    private static final int NUM_INCOME_BUILDINGS = 7;
+    public static final int NUM_DEFENCE_BUILDINGS = 7;
+    public static final int NUM_INCOME_BUILDINGS = 8;
 
-    private WWBuilding[] m_defenceBuildings;
-    private WWBuilding[] m_incomeBuildings;
     private int m_numDefenceBuildings;
     private int m_numIncomeBuildings;
-    private String m_profileName;
+    private WWBuilding[] m_defenceBuildings;
+    private WWBuilding[] m_incomeBuildings;
+    
+    private WWProfile[] m_profiles;
+    private WWProfile m_activeProfile;
     
     HorizontalScrollView m_incomeViewHeader;
     HorizontalScrollView m_incomeViewScroll;
