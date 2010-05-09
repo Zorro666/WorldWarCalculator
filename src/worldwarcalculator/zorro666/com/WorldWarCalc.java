@@ -54,9 +54,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Nuclear Testing Facility", 	100000000, 	700000,	0.1f);
     	m_incomeBuildings[m_numIncomeBuildings++] = new WWBuilding("Solar Satellite Network", 	340000000, 1200000,	0.1f);
     	
-    	m_profiles = new WWProfile[2];
+    	m_profiles = new WWProfile[16];
     	m_profiles[0] = new WWProfile();
     	m_profiles[1] = new WWProfile();
+    	m_profiles[2] = new WWProfile();
+    	m_profiles[3] = new WWProfile();
+    	m_profiles[4] = new WWProfile();
     	m_activeProfile = m_profiles[0];
         
     	// Temp save a fake profile to test the loading profile save & load code
@@ -65,17 +68,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	// Load the profile files in
     	LoadProfiles();
     	
+/*
     	// Update building count from profile
         for (int i=0; i<m_numDefenceBuildings; i++)
         {
-        	int number = m_activeProfile.GetNumDefenceBuilding(i);
-        	m_defenceBuildings[i].SetNumOwned(number);
+        	int numOwned = m_activeProfile.GetNumDefenceBuilding(i);
         }
         for (int i=0; i<m_numIncomeBuildings; i++)
         {
-        	int number = m_activeProfile.GetNumIncomeBuilding(i);
-        	m_incomeBuildings[i].SetNumOwned(number);
+        	int numOwned = m_activeProfile.GetNumIncomeBuilding(i);
         }
+*/
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -90,7 +93,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
         TableLayout defenceView = (TableLayout)findViewById(R.id.DefenceView);
         for (int i=0; i<m_numDefenceBuildings; i++)
         {
-        	addRow( defenceView, m_defenceBuildings[i]);
+        	WWProfileEntry profileEntry=m_activeProfile.GetDefenceBuilding(i);
+        	WWBuilding building = m_defenceBuildings[i];
+        	profileEntry.SetBuilding(building);
+        	addRow( defenceView,building,profileEntry);
         }
         
         //m_incomeViewHeader = (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
@@ -103,7 +109,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
         TableLayout incomeView = (TableLayout)findViewById(R.id.IncomeViewData);
         for (int i=0; i<m_numIncomeBuildings; i++)
         {
-        	addRow( incomeView, m_incomeBuildings[i]);
+        	WWProfileEntry profileEntry=m_activeProfile.GetIncomeBuilding(i);
+        	WWBuilding building = m_incomeBuildings[i];
+        	profileEntry.SetBuilding(building);
+        	addRow( incomeView,building,profileEntry);
         }
         
         final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
@@ -150,44 +159,43 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     }
     public boolean onKey(View v, int key, KeyEvent event)
     {
-    	int number = -1;
     	Object tag = v.getTag();
-    	if (tag.getClass() == WWBuilding.class)
+    	if(tag.getClass() == WWProfileEntry.class)
     	{
-    		WWBuilding building = (WWBuilding)tag;
+    		WWProfileEntry profileEntry = (WWProfileEntry)tag;
+    		WWBuilding building = profileEntry.GetBuilding();
     		EditText numberText = building.GetViewNumOwned();
     		if (v==numberText)
     		{
+    			int numOwned = 0;
     			String text = numberText.getText().toString();
     		
-    			number = 0;
     			if (text.length() > 0)
     			{
-    				number = Integer.parseInt(text);
+    				numOwned = Integer.parseInt(text);
     			}
-    			building.SetNumOwned(number);
-    			// Ugly - do it properly
-    			UpdateProfile();
+    			profileEntry.SetNumOwned(numOwned);
     			
-    			float value = building.GetValue();
+    			float value = building.GetValue(numOwned);
     			String valueString = Float.toString(value);
     			TextView valueText = building.GetViewValue();
     			valueText.setText(valueString);
     			
-    			long currentCost = building.GetCurrentCost();
+    			long currentCost = building.GetCurrentCost(numOwned);
     			String currentCostString = Long.toString(currentCost);
     			TextView currentCostText = building.GetViewCurrentCost();
     			currentCostText.setText(currentCostString);
     			
-    			Log.i(TAG,"onKey Building = " + building.GetName() + " number = " + number + " value = " + value);
+    			Log.i(TAG,"onKey Building = " + building.GetName() + " numOwned = " + numOwned + " value = " + value);
     		}
     	}
     	return false;
     }
     // OR could use afterTextChanged() and compare Editable e with m_number1.getText()
     
-    private void addRow(TableLayout parent,WWBuilding building)
+    private void addRow(TableLayout parent,WWBuilding building,WWProfileEntry profileEntry)
     {
+    	int numOwned = profileEntry.GetNumOwned();
        	InputFilter[] filters5 = new InputFilter[1];
        	filters5[0] = new InputFilter.LengthFilter(5);
        	
@@ -195,13 +203,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
        	filters8[0] = new InputFilter.LengthFilter(8);
        	
     	TableRow row = new TableRow(parent.getContext());
-    	row.setTag(building);
+    	row.setTag(profileEntry);
     	
     	TextView name = new TextView(row.getContext());
     	name.setText(building.GetName());
     	name.setPadding(1,1,1,1);
     	name.setWidth(116);
-    	name.setTag(building);
+    	name.setTag(profileEntry);
     	name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
     	name.setGravity(Gravity.CENTER);
     	name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
@@ -217,16 +225,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	number.setMaxLines(1);
     	number.setFilters(filters5);
     	number.setLines(1);
-    	number.setText(Integer.toString(building.GetNumOwned()));
+    	number.setText(Integer.toString(numOwned));
     	number.setPadding(5,5,5,5);
-    	number.setTag(building);
+    	number.setTag(profileEntry);
     	number.setOnKeyListener(this);
     	number.setSelectAllOnFocus(true);
     	building.SetViewNumOwned(number);
     	row.addView(number);
     	
     	TextView value = new TextView(row.getContext());
-    	value.setText(Float.toString(building.GetValue()));
+    	value.setText(Float.toString(building.GetValue(numOwned)));
     	value.setKeyListener(new DigitsKeyListener());
     	value.setInputType(InputType.TYPE_CLASS_NUMBER);
     	value.setSingleLine();
@@ -237,12 +245,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	value.setFilters(filters8);
     	value.setPadding(5,5,5,5);
     	value.setWidth(72);
-    	value.setTag(building);
+    	value.setTag(profileEntry);
     	building.SetViewValue(value);
     	row.addView(value);
     	
     	TextView reward = new TextView(row.getContext());
-    	reward.setText(Float.toString(building.GetValue()));
     	reward.setKeyListener(new DigitsKeyListener());
     	reward.setInputType(InputType.TYPE_CLASS_NUMBER);
     	reward.setSingleLine();
@@ -253,12 +260,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	reward.setFilters(filters8);
     	reward.setPadding(5,5,5,5);
     	reward.setWidth(96);
-    	reward.setTag(building);
+    	reward.setTag(profileEntry);
     	reward.setText(Integer.toString(building.GetReward()));
     	row.addView(reward);
     	
     	TextView currentCost = new TextView(row.getContext());
-    	currentCost.setText(Float.toString(building.GetValue()));
+    	currentCost.setText(Float.toString(building.GetValue(numOwned)));
     	currentCost.setKeyListener(new DigitsKeyListener());
     	currentCost.setInputType(InputType.TYPE_CLASS_NUMBER);
     	currentCost.setSingleLine();
@@ -269,13 +276,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	currentCost.setFilters(filters8);
     	currentCost.setPadding(5,5,5,5);
     	currentCost.setWidth(96);
-    	currentCost.setTag(building);
-    	currentCost.setText(Long.toString(building.GetCurrentCost()));
+    	currentCost.setTag(profileEntry);
+    	currentCost.setText(Long.toString(building.GetCurrentCost(numOwned)));
     	building.SetViewCurrentCost(currentCost);
     	row.addView(currentCost);
     	
     	TextView baseCost = new TextView(row.getContext());
-    	baseCost.setText(Float.toString(building.GetValue()));
+    	baseCost.setText(Float.toString(building.GetValue(numOwned)));
     	baseCost.setKeyListener(new DigitsKeyListener());
     	baseCost.setInputType(InputType.TYPE_CLASS_NUMBER);
     	baseCost.setSingleLine();
@@ -286,26 +293,28 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	baseCost.setFilters(filters8);
     	baseCost.setPadding(5,5,5,5);
     	baseCost.setWidth(96);
-    	baseCost.setTag(building);
+    	baseCost.setTag(profileEntry);
     	baseCost.setText(Integer.toString(building.GetBaseCost()));
     	row.addView(baseCost);
     	
     	parent.addView(row);
     }
+/*
     // This is ugly should only update the changed building entry
     private void UpdateProfile()
     {
         for (int i=0; i<m_numDefenceBuildings; i++)
         {
-        	int number = m_defenceBuildings[i].GetNumOwned();
-        	m_activeProfile.SetNumDefenceBuilding(i, number);
+        	//int number = m_defenceBuildings[i].GetNumOwned();
+        	//m_activeProfile.SetNumDefenceBuilding(i,numOwned);
         }
         for (int i=0; i<m_numIncomeBuildings; i++)
         {
-        	int number = m_incomeBuildings[i].GetNumOwned();
-        	m_activeProfile.SetNumIncomeBuilding(i, number);
+        	//int number = m_incomeBuildings[i].GetNumOwned();
+        	//m_activeProfile.SetNumIncomeBuilding(i,numOwned);
         }
     }
+*/
     private int LoadProfiles()
     {
     	int numProfiles = 0;
@@ -425,58 +434,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
     	}
     }
     
-    class WWProfile
-    {
-    	WWProfile()
-    	{
-    		m_numIncomeBuildings=new int[WorldWarCalc.NUM_INCOME_BUILDINGS];
-    		m_numDefenceBuildings=new int[WorldWarCalc.NUM_DEFENCE_BUILDINGS];
-    	}
-    	public String GetName()
-    	{
-    		return m_name;
-    	}
-    	public int GetNumIncomeBuildings()
-    	{
-    		return m_numIncomeBuildings.length;
-    	}
-    	public int GetNumDefenceBuildings()
-    	{
-    		return m_numDefenceBuildings.length;
-    	}
-    	public int GetNumIncomeBuilding(int index)
-    	{
-    		return m_numIncomeBuildings[index];
-    	}
-    	public int GetNumDefenceBuilding(int index)
-    	{
-    		return m_numDefenceBuildings[index];
-    	}
-    	
-    	public void SetName(String name)
-    	{
-    		m_name = name;
-    	}
-    	public void SetNumIncomeBuilding(int index,int number)
-    	{
-    		if ((index>=0) && (index<WorldWarCalc.NUM_INCOME_BUILDINGS))
-    		{
-    			m_numIncomeBuildings[index]=number;
-    		}
-    	}
-    	public void SetNumDefenceBuilding(int index,int number)
-    	{
-    		if ((index>=0) && (index<WorldWarCalc.NUM_DEFENCE_BUILDINGS))
-    		{
-    			m_numDefenceBuildings[index]=number;
-    		}
-    	}
-    	
-    	private String m_name;
-    	private int[] m_numIncomeBuildings;
-    	private int[] m_numDefenceBuildings;
-    }
-    	
     private static final String TAG = "WWCALC";
     
     public static final int NUM_DEFENCE_BUILDINGS = 7;

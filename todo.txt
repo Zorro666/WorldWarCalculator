@@ -1,14 +1,15 @@
-class for the profile data - save & load function
-need button to save profile
+Really sounds like income & defence should have a derived class to set some defaults in them and make profiles/UI interaction neater
+add all profiles to a drop down list
+add ability to rename current profile (double click on the current profile name)
 capture out of memory event - save current active profile (state data)
 capture close activity event - save the current profile
+make UI look nicer - smaller font
 THEN IT WILL BE USEFUL - USE IT - TEST IT OUT - SHOW IT/GIVE IT TO SAM
 Put +/- buttons UI system in place for number
-need way of choosing different profiles to load
 Make best buy BOLD and Green - flashing ?
-Really sounds like income & defence should have a derived class to set some defaults in them
-Try to get a header row working - with linked scrolling
 show hint data (new tab?) - how many of the best buildings to buy (sorted list)
+Try to get a header row working - with linked scrolling
 Display image of building
+need button to load profile - would reload to undo changes
 
 
