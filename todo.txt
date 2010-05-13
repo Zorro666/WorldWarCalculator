@@ -1,4 +1,5 @@
-profile tab - delete profile option (active profile)
+profile tab - profile name edit box should update name to match the name of the active profile
+profile tab - lost focus on edit name should only rename profile if the name is new
 profile tab - delete profile option should delete your profile file from disk
 profile tab - rename profile should update profile drop down list
 profile tab - delete profile option should update profile drop down list
