@@ -1,8 +1,14 @@
 package worldwarcalculator.zorro666.com;
 
+import android.util.Log;
+
 public class WWProfile
 {
 	WWProfile()
+	{
+		Log.i("BAD", "Oh noes");
+	}
+	WWProfile(String name)
 	{
 		m_incomeBuildings=new WWProfileEntry[WorldWarCalc.NUM_INCOME_BUILDINGS];
 		for (int i=0; i<WorldWarCalc.NUM_INCOME_BUILDINGS;i++)
@@ -14,6 +20,7 @@ public class WWProfile
 		{
 			m_defenceBuildings[i]=new WWProfileEntry();
 		}
+		m_name=name;
 	}
 	public String GetName()
 	{
@@ -66,6 +73,5 @@ public class WWProfile
 	private String m_name;
 	private WWProfileEntry[] m_incomeBuildings;
 	private WWProfileEntry[] m_defenceBuildings;
-	
 }
     	

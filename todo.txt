@@ -1,6 +1,16 @@
-Really sounds like income & defence should have a derived class to set some defaults in them and make profiles/UI interaction neater
-add all profiles to a drop down list
-add ability to rename current profile (double click on the current profile name)
+					<Button
+	    				android:id="@+id/profileNewButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="New"
+						android:padding="5dp">
+					</Button>
+P
+profile tab - new profile option
+profile tab - finish editing profile name - change name of active profile
+profile tab - delete profile option (active profile)
+all tabs - profile drop down list needs to stay in sync with profile list
+all tabs - select on profile list should choose a new profile - change m_activeProfile
 capture out of memory event - save current active profile (state data)
 capture close activity event - save the current profile
 make UI look nicer - smaller font

@@ -2,6 +2,10 @@ package worldwarcalculator.zorro666.com;
 
 public class WWProfileEntry
 {
+	public WWProfileEntry()
+	{
+		m_numOwned = 0;
+	}
 	public WWBuilding GetBuilding()
 	{
 		return m_building;
