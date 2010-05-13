@@ -3,13 +3,19 @@
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<TextView
-    	android:id="@+id/profileName"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="DEFAULT_PROFILE"
-		android:padding="5dp">
-	</TextView>
+	<LinearLayout 
+		android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		>
+    <Spinner 
+        android:id="@+id/profileSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/profile_prompt"
+    />
+	</LinearLayout>
 	<TabHost
 	    android:id="@+id/tabhost"
 		android:layout_width="fill_parent"
@@ -31,13 +37,24 @@
 				android:layout_width="fill_parent"
 				android:layout_height="fill_parent"
 				android:padding="0dp">
-				<Button
-	    			android:id="@+id/profileSave"
-					android:layout_width="fill_parent"
-					android:layout_height="fill_parent"
-					android:text="Save"
-					android:padding="5dp">
-				</Button>
+    			<EditText 
+        			android:id="@+id/profileName"
+        			android:layout_width="fill_parent"
+        			android:layout_height="wrap_content"
+        			android:text="default"
+    				android:selectAllOnFocus="true"
+        			android:padding="5dp"
+        			android:inputType="text"
+        			android:singleLine="true"
+        			>
+    			</EditText>
+					<Button
+	    				android:id="@+id/profileSaveButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Save"
+						android:padding="5dp">
+					</Button>
     		</LinearLayout>
 			<LinearLayout
 				android:id="@+id/IncomeViewTab"

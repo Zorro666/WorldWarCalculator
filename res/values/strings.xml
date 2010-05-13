@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, WorldWarCalc!</string>
     <string name="app_name">World War Calculator</string>
+<string name="profile_prompt">Choose a profile...</string>
 </resources>
