@@ -65,6 +65,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		m_profileNames = new ArrayList<String>();
 		m_profiles = new HashMap<String, WWProfile>(DEFAULT_NUM_PROFILES);
 
+		m_profilesAdapter =  new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, m_profileNames);
+		
 		// Temp save a fake profile to test the loading profile save & load code
 		// ProfileSave();
 
@@ -81,20 +83,26 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		Button saveProfile = (Button) findViewById(R.id.profileSaveButton);
 		saveProfile.setOnClickListener(this);
+		
+		Button newProfile = (Button) findViewById(R.id.profileNewButton);
+		newProfile.setOnClickListener(this);
+
+		Button deleteProfile = (Button) findViewById(R.id.profileDeleteButton);
+		deleteProfile.setOnClickListener(this);
 
 		EditText profileName = (EditText)findViewById(R.id.profileName);
 		profileName.setOnFocusChangeListener(this);
 
-		 Spinner profileNameView = (Spinner)findViewById(R.id.profileSpinner);
-		 // Subclass it and implement getView function to make it work with WWProfile
-		 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, m_profileNames);
-		 adapter.setDropDownViewResource(android.R.layout. simple_spinner_dropdown_item);
-		 profileNameView.setAdapter(adapter);
-		 profileNameView.setSelection(0);
-		 
-		 m_activeProfile = m_profiles.get(m_profileNames.get(0));
-		 Log.i(TAG, "m_activeProfile.Name=" + m_activeProfile.GetName());
-
+		Spinner profileNameView = (Spinner)findViewById(R.id.profileSpinner);
+		
+		// An option would be to subclass it and implement getView function to make it work with WWProfile
+		m_profilesAdapter.setDropDownViewResource(android.R.layout. simple_spinner_dropdown_item);
+		profileNameView.setAdapter(m_profilesAdapter);
+		profileNameView.setSelection(0);
+		
+		m_activeProfile = m_profiles.get(m_profileNames.get(0));
+		Log.i(TAG, "m_activeProfile.Name=" + m_activeProfile.GetName());
+		
 		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
 		for (int i = 0; i < m_numDefenceBuildings; i++) 
 		{
@@ -161,13 +169,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{ 
 			if (hasFocus == false) 
 			{ 
-				// Get the new profile name and compare against the active profile name 
-				// Update active profile name if it has changed 
-				// Update m_profileNames, m_profiles, profile drop down list 
-				EditText profileNameView = (EditText)v; 
+				EditText profileNameView = (EditText)v;
 				String newName = profileNameView.getText().toString();
-				Log.i(TAG, "Profile name has changed:" + newName);
-				m_activeProfile.SetName(newName);
+				ProfileRename(newName);
 			} 
 		}
 	}
@@ -180,6 +184,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		if (v.getId() == R.id.profileNewButton) 
 		{
 			ProfileNew();
+		}
+		if (v.getId() == R.id.profileDeleteButton)
+		{
+			ProfileDelete();
 		}
 	}
 
@@ -385,7 +393,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					tempProfile.SetNumIncomeBuilding(i, number);
 
 				}
-				AddProfile(name, tempProfile);
+				AddProfile(tempProfile);
 				Log.i(TAG,"LoadProfile DONE:"+name);
 			} 
 			catch (IOException e) 
@@ -408,10 +416,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			String profileFileName = "Profile3_" + profileName;
 			TextFileOutput outFile = new TextFileOutput(openFileOutput( profileFileName, MODE_PRIVATE));
 
+			String name = m_activeProfile.GetName();
 			try 
 			{
-				String name = m_activeProfile.GetName();
-
 				// Profile name
 				outFile.WriteString(name);
 
@@ -438,7 +445,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				return false;
 			}
 			outFile.Close();
-			Log.i(TAG,"SaveProfile DONE:"+profileName);
+			Log.i(TAG,"SaveProfile DONE:"+name);
 			return true;
 		} 
 		catch (FileNotFoundException e) 
@@ -451,7 +458,20 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		String name = "default";
 		WWProfile tempProfile = CreateNewProfile(name);
-		AddProfile(name, tempProfile);
+		AddProfile(tempProfile);
+		Log.i(TAG,"ProfileNew");
+	}
+	
+	private void ProfileDelete() 
+	{
+		String name = m_activeProfile.GetName();
+		m_profileNames.remove(name);
+		m_profiles.remove(name);
+		m_profilesAdapter.remove(name);
+		
+		m_activeProfile = m_profiles.get(m_profileNames.get(0));
+		Log.i(TAG,"ProfileDelete:"+name);
+		Log.i(TAG, "m_activeProfile.Name=" + m_activeProfile.GetName());
 	}
 
 	private WWProfile CreateNewProfile(String name) 
@@ -477,16 +497,34 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return profile;
 	}
 
-	private void AddProfile(String name, WWProfile profile) 
+	private void AddProfile(WWProfile profile) 
 	{
+		String name = profile.GetName();
 		if (m_profiles.containsKey(name) == false) 
 		{
 			m_profileNames.add(name);
 			m_profiles.put(name, profile);
 			Log.i(TAG,"AddProfile:"+name);
+			//m_profilesAdapter.add(name);
 		}
 	}
 
+	private void ProfileRename(String newName)
+	{
+		// Get the new profile name and compare against the active profile name 
+		// Update active profile name if it has changed 
+		// Update m_profileNames, m_profiles, profile drop down list 
+		Log.i(TAG, "Profile name has changed:" + newName);
+		String oldName = m_activeProfile.GetName();
+		m_activeProfile.SetName(newName);
+		if (m_profiles.containsKey(oldName) == false) 
+		{
+			m_profileNames.remove(oldName);
+			m_profiles.remove(oldName);
+			AddProfile(m_activeProfile);
+		}
+	}
+	
 	private void ProfileSave() 
 	{
 		try 
@@ -509,6 +547,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private int m_numIncomeBuildings;
 	private WWBuilding[] m_defenceBuildings;
 	private WWBuilding[] m_incomeBuildings;
+	private ArrayAdapter<String> m_profilesAdapter;
 
 	private Map<String, WWProfile> m_profiles;
 	private List<String> m_profileNames;

@@ -67,6 +67,13 @@
 						android:text="New"
 						android:padding="5dp">
 					</Button>
+					<Button
+	    				android:id="@+id/profileDeleteButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Delete"
+						android:padding="5dp">
+					</Button>
 				</LinearLayout>
     		</LinearLayout>
 			<LinearLayout

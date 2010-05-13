@@ -1,6 +1,7 @@
-profile tab - new profile option
-profile tab - finish editing profile name - change name of active profile
 profile tab - delete profile option (active profile)
+profile tab - delete profile option should delete your profile file from disk
+profile tab - rename profile should update profile drop down list
+profile tab - delete profile option should update profile drop down list
 all tabs - profile drop down list needs to stay in sync with profile list
 all tabs - select on profile list should choose a new profile - change m_activeProfile
 capture out of memory event - save current active profile (state data)
@@ -9,7 +10,8 @@ make UI look nicer - smaller font
 THEN IT WILL BE USEFUL - USE IT - TEST IT OUT - SHOW IT/GIVE IT TO SAM
 Put +/- buttons UI system in place for number
 Make best buy BOLD and Green - flashing ?
-show hint data (new tab?) - how many of the best buildings to buy (sorted list)
+all tabs - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
+hint tab - show hint data - how many of the best buildings to buy (sorted list)
 Try to get a header row working - with linked scrolling
 Display image of building
 need button to load profile - would reload to undo changes
