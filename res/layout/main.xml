@@ -48,20 +48,26 @@
         			android:singleLine="true"
         			>
     			</EditText>
-				<Button
-    				android:id="@+id/profileSaveButton"
-					android:layout_width="wrap_content"
-					android:layout_height="fill_parent"
-					android:text="Save"
-					android:padding="5dp">
-				</Button>
-				<Button
-    				android:id="@+id/profileNewButton"
-					android:layout_width="wrap_content"
-					android:layout_height="fill_parent"
-					android:text="New"
-					android:padding="5dp">
-				</Button>
+				<LinearLayout
+					android:orientation="horizontal"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:padding="0dp">
+					<Button
+    					android:id="@+id/profileSaveButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Save"
+						android:padding="5dp">
+					</Button>
+					<Button
+	    				android:id="@+id/profileNewButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="New"
+						android:padding="5dp">
+					</Button>
+				</LinearLayout>
     		</LinearLayout>
 			<LinearLayout
 				android:id="@+id/IncomeViewTab"

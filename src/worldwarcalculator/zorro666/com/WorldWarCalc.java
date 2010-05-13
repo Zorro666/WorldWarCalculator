@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener /* , OnFocusChangeListener */
+public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener
 
 {
 	/** Called when the activity is first created. */
@@ -69,7 +69,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		// ProfileSave();
 
 		// Load the profile files in
-		// LoadProfiles();
+		LoadProfiles();
 
 		if (m_profileNames.size() == 0) 
 		{
@@ -82,8 +82,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Button saveProfile = (Button) findViewById(R.id.profileSaveButton);
 		saveProfile.setOnClickListener(this);
 
-		// EditText profileName = (EditText)findViewById(R.id.profileName);
-		// profileName.setOnFocusChangeListener(this);
+		EditText profileName = (EditText)findViewById(R.id.profileName);
+		profileName.setOnFocusChangeListener(this);
 
 		 Spinner profileNameView = (Spinner)findViewById(R.id.profileSpinner);
 		 // Subclass it and implement getView function to make it work with WWProfile
@@ -155,14 +155,22 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return v.onTouchEvent(event);
 	}
 
-	/*
-	 * public void onFocusChange(View v, boolean hasFocus) { if
-	 * (v.getId()==R.id.profileName) { if (hasFocus == false) { // Get the new
-	 * profile name and compare against the active profile name // Update active
-	 * profile name if it has changed // Update m_profileNames, m_profiles,
-	 * profile drop down list EditText profileNameView = (EditText)v; Log.i(TAG,
-	 * "Profile name has changed:" + (EditText)profileNameView.getText()); } } }
-	 */
+	public void onFocusChange(View v, boolean hasFocus) 
+	{ 
+		if (v.getId()==R.id.profileName) 
+		{ 
+			if (hasFocus == false) 
+			{ 
+				// Get the new profile name and compare against the active profile name 
+				// Update active profile name if it has changed 
+				// Update m_profileNames, m_profiles, profile drop down list 
+				EditText profileNameView = (EditText)v; 
+				String newName = profileNameView.getText().toString();
+				Log.i(TAG, "Profile name has changed:" + newName);
+				m_activeProfile.SetName(newName);
+			} 
+		}
+	}
 	public void onClick(View v) 
 	{
 		if (v.getId() == R.id.profileSaveButton) 
@@ -378,6 +386,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 				}
 				AddProfile(name, tempProfile);
+				Log.i(TAG,"LoadProfile DONE:"+name);
 			} 
 			catch (IOException e) 
 			{
@@ -429,6 +438,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				return false;
 			}
 			outFile.Close();
+			Log.i(TAG,"SaveProfile DONE:"+profileName);
 			return true;
 		} 
 		catch (FileNotFoundException e) 
@@ -473,7 +483,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			m_profileNames.add(name);
 			m_profiles.put(name, profile);
-
+			Log.i(TAG,"AddProfile:"+name);
 		}
 	}
 

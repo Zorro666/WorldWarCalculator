@@ -1,11 +1,3 @@
-					<Button
-	    				android:id="@+id/profileNewButton"
-						android:layout_width="wrap_content"
-						android:layout_height="fill_parent"
-						android:text="New"
-						android:padding="5dp">
-					</Button>
-P
 profile tab - new profile option
 profile tab - finish editing profile name - change name of active profile
 profile tab - delete profile option (active profile)
