@@ -235,9 +235,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		if (parent.getId() == R.id.profileSpinner)
 		{
 			TextView item = (TextView)view;
-			String profileName = item.getText().toString();
-			Log.i(TAG,"ProfileSelect["+position+"] = "+profileName);
-			ProfileSelect();
+			if (item != null)
+			{
+				String profileName = item.getText().toString();
+				Log.i(TAG,"ProfileSelect["+position+"] = "+profileName);
+				ProfileSelect();
+			}
 		}
 	}
 	private void ProfileSelect()
@@ -533,15 +536,19 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		// Get the new profile name and compare against the active profile name 
 		// Update active profile name if it has changed 
 		// Update m_profileNames, m_profiles, profile drop down list 
-		Log.i(TAG, "Profile name has changed:" + newName);
 		String oldName = m_activeProfile.GetName();
+		Log.i(TAG, "ProfileRename: "+oldName+"->"+newName);
 		m_activeProfile.SetName(newName);
-		if (m_profiles.containsKey(oldName) == false) 
+		if (m_profiles.containsKey(oldName) == true) 
 		{
-			//m_profileNames.remove(oldName);
-			m_profilesAdapter.remove(oldName);
-			m_profiles.remove(oldName);
-			AddProfile(m_activeProfile);
+			if (oldName != newName)
+			{
+				//m_profileNames.remove(oldName);
+				m_profilesAdapter.remove(oldName);
+				m_profiles.remove(oldName);
+				m_activeProfile.SetName(newName);
+				AddProfile(m_activeProfile);
+			}
 		}
 	}
 	
