@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.HorizontalScrollView;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -34,8 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener
-
+public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener, OnItemSelectedListener
 {
 	/** Called when the activity is first created. */
 	@Override
@@ -73,7 +73,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		// Load the profile files in
 		LoadProfiles();
 
-		if (m_profileNames.size() == 0) 
+		if (m_profilesAdapter.getCount() == 0)
 		{
 			ProfileNew();
 		}
@@ -94,14 +94,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		profileName.setOnFocusChangeListener(this);
 
 		Spinner profileNameView = (Spinner)findViewById(R.id.profileSpinner);
+		profileNameView.setOnItemSelectedListener(this);
 		
 		// An option would be to subclass it and implement getView function to make it work with WWProfile
 		m_profilesAdapter.setDropDownViewResource(android.R.layout. simple_spinner_dropdown_item);
 		profileNameView.setAdapter(m_profilesAdapter);
 		profileNameView.setSelection(0);
 		
-		m_activeProfile = m_profiles.get(m_profileNames.get(0));
-		Log.i(TAG, "m_activeProfile.Name=" + m_activeProfile.GetName());
+		ProfileSelect();
 		
 		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
 		for (int i = 0; i < m_numDefenceBuildings; i++) 
@@ -226,8 +226,29 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return false;
 	}
 
-	public void OnItemSelected(AdapterView<?> parent, View view, int position, long id) 
+	public void onNothingSelected(AdapterView<?> parent)
 	{
+	}
+
+	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) 
+	{
+		if (parent.getId() == R.id.profileSpinner)
+		{
+			TextView item = (TextView)view;
+			String profileName = item.getText().toString();
+			Log.i(TAG,"ProfileSelect["+position+"] = "+profileName);
+			ProfileSelect();
+		}
+	}
+	private void ProfileSelect()
+	{
+		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
+		String profileName = (String)profileSpinner.getSelectedItem();
+		Log.i(TAG,"ProfileSelect = "+profileName);
+		EditText profileNameView = (EditText)findViewById(R.id.profileName);
+		profileNameView.setText(profileName);
+		// Need to error check this in case it returns NULL
+		m_activeProfile = m_profiles.get(profileName);
 	}
 
 	private void addRow(TableLayout parent, WWBuilding building, WWProfileEntry profileEntry) 
@@ -465,13 +486,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private void ProfileDelete() 
 	{
 		String name = m_activeProfile.GetName();
-		m_profileNames.remove(name);
+		//m_profileNames.remove(name);
 		m_profiles.remove(name);
 		m_profilesAdapter.remove(name);
 		
-		m_activeProfile = m_profiles.get(m_profileNames.get(0));
-		Log.i(TAG,"ProfileDelete:"+name);
-		Log.i(TAG, "m_activeProfile.Name=" + m_activeProfile.GetName());
+		ProfileSelect();
 	}
 
 	private WWProfile CreateNewProfile(String name) 
@@ -502,10 +521,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		String name = profile.GetName();
 		if (m_profiles.containsKey(name) == false) 
 		{
-			m_profileNames.add(name);
+			//m_profileNames.add(name);
 			m_profiles.put(name, profile);
 			Log.i(TAG,"AddProfile:"+name);
-			//m_profilesAdapter.add(name);
+			m_profilesAdapter.add(name);
 		}
 	}
 
@@ -519,7 +538,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		m_activeProfile.SetName(newName);
 		if (m_profiles.containsKey(oldName) == false) 
 		{
-			m_profileNames.remove(oldName);
+			//m_profileNames.remove(oldName);
+			m_profilesAdapter.remove(oldName);
 			m_profiles.remove(oldName);
 			AddProfile(m_activeProfile);
 		}
