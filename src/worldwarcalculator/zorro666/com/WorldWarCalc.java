@@ -363,6 +363,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		parent.addView(row);
 	}
 
+	private String MakeProfileFileName(String profileName)
+	{
+		String profileFileName = PROFILE_HEADER + "_" + PROFILE_VERSION + "_" + profileName;
+		return profileFileName;
+	}
+	
 	private int LoadProfiles() 
 	{
 		int numProfiles = 0;
@@ -373,7 +379,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			for (int file = 0; file < numFiles; file++) 
 			{
 				String profileFileName = fileNames[file];
-				if (profileFileName.startsWith("Profile3_")) 
+				String baseProfileFileName = MakeProfileFileName("");
+				if (profileFileName.startsWith(baseProfileFileName))
 				{
 					try 
 					{
@@ -417,6 +424,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					tempProfile.SetNumIncomeBuilding(i, number);
 
 				}
+				inFile.Close();
 				AddProfile(tempProfile);
 				Log.i(TAG,"LoadProfile DONE:"+name);
 			} 
@@ -437,7 +445,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		try 
 		{
-			String profileFileName = "Profile3_" + profileName;
+			String profileFileName = MakeProfileFileName(profileName);
 			TextFileOutput outFile = new TextFileOutput(openFileOutput( profileFileName, MODE_PRIVATE));
 
 			String name = m_activeProfile.GetName();
@@ -489,9 +497,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private void ProfileDelete() 
 	{
 		String name = m_activeProfile.GetName();
-		//m_profileNames.remove(name);
 		m_profiles.remove(name);
 		m_profilesAdapter.remove(name);
+		
+		String profileFileName = MakeProfileFileName(name);
+		if (deleteFile(profileFileName) == false)
+		{
+			Log.i(TAG, "ProfileDelete FAILED:"+profileFileName);
+		}
 		
 		ProfileSelect();
 	}
@@ -565,6 +578,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	}
 
 	private static final String TAG = "WWCALC";
+	private static final String PROFILE_HEADER = "WWProfile";
+	private static final String PROFILE_VERSION = "1";
 
 	public static final int NUM_DEFENCE_BUILDINGS = 7;
 	public static final int NUM_INCOME_BUILDINGS = 8;
