@@ -1,7 +1,3 @@
-profile tab - delete profile option should delete your profile file from disk
-profile tab - rename profile should update profile drop down list
-profile tab - delete profile option should update profile drop down list
-profile tab - delete profile shouldn't crash!
 all tabs - select on profile list should choose a new profile - change m_activeProfile and update building information
 capture out of memory event - save current active profile (state data)
 capture close activity event - save the current profile
@@ -14,5 +10,4 @@ hint tab - show hint data - how many of the best buildings to buy (sorted list)
 Try to get a header row working - with linked scrolling
 Display image of building
 need button to load profile - would reload to undo changes
-
-
+profile tab - delete profile should ask yes/no

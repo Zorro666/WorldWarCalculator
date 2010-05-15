@@ -73,11 +73,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		// Load the profile files in
 		LoadProfiles();
 
-		if (m_profilesAdapter.getCount() == 0)
-		{
-			ProfileNew();
-		}
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
@@ -101,6 +96,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		profileNameView.setAdapter(m_profilesAdapter);
 		profileNameView.setSelection(0);
 		
+		if (m_profilesAdapter.getCount() == 0)
+		{
+			ProfileNew();
+		}
+
 		ProfileSelect();
 		
 		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
@@ -489,11 +489,20 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		String name = "default";
 		WWProfile tempProfile = CreateNewProfile(name);
 		AddProfile(tempProfile);
+		
+		int profileIndex = m_profilesAdapter.getPosition(name);
+		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
+		profileSpinner.setSelection(profileIndex);
+		
 		Log.i(TAG,"ProfileNew");
 	}
 	
 	private void ProfileDelete() 
 	{
+		if (m_profilesAdapter.getCount() == 0)
+		{
+			return;
+		}
 		String name = m_activeProfile.GetName();
 		m_profiles.remove(name);
 		m_profilesAdapter.remove(name);
@@ -508,6 +517,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			Log.i(TAG, "ProfileDelete SUCCESS:"+profileFileName);
 		}
 		
+		// If deleting the last profile then create a default one
+		if (m_profilesAdapter.getCount() == 0)
+		{
+			ProfileNew();
+		}
 		ProfileSelect();
 	}
 
@@ -563,6 +577,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				m_profiles.remove(oldName);
 				m_activeProfile.SetName(newName);
 				AddProfile(m_activeProfile);
+				
+				int profileIndex = m_profilesAdapter.getPosition(newName);
+				Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
+				profileSpinner.setSelection(profileIndex);
 			}
 		}
 	}
