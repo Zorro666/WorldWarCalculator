@@ -470,14 +470,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					int number = m_activeProfile.GetNumIncomeBuilding(i);
 					outFile.WriteInt(number);
 				}
+				outFile.Close();
+				Log.i(TAG,"SaveProfile DONE:"+name);
 			} 
 			catch (IOException e) 
 			{
 				outFile.Close();
 				return false;
 			}
-			outFile.Close();
-			Log.i(TAG,"SaveProfile DONE:"+name);
 			return true;
 		} 
 		catch (FileNotFoundException e) 
@@ -504,6 +504,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		if (deleteFile(profileFileName) == false)
 		{
 			Log.i(TAG, "ProfileDelete FAILED:"+profileFileName);
+		}
+		else
+		{
+			Log.i(TAG, "ProfileDelete SUCCESS:"+profileFileName);
 		}
 		
 		ProfileSelect();

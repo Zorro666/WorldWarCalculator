@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package worldwarcalculator.zorro666.com;
+package com.zorro666.worldwarcalculator;
 
 public final class R {
     public static final class attr {
