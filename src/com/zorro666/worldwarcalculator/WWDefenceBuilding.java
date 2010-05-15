@@ -1,4 +1,4 @@
-package worldwarcalculator.zorro666.com;
+package com.zorro666.worldwarcalculator;
 
 public class WWDefenceBuilding extends WWBuilding 
 {

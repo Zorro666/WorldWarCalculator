@@ -1,4 +1,4 @@
-package worldwarcalculator.zorro666.com;
+package com.zorro666.worldwarcalculator;
 
 import android.util.Log;
 

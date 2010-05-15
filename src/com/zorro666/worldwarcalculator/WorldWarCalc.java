@@ -1,4 +1,4 @@
-package worldwarcalculator.zorro666.com;
+package com.zorro666.worldwarcalculator;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -426,7 +426,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				}
 				inFile.Close();
 				AddProfile(tempProfile);
-				Log.i(TAG,"LoadProfile DONE:"+name);
+				Log.i(TAG,"LoadProfile DONE:"+name+" file:"+profileFileName);
 			} 
 			catch (IOException e) 
 			{
@@ -441,13 +441,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 	}
 
-	private boolean SaveProfile(String profileName) throws IOException 
+	private boolean SaveProfile(String profileFileName) throws IOException 
 	{
 		try 
 		{
-			String profileFileName = MakeProfileFileName(profileName);
 			TextFileOutput outFile = new TextFileOutput(openFileOutput( profileFileName, MODE_PRIVATE));
-
 			String name = m_activeProfile.GetName();
 			try 
 			{
@@ -471,7 +469,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					outFile.WriteInt(number);
 				}
 				outFile.Close();
-				Log.i(TAG,"SaveProfile DONE:"+name);
+				Log.i(TAG,"SaveProfile DONE:"+name+" file:"+profileFileName);
 			} 
 			catch (IOException e) 
 			{
@@ -573,7 +571,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		try 
 		{
-			String profileFileName = m_activeProfile.GetName() + "Profile";
+			String profileName = m_activeProfile.GetName();
+			String profileFileName = MakeProfileFileName(profileName);
 			SaveProfile(profileFileName);
 		} 
 		catch (IOException e) 
