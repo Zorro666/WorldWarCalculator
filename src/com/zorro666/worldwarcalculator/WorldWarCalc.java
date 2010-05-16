@@ -67,12 +67,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		m_profilesAdapter =  new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, m_profileNames);
 		
-		// Temp save a fake profile to test the loading profile save & load code
-		// ProfileSave();
-
-		// Load the profile files in
-		LoadProfiles();
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
@@ -96,6 +90,25 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		profileNameView.setAdapter(m_profilesAdapter);
 		profileNameView.setSelection(0);
 		
+		m_activeProfile = new WWProfile("default");
+		
+		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
+		for (int i = 0; i < m_numDefenceBuildings; i++) 
+		{
+			WWBuilding building = m_defenceBuildings[i];
+			addRow(defenceView, building);
+		}
+
+		TableLayout incomeView = (TableLayout) findViewById(R.id.IncomeViewData);
+		for (int i = 0; i < m_numIncomeBuildings; i++) 
+		{
+			WWBuilding building = m_incomeBuildings[i];
+			addRow(incomeView, building);
+		}
+
+		// Load the profile files in
+		LoadProfiles();
+
 		if (m_profilesAdapter.getCount() == 0)
 		{
 			ProfileNew();
@@ -103,14 +116,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		ProfileSelect();
 		
-		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
-		for (int i = 0; i < m_numDefenceBuildings; i++) 
-		{
-			WWProfileEntry profileEntry = m_activeProfile.GetDefenceBuilding(i);
-			WWBuilding building = m_defenceBuildings[i];
-			addRow(defenceView, building, profileEntry);
-		}
-
 		// m_incomeViewHeader =
 		// (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
 		// m_incomeViewHeader.setOnTouchListener(this);
@@ -119,14 +124,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		// (HorizontalScrollView)findViewById(R.id.IncomeViewScroll);
 		// m_incomeViewScroll.setOnTouchListener(this);
 		// m_incomeViewScroll.setSmoothScrollingEnabled(true);
-
-		TableLayout incomeView = (TableLayout) findViewById(R.id.IncomeViewData);
-		for (int i = 0; i < m_numIncomeBuildings; i++) 
-		{
-			WWProfileEntry profileEntry = m_activeProfile.GetIncomeBuilding(i);
-			WWBuilding building = m_incomeBuildings[i];
-			addRow(incomeView, building, profileEntry);
-		}
 
 		final TabHost tabs = (TabHost) findViewById(R.id.tabhost);
 		tabs.setup();
@@ -209,18 +206,20 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					numOwned = Integer.parseInt(text);
 				}
 				profileEntry.SetNumOwned(numOwned);
+				
+				UpdateBuildingRow(profileEntry);
 
-				float value = building.GetValue(numOwned);
-				String valueString = Float.toString(value);
-				TextView valueText = building.GetViewValue();
-				valueText.setText(valueString);
+				//float value = building.GetValue(numOwned);
+				//String valueString = Float.toString(value);
+				//TextView valueText = building.GetViewValue();
+				//valueText.setText(valueString);
 
-				long currentCost = building.GetCurrentCost(numOwned);
-				String currentCostString = Long.toString(currentCost);
-				TextView currentCostText = building.GetViewCurrentCost();
-				currentCostText.setText(currentCostString);
+				//long currentCost = building.GetCurrentCost(numOwned);
+				//String currentCostString = Long.toString(currentCost);
+				//TextView currentCostText = building.GetViewCurrentCost();
+				//currentCostText.setText(currentCostString);
 
-				Log.i(TAG, "onKey Building = " + building.GetName() + " numOwned = " + numOwned + " value = " + value);
+				Log.i(TAG, "onKey Building = " + profileEntry.GetBuilding().GetName() + " numOwned = " + numOwned);
 			}
 		}
 		return false;
@@ -248,15 +247,66 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
 		String profileName = (String)profileSpinner.getSelectedItem();
 		Log.i(TAG,"ProfileSelect = "+profileName);
+		
+		WWProfile profile = m_profiles.get(profileName);
+		// Need to error check this in case it returns NULL
+		if (profile == null)
+		{
+			Log.i(TAG,"ProfileSelect: NULL = "+profileName);
+			// Make sure we have a profile to use
+			if (m_profilesAdapter.getCount() == 0)		
+			{
+				ProfileNew();
+			}
+		}
+		
 		EditText profileNameView = (EditText)findViewById(R.id.profileName);
 		profileNameView.setText(profileName);
-		// Need to error check this in case it returns NULL
-		m_activeProfile = m_profiles.get(profileName);
+		
+		// Now update the displayed details based on the active profile
+		m_activeProfile = profile;
+		UpdateBuildingsView();
+	}
+	
+	private void UpdateBuildingsView()
+	{
+		for (int i = 0; i < m_activeProfile.GetNumDefenceBuildings(); i++) 
+		{
+			WWProfileEntry profileEntry = m_activeProfile.GetDefenceBuilding(i);
+			UpdateBuildingRow(profileEntry);
+		}
+		for (int i = 0; i < m_activeProfile.GetNumIncomeBuildings(); i++) 
+		{
+			WWProfileEntry profileEntry = m_activeProfile.GetIncomeBuilding(i);
+			UpdateBuildingRow(profileEntry);
+		}
+	}
+	private void UpdateBuildingRow( WWProfileEntry profileEntry )
+	{
+		WWBuilding building = profileEntry.GetBuilding();
+		
+		int numOwned =  profileEntry.GetNumOwned();
+		EditText numOwnedView = building.GetViewNumOwned();
+		String numOwnedString = Integer.toString(numOwned);
+		numOwnedView.setText(numOwnedString);
+		numOwnedView.setTag(profileEntry);
+		
+		float value = building.GetValue(numOwned);
+		String valueString = Float.toString(value);
+		TextView valueView = building.GetViewValue();
+		valueView.setText(valueString);
+
+		long currentCost = building.GetCurrentCost(numOwned);
+		String currentCostString = Long.toString(currentCost);
+		TextView currentCostText = building.GetViewCurrentCost();
+		currentCostText.setText(currentCostString);
+		
+		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" numOwned:"+numOwnedString+" value:"+valueString+" currentCost:"+currentCostString);
 	}
 
-	private void addRow(TableLayout parent, WWBuilding building, WWProfileEntry profileEntry) 
+	private void addRow(TableLayout parent, WWBuilding building) 
 	{
-		int numOwned = profileEntry.GetNumOwned();
+		int numOwned = 0;
 		InputFilter[] filters5 = new InputFilter[1];
 		filters5[0] = new InputFilter.LengthFilter(5);
 
@@ -264,13 +314,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		filters8[0] = new InputFilter.LengthFilter(8);
 
 		TableRow row = new TableRow(parent.getContext());
-		row.setTag(profileEntry);
 
 		TextView name = new TextView(row.getContext());
 		name.setText(building.GetName());
 		name.setPadding(1, 1, 1, 1);
 		name.setWidth(116);
-		name.setTag(profileEntry);
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		name.setGravity(Gravity.CENTER);
 		name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
@@ -288,7 +336,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setLines(1);
 		number.setText(Integer.toString(numOwned));
 		number.setPadding(5, 0, 5, 0);
-		number.setTag(profileEntry);
 		number.setOnKeyListener(this);
 		number.setSelectAllOnFocus(true);
 		number.setSingleLine(true);
@@ -297,7 +344,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		row.addView(number);
 
 		TextView value = new TextView(row.getContext());
-		value.setText(Float.toString(building.GetValue(numOwned)));
 		value.setKeyListener(new DigitsKeyListener());
 		value.setInputType(InputType.TYPE_CLASS_NUMBER);
 		value.setSingleLine();
@@ -308,7 +354,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		value.setFilters(filters8);
 		value.setPadding(5, 5, 5, 5);
 		value.setWidth(72);
-		value.setTag(profileEntry);
+		value.setText(Float.toString(building.GetValue(numOwned)));
 		building.SetViewValue(value);
 		row.addView(value);
 
@@ -323,12 +369,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		reward.setFilters(filters8);
 		reward.setPadding(5, 5, 5, 5);
 		reward.setWidth(96);
-		reward.setTag(profileEntry);
 		reward.setText(Integer.toString(building.GetReward()));
 		row.addView(reward);
 
 		TextView currentCost = new TextView(row.getContext());
-		currentCost.setText(Float.toString(building.GetValue(numOwned)));
 		currentCost.setKeyListener(new DigitsKeyListener());
 		currentCost.setInputType(InputType.TYPE_CLASS_NUMBER);
 		currentCost.setSingleLine();
@@ -339,13 +383,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		currentCost.setFilters(filters8);
 		currentCost.setPadding(5, 5, 5, 5);
 		currentCost.setWidth(96);
-		currentCost.setTag(profileEntry);
 		currentCost.setText(Long.toString(building.GetCurrentCost(numOwned)));
 		building.SetViewCurrentCost(currentCost);
 		row.addView(currentCost);
 
 		TextView baseCost = new TextView(row.getContext());
-		baseCost.setText(Float.toString(building.GetValue(numOwned)));
 		baseCost.setKeyListener(new DigitsKeyListener());
 		baseCost.setInputType(InputType.TYPE_CLASS_NUMBER);
 		baseCost.setSingleLine();
@@ -356,7 +398,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setFilters(filters8);
 		baseCost.setPadding(5, 5, 5, 5);
 		baseCost.setWidth(96);
-		baseCost.setTag(profileEntry);
 		baseCost.setText(Integer.toString(building.GetBaseCost()));
 		row.addView(baseCost);
 
@@ -425,7 +466,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 				}
 				inFile.Close();
-				AddProfile(tempProfile);
+				ProfileAdd(tempProfile);
 				Log.i(TAG,"LoadProfile DONE:"+name+" file:"+profileFileName);
 			} 
 			catch (IOException e) 
@@ -488,15 +529,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		String name = "default";
 		WWProfile tempProfile = CreateNewProfile(name);
-		AddProfile(tempProfile);
-		
-		int profileIndex = m_profilesAdapter.getPosition(name);
-		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
-		profileSpinner.setSelection(profileIndex);
+		ProfileAdd(tempProfile);
 		
 		Log.i(TAG,"ProfileNew");
 	}
-	
 	private void ProfileDelete() 
 	{
 		if (m_profilesAdapter.getCount() == 0)
@@ -548,43 +584,45 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return profile;
 	}
 
-	private void AddProfile(WWProfile profile) 
-	{
-		String name = profile.GetName();
-		if (m_profiles.containsKey(name) == false) 
-		{
-			//m_profileNames.add(name);
-			m_profiles.put(name, profile);
-			Log.i(TAG,"AddProfile:"+name);
-			m_profilesAdapter.add(name);
-		}
-	}
-
 	private void ProfileRename(String newName)
 	{
 		// Get the new profile name and compare against the active profile name 
 		// Update active profile name if it has changed 
 		// Update m_profileNames, m_profiles, profile drop down list 
 		String oldName = m_activeProfile.GetName();
-		Log.i(TAG, "ProfileRename: "+oldName+"->"+newName);
-		m_activeProfile.SetName(newName);
 		if (m_profiles.containsKey(oldName) == true) 
 		{
-			if (oldName != newName)
+			if (oldName.equals(newName) == false)
 			{
+				Log.i(TAG, "ProfileRename: "+oldName+"->"+newName);
 				//m_profileNames.remove(oldName);
 				m_profilesAdapter.remove(oldName);
 				m_profiles.remove(oldName);
 				m_activeProfile.SetName(newName);
-				AddProfile(m_activeProfile);
-				
-				int profileIndex = m_profilesAdapter.getPosition(newName);
-				Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
-				profileSpinner.setSelection(profileIndex);
+				ProfileAdd(m_activeProfile);
 			}
 		}
 	}
 	
+	private void ProfileAdd(WWProfile profile) 
+	{
+		String name = profile.GetName();
+		if (m_profiles.containsKey(name) == false) 
+		{
+			//m_profileNames.add(name);
+			m_profiles.put(name, profile);
+			Log.i(TAG,"ProfileAdd:"+name);
+			m_profilesAdapter.add(name);
+		}
+		
+		// Update the selected profile in the drop down list
+		int profileIndex = m_profilesAdapter.getPosition(name);
+		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
+		profileSpinner.setSelection(profileIndex);
+		
+		ProfileSelect();
+	}
+
 	private void ProfileSave() 
 	{
 		try 
@@ -602,7 +640,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private static final String PROFILE_HEADER = "WWProfile";
 	private static final String PROFILE_VERSION = "1";
 
-	public static final int NUM_DEFENCE_BUILDINGS = 7;
+	public static final int NUM_DEFENCE_BUILDINGS = 6;
 	public static final int NUM_INCOME_BUILDINGS = 8;
 	public static final int DEFAULT_NUM_PROFILES = 8;
 

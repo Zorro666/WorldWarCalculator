@@ -1,4 +1,3 @@
-all tabs - select on profile list should choose a new profile - change m_activeProfile and update building information
 capture out of memory event - save current active profile (state data)
 capture close activity event - save the current profile
 make UI look nicer - smaller font
@@ -11,3 +10,4 @@ Try to get a header row working - with linked scrolling
 Display image of building
 need button to load profile - would reload to undo changes
 profile tab - delete profile should ask yes/no
+unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
