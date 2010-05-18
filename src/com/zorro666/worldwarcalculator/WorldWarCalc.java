@@ -368,12 +368,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		name.setGravity(Gravity.CENTER);
 		name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
 		name.setTextSize(textSize);
+		name.setHeight(40);
+		name.setLines(2);
+		name.setMaxLines(2);
 		row.addView(name);
 
 		EditText number = new EditText(row.getContext());
 		number.setInputType(InputType.TYPE_CLASS_NUMBER);
 		number.setKeyListener(new DigitsKeyListener());
-		number.setSingleLine();
 		number.setMinWidth(56);
 		number.setWidth(56);
 		number.setMaxWidth(56);
@@ -384,9 +386,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setPadding(padLeft,padTop,padRight,padBottom);
 		number.setOnKeyListener(this);
 		number.setSelectAllOnFocus(true);
-		number.setMinHeight(16);
-		number.setHeight(16);
-		number.setMaxHeight(16);
+		number.setMinHeight(36);
+		number.setHeight(36);
+		number.setMaxHeight(36);
 		number.setTextSize(textSize);
 		number.setBackgroundDrawable(null);
 		number.setBackgroundColor(Color.WHITE);
@@ -406,6 +408,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		value.setPadding(padLeft,padTop,padRight,padBottom);
 		value.setText(Float.toString(building.GetValue(numOwned)));
 		value.setTextSize(textSize);
+		value.setMinHeight(40);
+		value.setHeight(40);
+		value.setMaxHeight(40);
 		building.SetViewValue(value);
 		row.addView(value);
 
@@ -413,30 +418,36 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		reward.setKeyListener(new DigitsKeyListener());
 		reward.setInputType(InputType.TYPE_CLASS_NUMBER);
 		reward.setSingleLine();
-		reward.setMinWidth((int)(textSize*4));
-		reward.setWidth((int)(textSize*4));
-		reward.setMaxWidth((int)(textSize*4));
+		reward.setMinWidth((int)(textSize*4.5f));
+		reward.setWidth((int)(textSize*4.5f));
+		reward.setMaxWidth((int)(textSize*4.5f));
 		reward.setMaxLines(1);
 		reward.setFilters(filters8);
 		reward.setPadding(padLeft,padTop,padRight,padBottom);
 		reward.setGravity(Gravity.RIGHT);
 		reward.setText(Integer.toString(building.GetReward()));
 		reward.setTextSize(textSize);
+		reward.setMinHeight(40);
+		reward.setHeight(40);
+		reward.setMaxHeight(40);
 		row.addView(reward);
 
 		TextView currentCost = new TextView(row.getContext());
 		currentCost.setKeyListener(new DigitsKeyListener());
 		currentCost.setInputType(InputType.TYPE_CLASS_NUMBER);
 		currentCost.setSingleLine();
-		currentCost.setMinWidth(64);
-		currentCost.setWidth(64);
-		currentCost.setMaxWidth(64);
+		currentCost.setMinWidth((int)(textSize*6.5f));
+		currentCost.setWidth((int)(textSize*6.5f));
+		currentCost.setMaxWidth((int)(textSize*6.5f));
 		currentCost.setMaxLines(1);
 		currentCost.setFilters(filters8);
 		currentCost.setPadding(padLeft,padTop,padRight,padBottom);
 		currentCost.setGravity(Gravity.RIGHT);
 		currentCost.setText(Long.toString(building.GetCurrentCost(numOwned)));
 		currentCost.setTextSize(textSize);
+		currentCost.setMinHeight(40);
+		currentCost.setHeight(40);
+		currentCost.setMaxHeight(40);
 		building.SetViewCurrentCost(currentCost);
 		row.addView(currentCost);
 
@@ -444,15 +455,18 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setKeyListener(new DigitsKeyListener());
 		baseCost.setInputType(InputType.TYPE_CLASS_NUMBER);
 		baseCost.setSingleLine();
-		baseCost.setMinWidth(64);
-		baseCost.setWidth(64);
-		baseCost.setMaxWidth(64);
+		baseCost.setMinWidth((int)(textSize*5.5f));
+		baseCost.setWidth((int)(textSize*5.5f));
+		baseCost.setMaxWidth((int)(textSize*5.5f));
 		baseCost.setMaxLines(1);
 		baseCost.setFilters(filters8);
 		baseCost.setPadding(padLeft,padTop,padRight,padBottom);
 		baseCost.setGravity(Gravity.RIGHT);
-		baseCost.setText(Integer.toString(building.GetBaseCost()));
+		baseCost.setText(Long.toString(building.GetBaseCost()));
 		baseCost.setTextSize(textSize);
+		baseCost.setMinHeight(40);
+		baseCost.setHeight(40);
+		baseCost.setMaxHeight(40);
 		row.addView(baseCost);
 
 		parent.addView(row);

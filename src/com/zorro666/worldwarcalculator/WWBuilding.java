@@ -8,7 +8,7 @@ public class WWBuilding
 	public WWBuilding( final String name, final int baseCost, final int reward, final float valueMultiplier )
 	{
 		m_name = name;
-		m_baseCostInK = baseCost/1000;
+		m_baseCost = baseCost/10;
 		m_reward = reward;
 		m_valueMultiplier = valueMultiplier;
 	}
@@ -17,20 +17,15 @@ public class WWBuilding
 		return m_name;
 	}
 	
-	public int GetBaseCost()
+	public long GetBaseCost()
 	{
-		return m_baseCostInK * 1000;
+		return m_baseCost*10;
 	}
 	
 	public long GetCurrentCost(int numOwned)
 	{
-		long costInK = GetCurrentCostInK(numOwned);
-		long cost = costInK * 1000;
-		return cost;
-	}
-	public int GetCurrentCostInK(int numOwned)
-	{
-		int costInK = m_baseCostInK + ( numOwned * m_baseCostInK ) / 10;
+		long costInK = m_baseCost + ( numOwned * m_baseCost / 10 );
+		costInK *= 10;
 		return costInK;
 	}
 	
@@ -48,10 +43,11 @@ public class WWBuilding
 	}
 	public float GetRawValue(int numOwned)
 	{
-		int costInK = GetCurrentCostInK(numOwned);
+		long costInK = m_baseCost + ( numOwned * m_baseCost / 10 );
+		//long costInK = GetCurrentCost(numOwned);
 		int reward = GetReward();
 		float value = costInK/(reward+0.0f);
-		value *= 1000.0f;
+		value *= 10.0f;
 		return value;
 	}
 	
@@ -82,7 +78,7 @@ public class WWBuilding
 	}
 	
 	private String m_name;
-	private int m_baseCostInK;
+	private long m_baseCost;
 	private int m_reward;
 	private float m_valueMultiplier;;
 	private EditText m_viewNumOwned;
