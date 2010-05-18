@@ -1,4 +1,3 @@
-fix number entry - broken since the callback to update the row view onKey :(
 make UI look nicer - alignment and separators between numbers
 Put +/- buttons UI system in place for number
 THEN IT WILL BE USEFUL - USE IT - TEST IT OUT - SHOW IT/GIVE IT TO SAM

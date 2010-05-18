@@ -245,16 +245,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				
 				UpdateBuildingRow(profileEntry);
 
-				//float value = building.GetValue(numOwned);
-				//String valueString = Float.toString(value);
-				//TextView valueText = building.GetViewValue();
-				//valueText.setText(valueString);
-
-				//long currentCost = building.GetCurrentCost(numOwned);
-				//String currentCostString = Long.toString(currentCost);
-				//TextView currentCostText = building.GetViewCurrentCost();
-				//currentCostText.setText(currentCostString);
-
 				Log.i(TAG, "onKey Building = " + profileEntry.GetBuilding().GetName() + " numOwned = " + numOwned);
 			}
 		}
@@ -310,14 +300,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			WWProfileEntry profileEntry = m_activeProfile.GetDefenceBuilding(i);
 			UpdateBuildingRow(profileEntry);
+			UpdateBuildingNumOwned(profileEntry);
 		}
 		for (int i = 0; i < m_activeProfile.GetNumIncomeBuildings(); i++) 
 		{
 			WWProfileEntry profileEntry = m_activeProfile.GetIncomeBuilding(i);
 			UpdateBuildingRow(profileEntry);
+			UpdateBuildingNumOwned(profileEntry);
 		}
 	}
-	private void UpdateBuildingRow( WWProfileEntry profileEntry )
+	
+	private void UpdateBuildingNumOwned( WWProfileEntry profileEntry )
 	{
 		WWBuilding building = profileEntry.GetBuilding();
 		
@@ -327,6 +320,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		numOwnedView.setText(numOwnedString);
 		numOwnedView.setTag(profileEntry);
 		
+		Log.i(TAG, "UpdateBuildingNumOwned: "+building.GetName()+" numOwned:"+numOwnedString);
+	}
+	
+	private void UpdateBuildingRow( WWProfileEntry profileEntry )
+	{
+		WWBuilding building = profileEntry.GetBuilding();
+		
+		int numOwned =  profileEntry.GetNumOwned();
 		float value = building.GetValue(numOwned);
 		String valueString = Float.toString(value);
 		TextView valueView = building.GetViewValue();
@@ -337,7 +338,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		TextView currentCostText = building.GetViewCurrentCost();
 		currentCostText.setText(currentCostString);
 		
-		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" numOwned:"+numOwnedString+" value:"+valueString+" currentCost:"+currentCostString);
+		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" value:"+valueString+" currentCost:"+currentCostString);
 	}
 
 	private void addRow(TableLayout parent, WWBuilding building) 
