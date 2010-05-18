@@ -62,6 +62,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Nuclear Testing Facility", 100000000, 700000);
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Solar Satellite Network", 340000000, 1200000);
 
+		m_activeProfile = new WWProfile("default");
+		
 		m_profileNames = new ArrayList<String>();
 		m_profiles = new HashMap<String, WWProfile>(DEFAULT_NUM_PROFILES);
 
@@ -90,8 +92,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		profileNameView.setAdapter(m_profilesAdapter);
 		profileNameView.setSelection(0);
 		
-		m_activeProfile = new WWProfile("default");
-		
 		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
 		for (int i = 0; i < m_numDefenceBuildings; i++) 
 		{
@@ -106,16 +106,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			addRow(incomeView, building);
 		}
 
-		// Load the profile files in
-		LoadProfiles();
-
-		if (m_profilesAdapter.getCount() == 0)
-		{
-			ProfileNew();
-		}
-
-		ProfileSelect();
-		
 		// m_incomeViewHeader =
 		// (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
 		// m_incomeViewHeader.setOnTouchListener(this);
@@ -146,7 +136,53 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		tabs.addTab(spec);
 		tabs.setCurrentTab(1);
 	}
+	
+	@Override
+	public void onStart()
+	{
+		// Load the profile files in
+		LoadAllProfiles();
 
+		if (m_profilesAdapter.getCount() == 0)
+		{
+			ProfileNew();
+		}
+
+		ProfileSelect();
+		
+		super.onStart();
+	}
+
+	@Override
+	public void onRestart()
+	{
+		super.onRestart();
+	}
+
+	// Another application comes in front of this view
+	@Override
+	public void onPause()
+	{
+		// Save all the profiles
+		SaveAllProfiles();
+		
+		super.onPause();
+	}
+
+	// Application is no longer in view
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+	}
+	
+	// Application is being destroyed
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+	}
+	
 	public boolean onTouch(View v, MotionEvent event) 
 	{
 		if (v == m_incomeViewScroll) 
@@ -176,7 +212,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		if (v.getId() == R.id.profileSaveButton) 
 		{
-			ProfileSave();
+			ProfileSave(m_activeProfile);
 		}
 		if (v.getId() == R.id.profileNewButton) 
 		{
@@ -306,7 +342,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 	private void addRow(TableLayout parent, WWBuilding building) 
 	{
-		int numOwned = 0;
+		final float textSize = 14.0f;
+		
+		final int padTop = 1;
+		final int padBottom = 1;
+		final int padLeft = 2;
+		final int padRight = 2;
+		
+		final int numOwned = 0;
+		
 		InputFilter[] filters5 = new InputFilter[1];
 		filters5[0] = new InputFilter.LengthFilter(5);
 
@@ -317,29 +361,34 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		TextView name = new TextView(row.getContext());
 		name.setText(building.GetName());
-		name.setPadding(1, 1, 1, 1);
+		name.setPadding(padLeft,padTop,padRight,padBottom);
 		name.setWidth(116);
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		name.setGravity(Gravity.CENTER);
 		name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		name.setTextSize(textSize);
 		row.addView(name);
 
 		EditText number = new EditText(row.getContext());
 		number.setInputType(InputType.TYPE_CLASS_NUMBER);
 		number.setKeyListener(new DigitsKeyListener());
 		number.setSingleLine();
-		number.setMinWidth(64);
-		number.setWidth(64);
-		number.setMaxWidth(64);
+		number.setMinWidth(56);
+		number.setWidth(56);
+		number.setMaxWidth(56);
 		number.setMaxLines(1);
 		number.setFilters(filters5);
 		number.setLines(1);
 		number.setText(Integer.toString(numOwned));
-		number.setPadding(5, 0, 5, 0);
+		number.setPadding(padLeft,padTop,padRight,padBottom);
 		number.setOnKeyListener(this);
 		number.setSelectAllOnFocus(true);
-		number.setSingleLine(true);
-		number.setHeight(8);
+		number.setMinHeight(16);
+		number.setHeight(16);
+		number.setMaxHeight(16);
+		number.setTextSize(textSize);
+		number.setBackgroundDrawable(null);
+		number.setBackgroundColor(Color.WHITE);
 		building.SetViewNumOwned(number);
 		row.addView(number);
 
@@ -347,14 +396,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		value.setKeyListener(new DigitsKeyListener());
 		value.setInputType(InputType.TYPE_CLASS_NUMBER);
 		value.setSingleLine();
-		value.setMinWidth(72);
-		value.setWidth(72);
-		value.setMaxWidth(72);
+		value.setMinWidth((int)(textSize*4));
+		value.setWidth((int)(textSize*4));
+		value.setMaxWidth((int)(textSize*4));
 		value.setMaxLines(1);
 		value.setFilters(filters8);
-		value.setPadding(5, 5, 5, 5);
-		value.setWidth(72);
+		value.setGravity(Gravity.RIGHT);
+		value.setPadding(padLeft,padTop,padRight,padBottom);
 		value.setText(Float.toString(building.GetValue(numOwned)));
+		value.setTextSize(textSize);
 		building.SetViewValue(value);
 		row.addView(value);
 
@@ -362,14 +412,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		reward.setKeyListener(new DigitsKeyListener());
 		reward.setInputType(InputType.TYPE_CLASS_NUMBER);
 		reward.setSingleLine();
-		reward.setMinWidth(64);
-		reward.setWidth(64);
-		reward.setMaxWidth(64);
+		reward.setMinWidth((int)(textSize*4));
+		reward.setWidth((int)(textSize*4));
+		reward.setMaxWidth((int)(textSize*4));
 		reward.setMaxLines(1);
 		reward.setFilters(filters8);
-		reward.setPadding(5, 5, 5, 5);
-		reward.setWidth(96);
+		reward.setPadding(padLeft,padTop,padRight,padBottom);
+		reward.setGravity(Gravity.RIGHT);
 		reward.setText(Integer.toString(building.GetReward()));
+		reward.setTextSize(textSize);
 		row.addView(reward);
 
 		TextView currentCost = new TextView(row.getContext());
@@ -381,9 +432,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		currentCost.setMaxWidth(64);
 		currentCost.setMaxLines(1);
 		currentCost.setFilters(filters8);
-		currentCost.setPadding(5, 5, 5, 5);
-		currentCost.setWidth(96);
+		currentCost.setPadding(padLeft,padTop,padRight,padBottom);
+		currentCost.setGravity(Gravity.RIGHT);
 		currentCost.setText(Long.toString(building.GetCurrentCost(numOwned)));
+		currentCost.setTextSize(textSize);
 		building.SetViewCurrentCost(currentCost);
 		row.addView(currentCost);
 
@@ -396,9 +448,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setMaxWidth(64);
 		baseCost.setMaxLines(1);
 		baseCost.setFilters(filters8);
-		baseCost.setPadding(5, 5, 5, 5);
-		baseCost.setWidth(96);
+		baseCost.setPadding(padLeft,padTop,padRight,padBottom);
+		baseCost.setGravity(Gravity.RIGHT);
 		baseCost.setText(Integer.toString(building.GetBaseCost()));
+		baseCost.setTextSize(textSize);
 		row.addView(baseCost);
 
 		parent.addView(row);
@@ -410,7 +463,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return profileFileName;
 	}
 	
-	private int LoadProfiles() 
+	private void SaveAllProfiles() 
+	{
+		for (Map.Entry<String,WWProfile> entry: m_profiles.entrySet())
+		{
+			WWProfile profile = entry.getValue();
+			ProfileSave(profile);
+		}
+	}
+	private int LoadAllProfiles() 
 	{
 		int numProfiles = 0;
 		String[] fileNames = fileList();
@@ -482,31 +543,31 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 	}
 
-	private boolean SaveProfile(String profileFileName) throws IOException 
+	private boolean SaveProfile(String profileFileName,WWProfile profile) throws IOException 
 	{
 		try 
 		{
 			TextFileOutput outFile = new TextFileOutput(openFileOutput( profileFileName, MODE_PRIVATE));
-			String name = m_activeProfile.GetName();
+			String name = profile.GetName();
 			try 
 			{
 				// Profile name
 				outFile.WriteString(name);
 
 				// Number of each defence building
-				int numDefenceBuildings = m_activeProfile.GetNumDefenceBuildings();
+				int numDefenceBuildings = profile.GetNumDefenceBuildings();
 				outFile.WriteInt(numDefenceBuildings);
 				for (int i = 0; i < numDefenceBuildings; i++) 
 				{
-					int number = m_activeProfile.GetNumDefenceBuilding(i);
+					int number = profile.GetNumDefenceBuilding(i);
 					outFile.WriteInt(number);
 				}
 				// Number of each income building
-				int numIncomeBuildings = m_activeProfile .GetNumIncomeBuildings();
+				int numIncomeBuildings = profile .GetNumIncomeBuildings();
 				outFile.WriteInt(numIncomeBuildings);
 				for (int i = 0; i < numIncomeBuildings; i++) 
 				{
-					int number = m_activeProfile.GetNumIncomeBuilding(i);
+					int number = profile.GetNumIncomeBuilding(i);
 					outFile.WriteInt(number);
 				}
 				outFile.Close();
@@ -623,13 +684,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		ProfileSelect();
 	}
 
-	private void ProfileSave() 
+	private void ProfileSave(WWProfile profile) 
 	{
 		try 
 		{
-			String profileName = m_activeProfile.GetName();
+			String profileName = profile.GetName();
 			String profileFileName = MakeProfileFileName(profileName);
-			SaveProfile(profileFileName);
+			SaveProfile(profileFileName,profile);
 		} 
 		catch (IOException e) 
 		{
