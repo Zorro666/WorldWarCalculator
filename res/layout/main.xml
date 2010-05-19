@@ -95,7 +95,6 @@
 						<TableLayout
 							android:layout_width="fill_parent"
 							android:layout_height="fill_parent"
-							android:stretchColumns="1"
 							android:padding="0dp">
 						<TableRow>
 							<TextView
@@ -157,8 +156,7 @@
 							android:id="@+id/IncomeViewData"
 							android:layout_width="fill_parent"
 							android:layout_height="fill_parent"
-							android:stretchColumns="1"
-							android:padding="5dp">
+							android:padding="0dp">
 						</TableLayout>
 					</HorizontalScrollView>
 				</ScrollView>

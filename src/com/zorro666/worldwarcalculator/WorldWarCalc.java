@@ -93,17 +93,22 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		profileNameView.setSelection(0);
 		
 		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
+		boolean row;
+		row = true;
 		for (int i = 0; i < m_numDefenceBuildings; i++) 
 		{
 			WWBuilding building = m_defenceBuildings[i];
-			addRow(defenceView, building);
+			addRow(defenceView, building, row);
+			row ^= true;
 		}
 
 		TableLayout incomeView = (TableLayout) findViewById(R.id.IncomeViewData);
+		row = true;
 		for (int i = 0; i < m_numIncomeBuildings; i++) 
 		{
 			WWBuilding building = m_incomeBuildings[i];
-			addRow(incomeView, building);
+			addRow(incomeView, building, row);
+			row ^= true;
 		}
 
 		// m_incomeViewHeader =
@@ -341,16 +346,19 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" value:"+valueString+" currentCost:"+currentCostString);
 	}
 
-	private void addRow(TableLayout parent, WWBuilding building) 
+	private void addRow(TableLayout parent, WWBuilding building, boolean oddRow) 
 	{
 		final float textSize = 14.0f;
+		final int rowHeight = 50;
 		
-		final int padTop = 1;
-		final int padBottom = 1;
-		final int padLeft = 2;
-		final int padRight = 2;
+		final int padTop = 0;
+		final int padBottom = 0;
+		final int padLeft = 0;
+		final int padRight = 0;
 		
 		final int numOwned = 0;
+		
+		int colour = oddRow ? Color.BLACK : Color.DKGRAY;
 		
 		InputFilter[] filters4 = new InputFilter[1];
 		filters4[0] = new InputFilter.LengthFilter(4);
@@ -365,19 +373,25 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		filters13[0] = new InputFilter.LengthFilter(13);
 		
 		TableRow row = new TableRow(parent.getContext());
+		row.setPadding(0,0,0,0);
 
 		TextView name = new TextView(row.getContext());
-		name.setText(building.GetName());
-		name.setPadding(padLeft,padTop,padRight,padBottom);
-		name.setWidth(116);
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
-		name.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.TOP);
-		name.setGravity(Gravity.TOP);
-		name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
 		name.setTextSize(textSize);
-		name.setHeight(40);
+		name.setMinWidth(116);
+		name.setWidth(116);
+		name.setMaxWidth(116);
 		name.setLines(2);
+		name.setMinLines(2);
 		name.setMaxLines(2);
+		name.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		name.setPadding(padLeft,padTop,padRight,padBottom);
+		name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		name.setMinHeight(rowHeight);
+		name.setHeight(rowHeight);
+		name.setMaxHeight(rowHeight);
+		name.setBackgroundColor(colour);
+		name.setText(building.GetName());
 		row.addView(name);
 
 		EditText number = new EditText(row.getContext());
@@ -386,94 +400,104 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setMinWidth((int)(textSize*3.0f));
 		number.setWidth((int)(textSize*3.0f));
 		number.setMaxWidth((int)(textSize*3.0f));
+		number.setMinLines(1);
 		number.setMaxLines(1);
 		number.setFilters(filters4);
 		number.setLines(1);
+		number.setGravity(Gravity.TOP|Gravity.RIGHT);
 		number.setText(Integer.toString(numOwned));
 		number.setPadding(padLeft,padTop,padRight,padBottom);
 		number.setOnKeyListener(this);
 		number.setSelectAllOnFocus(true);
-		number.setMinHeight(36);
-		number.setHeight(36);
-		number.setMaxHeight(36);
+		number.setMinHeight(rowHeight);
+		number.setHeight(rowHeight);
+		number.setMaxHeight(rowHeight);
 		number.setTextSize(textSize);
 		number.setBackgroundDrawable(null);
-		number.setBackgroundColor(Color.WHITE);
+		number.setBackgroundColor(Color.YELLOW);
 		building.SetViewNumOwned(number);
 		row.addView(number);
 
 		TextView value = new TextView(row.getContext());
 		value.setKeyListener(new DigitsKeyListener());
 		value.setInputType(InputType.TYPE_CLASS_NUMBER);
-		value.setSingleLine();
 		value.setMinWidth((int)(textSize*6));
 		value.setWidth((int)(textSize*6));
 		value.setMaxWidth((int)(textSize*6));
+		value.setLines(1);
+		value.setMinLines(1);
 		value.setMaxLines(1);
 		value.setFilters(filters10);
-		value.setGravity(Gravity.RIGHT);
+		value.setGravity(Gravity.TOP|Gravity.RIGHT);
 		value.setPadding(padLeft,padTop,padRight,padBottom);
 		value.setText(Float.toString(building.GetValue(numOwned)));
 		value.setTextSize(textSize);
-		value.setMinHeight(40);
-		value.setHeight(40);
-		value.setMaxHeight(40);
+		value.setMinHeight(rowHeight);
+		value.setHeight(rowHeight);
+		value.setMaxHeight(rowHeight);
+		value.setBackgroundColor(colour);
 		building.SetViewValue(value);
 		row.addView(value);
 
 		TextView reward = new TextView(row.getContext());
 		reward.setKeyListener(new DigitsKeyListener());
 		reward.setInputType(InputType.TYPE_CLASS_NUMBER);
-		reward.setSingleLine();
 		reward.setMinWidth((int)(textSize*4.5f));
 		reward.setWidth((int)(textSize*4.5f));
 		reward.setMaxWidth((int)(textSize*4.5f));
+		reward.setMinLines(1);
 		reward.setMaxLines(1);
+		reward.setLines(1);
 		reward.setFilters(filters8);
 		reward.setPadding(padLeft,padTop,padRight,padBottom);
-		reward.setGravity(Gravity.RIGHT);
+		reward.setGravity(Gravity.TOP|Gravity.RIGHT);
 		reward.setText(Integer.toString(building.GetReward()));
 		reward.setTextSize(textSize);
-		reward.setMinHeight(40);
-		reward.setHeight(40);
-		reward.setMaxHeight(40);
+		reward.setMinHeight(rowHeight);
+		reward.setHeight(rowHeight);
+		reward.setMaxHeight(rowHeight);
+		reward.setBackgroundColor(colour);
 		row.addView(reward);
 
 		TextView currentCost = new TextView(row.getContext());
 		currentCost.setKeyListener(new DigitsKeyListener());
 		currentCost.setInputType(InputType.TYPE_CLASS_NUMBER);
-		currentCost.setSingleLine();
 		currentCost.setMinWidth((int)(textSize*8.0f));
 		currentCost.setWidth((int)(textSize*8.0f));
 		currentCost.setMaxWidth((int)(textSize*8.0f));
+		currentCost.setMinLines(1);
 		currentCost.setMaxLines(1);
+		currentCost.setLines(1);
 		currentCost.setFilters(filters13);
 		currentCost.setPadding(padLeft,padTop,padRight,padBottom);
-		currentCost.setGravity(Gravity.RIGHT);
+		currentCost.setGravity(Gravity.TOP|Gravity.RIGHT);
 		currentCost.setText(Long.toString(building.GetCurrentCost(numOwned)));
 		currentCost.setTextSize(textSize);
-		currentCost.setMinHeight(40);
-		currentCost.setHeight(40);
-		currentCost.setMaxHeight(40);
+		currentCost.setMinHeight(rowHeight);
+		currentCost.setHeight(rowHeight);
+		currentCost.setMaxHeight(rowHeight);
+		currentCost.setBackgroundColor(colour);
 		building.SetViewCurrentCost(currentCost);
 		row.addView(currentCost);
 
 		TextView baseCost = new TextView(row.getContext());
 		baseCost.setKeyListener(new DigitsKeyListener());
 		baseCost.setInputType(InputType.TYPE_CLASS_NUMBER);
-		baseCost.setSingleLine();
 		baseCost.setMinWidth((int)(textSize*5.5f));
 		baseCost.setWidth((int)(textSize*5.5f));
 		baseCost.setMaxWidth((int)(textSize*5.5f));
+		baseCost.setMinLines(1);
 		baseCost.setMaxLines(1);
+		baseCost.setLines(1);
 		baseCost.setFilters(filters8);
 		baseCost.setPadding(padLeft,padTop,padRight,padBottom);
-		baseCost.setGravity(Gravity.RIGHT);
+		baseCost.setGravity(Gravity.TOP|Gravity.RIGHT);
 		baseCost.setText(Long.toString(building.GetBaseCost()));
 		baseCost.setTextSize(textSize);
-		baseCost.setMinHeight(40);
-		baseCost.setHeight(40);
-		baseCost.setMaxHeight(40);
+		baseCost.setMinHeight(rowHeight);
+		baseCost.setHeight(rowHeight);
+		baseCost.setMaxHeight(rowHeight);
+		baseCost.setBackgroundColor(colour);
 		row.addView(baseCost);
 
 		parent.addView(row);
