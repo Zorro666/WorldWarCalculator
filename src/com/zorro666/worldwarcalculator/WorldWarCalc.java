@@ -55,7 +55,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Supply Depot", 18000, 1000);
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Refinery", 150000, 6500);
-		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Weapons Factor", 540000, 16500);
+		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Weapons Factory", 540000, 16500);
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Power Plant", 2700000, 56000);
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Oil Rig", 20000000, 270000);
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Military Research Lab", 60000000, 500000);
@@ -352,12 +352,18 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		final int numOwned = 0;
 		
-		InputFilter[] filters5 = new InputFilter[1];
-		filters5[0] = new InputFilter.LengthFilter(5);
+		InputFilter[] filters4 = new InputFilter[1];
+		filters4[0] = new InputFilter.LengthFilter(4);
 
 		InputFilter[] filters8 = new InputFilter[1];
 		filters8[0] = new InputFilter.LengthFilter(8);
+		
+		InputFilter[] filters10 = new InputFilter[1];
+		filters10[0] = new InputFilter.LengthFilter(10);
 
+		InputFilter[] filters13 = new InputFilter[1];
+		filters13[0] = new InputFilter.LengthFilter(13);
+		
 		TableRow row = new TableRow(parent.getContext());
 
 		TextView name = new TextView(row.getContext());
@@ -365,7 +371,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		name.setPadding(padLeft,padTop,padRight,padBottom);
 		name.setWidth(116);
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
-		name.setGravity(Gravity.CENTER);
+		name.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.TOP);
+		name.setGravity(Gravity.TOP);
 		name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
 		name.setTextSize(textSize);
 		name.setHeight(40);
@@ -376,11 +383,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		EditText number = new EditText(row.getContext());
 		number.setInputType(InputType.TYPE_CLASS_NUMBER);
 		number.setKeyListener(new DigitsKeyListener());
-		number.setMinWidth(56);
-		number.setWidth(56);
-		number.setMaxWidth(56);
+		number.setMinWidth((int)(textSize*3.0f));
+		number.setWidth((int)(textSize*3.0f));
+		number.setMaxWidth((int)(textSize*3.0f));
 		number.setMaxLines(1);
-		number.setFilters(filters5);
+		number.setFilters(filters4);
 		number.setLines(1);
 		number.setText(Integer.toString(numOwned));
 		number.setPadding(padLeft,padTop,padRight,padBottom);
@@ -399,11 +406,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		value.setKeyListener(new DigitsKeyListener());
 		value.setInputType(InputType.TYPE_CLASS_NUMBER);
 		value.setSingleLine();
-		value.setMinWidth((int)(textSize*4));
-		value.setWidth((int)(textSize*4));
-		value.setMaxWidth((int)(textSize*4));
+		value.setMinWidth((int)(textSize*6));
+		value.setWidth((int)(textSize*6));
+		value.setMaxWidth((int)(textSize*6));
 		value.setMaxLines(1);
-		value.setFilters(filters8);
+		value.setFilters(filters10);
 		value.setGravity(Gravity.RIGHT);
 		value.setPadding(padLeft,padTop,padRight,padBottom);
 		value.setText(Float.toString(building.GetValue(numOwned)));
@@ -436,11 +443,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		currentCost.setKeyListener(new DigitsKeyListener());
 		currentCost.setInputType(InputType.TYPE_CLASS_NUMBER);
 		currentCost.setSingleLine();
-		currentCost.setMinWidth((int)(textSize*6.5f));
-		currentCost.setWidth((int)(textSize*6.5f));
-		currentCost.setMaxWidth((int)(textSize*6.5f));
+		currentCost.setMinWidth((int)(textSize*8.0f));
+		currentCost.setWidth((int)(textSize*8.0f));
+		currentCost.setMaxWidth((int)(textSize*8.0f));
 		currentCost.setMaxLines(1);
-		currentCost.setFilters(filters8);
+		currentCost.setFilters(filters13);
 		currentCost.setPadding(padLeft,padTop,padRight,padBottom);
 		currentCost.setGravity(Gravity.RIGHT);
 		currentCost.setText(Long.toString(building.GetCurrentCost(numOwned)));

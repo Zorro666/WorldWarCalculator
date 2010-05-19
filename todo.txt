@@ -1,6 +1,7 @@
 make UI look nicer - alignment and separators between numbers
 Put +/- buttons UI system in place for number
 THEN IT WILL BE USEFUL - USE IT - TEST IT OUT - SHOW IT/GIVE IT TO SAM
+display numbers as 340M or 18K if exact multiples can be found
 Make best buy BOLD and Green - flashing ?
 all tabs - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 hint tab - show hint data - how many of the best buildings to buy (sorted list)
