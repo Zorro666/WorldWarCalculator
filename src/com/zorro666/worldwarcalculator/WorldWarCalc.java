@@ -349,12 +349,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private void addRow(TableLayout parent, WWBuilding building, boolean oddRow) 
 	{
 		final float textSize = 14.0f;
-		final int rowHeight = 50;
+		final int rowHeight = 40;
 		
 		final int padTop = 0;
 		final int padBottom = 0;
-		final int padLeft = 0;
-		final int padRight = 0;
+		final int padLeft = 1;
+		final int padRight = 1;
 		
 		final int numOwned = 0;
 		
@@ -414,7 +414,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setMaxHeight(rowHeight);
 		number.setTextSize(textSize);
 		number.setBackgroundDrawable(null);
-		number.setBackgroundColor(Color.YELLOW);
+		number.setBackgroundColor(0xFF606060);
 		building.SetViewNumOwned(number);
 		row.addView(number);
 
@@ -499,8 +499,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setMaxHeight(rowHeight);
 		baseCost.setBackgroundColor(colour);
 		row.addView(baseCost);
-
+		
 		parent.addView(row);
+		
+		TableRow sep = new TableRow(parent.getContext());
+		sep.setBackgroundColor(Color.WHITE);
+		sep.setPadding(0,1,0,1);
+
+		parent.addView(sep);
 	}
 
 	private String MakeProfileFileName(String profileName)
