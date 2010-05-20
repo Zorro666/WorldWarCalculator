@@ -2,6 +2,8 @@ package com.zorro666.worldwarcalculator;
 
 import android.widget.TextView;
 import android.widget.EditText;
+import android.widget.Button;
+
 
 public class WWBuilding 
 {
@@ -63,6 +65,22 @@ public class WWBuilding
 		return m_viewCurrentCost;
 	}
 	
+	public Button GetViewMinusButton()
+	{
+		return m_viewMinusButton;
+	}
+	public Button GetViewPlusButton()
+	{
+		return m_viewPlusButton;
+	}
+	public void SetViewMinusButton(Button viewMinusButton)
+	{
+		m_viewMinusButton = viewMinusButton;
+	}
+	public void SetViewPlusButton(Button viewPlusButton)
+	{
+		m_viewPlusButton = viewPlusButton;
+	}
 	public void SetViewNumOwned(EditText viewNumOwned)
 	{
 		m_viewNumOwned = viewNumOwned;
@@ -81,6 +99,8 @@ public class WWBuilding
 	private long m_baseCost;
 	private int m_reward;
 	private float m_valueMultiplier;;
+	private Button m_viewMinusButton;
+	private Button m_viewPlusButton;
 	private EditText m_viewNumOwned;
 	private TextView m_viewValue;
 	private TextView m_viewCurrentCost;
