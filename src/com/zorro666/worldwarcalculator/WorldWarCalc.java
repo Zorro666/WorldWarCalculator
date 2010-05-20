@@ -219,30 +219,46 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			ProfileSave(m_activeProfile);
 		}
-		if (v.getId() == R.id.profileNewButton) 
+		else if (v.getId() == R.id.profileNewButton) 
 		{
 			ProfileNew();
 		}
-		if (v.getId() == R.id.profileDeleteButton)
+		else if (v.getId() == R.id.profileDeleteButton)
 		{
 			ProfileDelete();
 		}
-		Object tag = v.getTag();
-		if (tag.getClass() == WWProfileEntry.class)
+		else
 		{
-			WWProfileEntry profileEntry = (WWProfileEntry) tag;
-			WWBuilding building = profileEntry.GetBuilding();
-			if (v.getId() == 123456)
+			Object tag = v.getTag();
+			if (tag.getClass() == WWProfileEntry.class)
 			{
-				Log.i(TAG,"Minus Button"+building.GetName());
-			}
-			if (v.getId() == 654321)
-			{
-				Log.i(TAG,"Plus Button"+building.GetName());
+				WWProfileEntry profileEntry = (WWProfileEntry) tag;
+				WWBuilding building = profileEntry.GetBuilding();
+				int delta = 0;
+				if (v.getId() == 123456)
+				{
+					delta = -1;
+					Log.i(TAG,"Minus Button:"+building.GetName());
+				}
+				if (v.getId() == 654321)
+				{
+					delta = +1;
+				}
+				if (delta != 0)
+				{
+					int numOwned = profileEntry.GetNumOwned();
+					numOwned += delta;
+					if ((numOwned >= 0) && (numOwned <= 9999))
+					{
+						profileEntry.SetNumOwned(numOwned);
+						UpdateBuildingRow(profileEntry);
+						UpdateBuildingNumOwned(profileEntry);
+						Log.i(TAG,"-/+ Button:"+building.GetName()+" Delta:"+delta);
+					}
+				}
 			}
 		}
 	}
-
 	public boolean onKey(View v, int key, KeyEvent event) 
 	{
 		Object tag = v.getTag();
@@ -422,9 +438,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		Button minus = new Button(row.getContext());
 		minus.setTextSize(textSize);
-		minus.setMinWidth((int)(textSize));
-		minus.setWidth((int)(textSize));
-		minus.setMaxWidth((int)(textSize));
+		minus.setMinWidth((int)(textSize*2.0f));
+		minus.setWidth((int)(textSize*2.0f));
+		minus.setMaxWidth((int)(textSize*2.0f));
 		minus.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
 		minus.setPadding(padLeft,padTop,padRight,padBottom);
 		minus.setMinHeight(rowHeight);
@@ -464,9 +480,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		Button plus = new Button(row.getContext());
 		plus.setTextSize(textSize);
-		plus.setMinWidth((int)(textSize));
-		plus.setWidth((int)(textSize));
-		plus.setMaxWidth((int)(textSize));
+		plus.setMinWidth((int)(textSize*2.0f));
+		plus.setWidth((int)(textSize*2.0f));
+		plus.setMaxWidth((int)(textSize*2.0f));
 		plus.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
 		plus.setPadding(padLeft,padTop,padRight,padBottom);
 		plus.setMinHeight(rowHeight);
@@ -477,7 +493,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		plus.setText("+");
 		plus.setOnClickListener(this);
 		plus.setId(654321);
-		building.SetViewMinusButton(plus);
+		building.SetViewPlusButton(plus);
 		row.addView(plus);
 		
 		TextView value = new TextView(row.getContext());

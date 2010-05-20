@@ -20,6 +20,14 @@ public class WWProfileEntry
 	}
 	public void SetNumOwned(int numOwned)
 	{
+		if (numOwned < 0)
+		{
+			return;
+		}
+		if (numOwned > 9999)
+		{
+			return;
+		}
 		m_numOwned=numOwned;
 	}
 	private WWBuilding m_building;
