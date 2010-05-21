@@ -98,7 +98,7 @@ public class WWBuilding
 	private String m_name;
 	private long m_baseCost;
 	private int m_reward;
-	private float m_valueMultiplier;;
+	private float m_valueMultiplier;
 	private Button m_viewMinusButton;
 	private Button m_viewPlusButton;
 	private EditText m_viewNumOwned;
