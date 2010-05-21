@@ -145,8 +145,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onStart()
 	{
-		// Load the profile files in
 		LoadAllProfiles();
+		LoadAppState();
 
 		if (m_profilesAdapter.getCount() == 0)
 		{
@@ -168,9 +168,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onPause()
 	{
-		// Save all the profiles
 		SaveAllProfiles();
-		
+		SaveAppState();
 		super.onPause();
 	}
 
@@ -605,6 +604,69 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return profileFileName;
 	}
 	
+	private boolean SaveAppState() 
+	{
+		String fileName = "AppState";
+		try 
+		{
+			TextFileOutput outFile = new TextFileOutput(openFileOutput( fileName, MODE_PRIVATE));
+			try 
+			{
+				// Active profile
+				String activeProfile = m_activeProfile.GetName();
+				outFile.WriteString(activeProfile);
+				
+				outFile.Close();
+				Log.i(TAG,"SaveAppState DONE file:"+fileName);
+			} 
+			catch (IOException e) 
+			{
+				outFile.Close();
+				return false;
+			}
+			return true;
+		} 
+		catch (FileNotFoundException e) 
+		{
+			return false;
+		}
+		catch (IOException e) 
+		{
+			return false;
+		}
+	}
+		
+	private boolean LoadAppState() 
+	{
+		String fileName = "AppState";
+		try 
+		{
+			TextFileInput inFile = new TextFileInput(openFileInput(fileName));
+			try 
+			{
+				// Active profile
+				String activeProfile = inFile.ReadString();
+				Log.i(TAG,"LoadAppState activeProfile:"+activeProfile);
+				
+				inFile.Close();
+				Log.i(TAG,"LoadAppState DONE file:"+fileName);
+			} 
+			catch (IOException e) 
+			{
+				inFile.Close();
+				return false;
+			}
+			return true;
+		} 
+		catch (FileNotFoundException e) 
+		{
+			return false;
+		}
+		catch (IOException e) 
+		{
+			return false;
+		}
+	}
 	private void SaveAllProfiles() 
 	{
 		for (Map.Entry<String,WWProfile> entry: m_profiles.entrySet())
@@ -626,15 +688,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				String baseProfileFileName = MakeProfileFileName("");
 				if (profileFileName.startsWith(baseProfileFileName))
 				{
-					try 
+					if (LoadProfile(profileFileName) == true) 
 					{
-						if (LoadProfile(profileFileName) == true) 
-						{
-							numProfiles++;
-						}
-					} 
-					catch (IOException e) 
-					{
+						numProfiles++;
 					}
 				}
 			}
@@ -642,7 +698,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return numProfiles;
 	}
 
-	private boolean LoadProfile(String profileFileName) throws IOException 
+	private boolean LoadProfile(String profileFileName)
 	{
 		try 
 		{
@@ -683,9 +739,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			return false;
 		}
+		catch (IOException e) 
+		{
+			return false;
+		}
 	}
 
-	private boolean SaveProfile(String profileFileName,WWProfile profile) throws IOException 
+	private boolean SaveProfile(String profileFileName,WWProfile profile) 
 	{
 		try 
 		{
@@ -723,6 +783,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			return true;
 		} 
 		catch (FileNotFoundException e) 
+		{
+			return false;
+		}
+		catch (IOException e) 
 		{
 			return false;
 		}
@@ -828,15 +892,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 	private void ProfileSave(WWProfile profile) 
 	{
-		try 
-		{
-			String profileName = profile.GetName();
-			String profileFileName = MakeProfileFileName(profileName);
-			SaveProfile(profileFileName,profile);
-		} 
-		catch (IOException e) 
-		{
-		}
+		String profileName = profile.GetName();
+		String profileFileName = MakeProfileFileName(profileName);
+		SaveProfile(profileFileName,profile);
 	}
 
 	private static final String TAG = "WWCALC";

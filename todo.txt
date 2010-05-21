@@ -1,5 +1,4 @@
-bigger and brighter number text
-save the active profile name - so it can restored/selected on restart
+select the active profile based on the string read back from the app state file
 THEN IT WILL BE USEFUL - USE IT - TEST IT OUT - SHOW IT/GIVE IT TO SAM
 display numbers as 340M or 18K if exact multiples can be found
 Make best buy BOLD and Green - flashing ?
@@ -15,3 +14,4 @@ unify the Income & Defence buildings list into a single collection which can be 
 make UI look nicer - ?????
 make +/- buttons look nicer
 use problem android bundle for save/restore - sharedstatebundle?????
+add an icon for the app :)
