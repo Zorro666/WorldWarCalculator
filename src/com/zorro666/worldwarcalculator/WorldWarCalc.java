@@ -306,7 +306,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private void ProfileSelect()
 	{
 		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
-		String profileName = (String)profileSpinner.getSelectedItem();
+		int itemIndex = (int)profileSpinner.getSelectedItemId();
+		int numItems = profileSpinner.getCount();
+		if (itemIndex >= numItems)
+		{
+			itemIndex = 0;
+		}
+		if (numItems == 0)
+		{
+			return;
+		}
+		String profileName = m_profilesAdapter.getItem(itemIndex);
 		Log.i(TAG,"ProfileSelect = "+profileName);
 		
 		WWProfile profile = m_profiles.get(profileName);
@@ -456,6 +466,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		EditText number = new EditText(row.getContext());
 		number.setInputType(InputType.TYPE_CLASS_NUMBER);
+		number.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		number.setKeyListener(new DigitsKeyListener());
 		number.setMinWidth((int)(textSize*2.5f));
 		number.setWidth((int)(textSize*2.5f));
@@ -473,8 +484,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setHeight(rowHeight);
 		number.setMaxHeight(rowHeight);
 		number.setTextSize(textSize);
+		number.setTextColor(0xFFFFFFFF);
 		number.setBackgroundDrawable(null);
-		number.setBackgroundColor(0xFF606060);
+		number.setBackgroundColor(0xFF444444);
 		building.SetViewNumOwned(number);
 		row.addView(number);
 
