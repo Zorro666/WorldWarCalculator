@@ -1,11 +1,13 @@
 select the active profile based on the string read back from the app state file
-THEN IT WILL BE USEFUL - USE IT - TEST IT OUT - SHOW IT/GIVE IT TO SAM
+make the UI buttons bigger
+Value is the wrong name - Cheapness might be the best word
 display numbers as 340M or 18K if exact multiples can be found
-Make best buy BOLD and Green - flashing ?
-all tabs - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
-all tabs - put a profile save button next to the profile dropdown?
+Make best buy BOLD and Green
+all tabs - put best hint to the right of the "profile drop down" ?
+building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
+income tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 hint tab - show hint data - how many of the best buildings to buy (sorted list)
-put best hint to the right of the "profile drop down" ?
+all tabs - put a profile save button next to the profile dropdown?
 Try to get a header row working - with linked scrolling
 profile tab - need button to load profile - would reload to undo changes - needs a confirmation box first
 profile tab - delete profile should ask yes/no

@@ -101,21 +101,21 @@
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:text="Building"
-								android:width="116px"
+								android:width="136px"
 								android:padding="5dp">
 							</TextView>
 							<TextView
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:text="Number"
-								android:width="64px"
+								android:width="72px"
 								android:padding="5dp">
 							</TextView>
 							<TextView
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Value"
-								android:width="72px"
+								android:text="Cost per reward"
+								android:width="120px"
 								android:padding="5dp">
 							</TextView>
 							<TextView
@@ -129,14 +129,14 @@
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:text="Current Cost"
-								android:width="96px"
+								android:width="92px"
 								android:padding="5dp">
 							</TextView>
 							<TextView
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:text="Base Cost"
-								android:width="96px"
+								android:width="92px"
 								android:padding="5dp">
 							</TextView>
 						</TableRow>

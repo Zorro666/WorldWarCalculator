@@ -111,14 +111,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			row ^= true;
 		}
 
-		// m_incomeViewHeader =
-		// (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
-		// m_incomeViewHeader.setOnTouchListener(this);
+		m_incomeViewHeader = (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
+		//m_incomeViewHeader.setOnTouchListener(this);
 
-		// HorizontalScrollView m_incomeViewScroll =
-		// (HorizontalScrollView)findViewById(R.id.IncomeViewScroll);
-		// m_incomeViewScroll.setOnTouchListener(this);
-		// m_incomeViewScroll.setSmoothScrollingEnabled(true);
+		m_incomeViewScroll = (HorizontalScrollView)findViewById(R.id.IncomeViewScroll);
+		m_incomeViewScroll.setOnTouchListener(this);
+		m_incomeViewScroll.setSmoothScrollingEnabled(true);
 
 		final TabHost tabs = (TabHost) findViewById(R.id.tabhost);
 		tabs.setup();
@@ -195,7 +193,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		if (v == m_incomeViewHeader) 
 		{
-			m_incomeViewScroll.onTouchEvent(event);
+			//m_incomeViewScroll.onTouchEvent(event);
 		}
 		return v.onTouchEvent(event);
 	}
