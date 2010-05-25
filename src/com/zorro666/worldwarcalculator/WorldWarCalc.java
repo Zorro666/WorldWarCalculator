@@ -63,6 +63,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Solar Satellite Network", 340000000, 1200000);
 
 		m_activeProfile = new WWProfile("default");
+		m_activeProfileName = m_activeProfile.GetName();
 		
 		m_profileNames = new ArrayList<String>();
 		m_profiles = new HashMap<String, WWProfile>(DEFAULT_NUM_PROFILES);
@@ -144,14 +145,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	public void onStart()
 	{
 		LoadAllProfiles();
+		Log.i(TAG,"onStart LoadAppState");
 		LoadAppState();
 
+		// Set selected item to match the active profile
 		if (m_profilesAdapter.getCount() == 0)
 		{
 			ProfileNew();
 		}
 
-		ProfileSelect();
+		ProfileSelectByName(m_activeProfileName);
 		
 		super.onStart();
 	}
@@ -159,6 +162,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onRestart()
 	{
+		Log.i(TAG,"onRestart");
 		super.onRestart();
 	}
 
@@ -166,7 +170,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onPause()
 	{
-		SaveAllProfiles();
 		SaveAppState();
 		super.onPause();
 	}
@@ -175,6 +178,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onStop()
 	{
+		SaveAppState();
 		super.onStop();
 	}
 	
@@ -182,6 +186,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onDestroy()
 	{
+		SaveAllProfiles();
+		SaveAppState();
 		super.onDestroy();
 	}
 	
@@ -295,7 +301,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			if (item != null)
 			{
 				String profileName = item.getText().toString();
-				Log.i(TAG,"ProfileSelect["+position+"] = "+profileName);
+				Log.i(TAG,"onItemSelected["+position+"] = "+profileName);
 				ProfileSelect();
 			}
 		}
@@ -315,12 +321,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		String profileName = m_profilesAdapter.getItem(itemIndex);
 		Log.i(TAG,"ProfileSelect = "+profileName);
-		
+		ProfileSelectByName(profileName);
+	}
+	
+	void ProfileSelectByName(String profileName)
+	{
+		Log.i(TAG,"ProfileSelectByName = "+profileName);
 		WWProfile profile = m_profiles.get(profileName);
 		// Need to error check this in case it returns NULL
 		if (profile == null)
 		{
-			Log.i(TAG,"ProfileSelect: NULL = "+profileName);
+			Log.i(TAG,"ProfileSelectByName: NULL = "+profileName);
 			// Make sure we have a profile to use
 			if (m_profilesAdapter.getCount() == 0)		
 			{
@@ -333,6 +344,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		// Now update the displayed details based on the active profile
 		m_activeProfile = profile;
+		m_activeProfileName = m_activeProfile.GetName();
 		UpdateBuildingsView();
 	}
 	
@@ -611,8 +623,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			try 
 			{
 				// Active profile
-				String activeProfile = m_activeProfile.GetName();
+				String activeProfile = m_activeProfileName;
 				outFile.WriteString(activeProfile);
+				Log.i(TAG,"SaveAppState activeProfile:"+activeProfile);
 				
 				outFile.Close();
 				Log.i(TAG,"SaveAppState DONE file:"+fileName);
@@ -648,6 +661,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				
 				inFile.Close();
 				Log.i(TAG,"LoadAppState DONE file:"+fileName);
+				
+				m_activeProfileName = activeProfile;
 			} 
 			catch (IOException e) 
 			{
@@ -658,6 +673,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		} 
 		catch (FileNotFoundException e) 
 		{
+			Log.i(TAG,"LoadAppState FileNotFound:"+fileName);
 			return false;
 		}
 		catch (IOException e) 
@@ -864,6 +880,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				m_profilesAdapter.remove(oldName);
 				m_profiles.remove(oldName);
 				m_activeProfile.SetName(newName);
+				m_activeProfileName = m_activeProfile.GetName();
 				ProfileAdd(m_activeProfile);
 			}
 		}
@@ -912,6 +929,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private Map<String, WWProfile> m_profiles;
 	private List<String> m_profileNames;
 	private WWProfile m_activeProfile;
+	private String m_activeProfileName;
 
 	HorizontalScrollView m_incomeViewHeader;
 	HorizontalScrollView m_incomeViewScroll;

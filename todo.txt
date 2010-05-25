@@ -1,11 +1,15 @@
+find out which key when you press back button to pause APP
+debug why back button pause has to be pressed twice
+sort out the life cycle and the save profiles, save state stuff - it is messed up
 select the active profile based on the string read back from the app state file
-make the UI buttons bigger
-Value is the wrong name - Cheapness might be the best word
-display numbers as 340M or 18K if exact multiples can be found
-Make best buy BOLD and Green
+bug: enter number - switch app the new number is saved
+Make best buy BOLD and Red
 all tabs - put best hint to the right of the "profile drop down" ?
+make the UI buttons bigger
+display numbers as 340M or 18K if exact multiples can be found
 building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 income tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
+all tabs - put best n hints (2 or 3) to the right of the "profile drop down" ?
 hint tab - show hint data - how many of the best buildings to buy (sorted list)
 all tabs - put a profile save button next to the profile dropdown?
 Try to get a header row working - with linked scrolling
