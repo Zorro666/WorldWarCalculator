@@ -1,8 +1,5 @@
-find out which key when you press back button to pause APP
-debug why back button pause has to be pressed twice
-sort out the life cycle and the save profiles, save state stuff - it is messed up
-select the active profile based on the string read back from the app state file
-bug: enter number - switch app the new number is saved
+sort out the life cycle state saving - use onSave, onRestore bundles instead of files
+bug: enter number - switch app the new number is not saved
 Make best buy BOLD and Red
 all tabs - put best hint to the right of the "profile drop down" ?
 make the UI buttons bigger

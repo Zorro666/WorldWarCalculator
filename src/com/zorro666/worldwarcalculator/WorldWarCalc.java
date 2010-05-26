@@ -41,6 +41,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
+		Log.i(TAG,"onCreate");
+		super.onCreate(savedInstanceState);
+		
 		m_defenceBuildings = new WWBuilding[NUM_DEFENCE_BUILDINGS];
 		m_incomeBuildings = new WWBuilding[NUM_INCOME_BUILDINGS];
 		m_numDefenceBuildings = 0;
@@ -70,7 +73,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		m_profilesAdapter =  new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, m_profileNames);
 		
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		Button saveProfile = (Button) findViewById(R.id.profileSaveButton);
@@ -144,6 +146,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onStart()
 	{
+		Log.i(TAG,"onStart");
+		super.onStart();
+		
 		LoadAllProfiles();
 		Log.i(TAG,"onStart LoadAppState");
 		LoadAppState();
@@ -154,31 +159,44 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			ProfileNew();
 		}
 
-		ProfileSelectByName(m_activeProfileName);
-		
-		super.onStart();
+		ProfileSetSelectedProfile(m_activeProfileName);
 	}
 
 	@Override
+	// The activity comes to the foreground from being stopped (from onStop state)
 	public void onRestart()
 	{
 		Log.i(TAG,"onRestart");
 		super.onRestart();
 	}
 
+	// The activity comes to the foreground from being paused (from onPause state)
+	@Override
+	public void onResume()
+	{
+		Log.i(TAG,"onResume");
+		super.onResume();
+	}
+	
 	// Another application comes in front of this view
 	@Override
 	public void onPause()
 	{
-		SaveAppState();
+		Log.i(TAG,"onPause");
 		super.onPause();
+		
+		// Save state in the onSaveInstanceState() override
+		// Restore state in the onRestoreInstanceState() override
+		// BAD BAD BAD BAD BAD
+		SaveAllProfiles();
+		SaveAppState();
 	}
 
 	// Application is no longer in view
 	@Override
 	public void onStop()
 	{
-		SaveAppState();
+		Log.i(TAG,"onStop");
 		super.onStop();
 	}
 	
@@ -186,9 +204,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	@Override
 	public void onDestroy()
 	{
+		super.onDestroy();
+		
+		Log.i(TAG,"onDestroy");
 		SaveAllProfiles();
 		SaveAppState();
-		super.onDestroy();
 	}
 	
 	public boolean onTouch(View v, MotionEvent event) 
@@ -283,7 +303,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				
 				UpdateBuildingRow(profileEntry);
 
-				Log.i(TAG, "onKey Building = " + profileEntry.GetBuilding().GetName() + " numOwned = " + numOwned);
+				Log.i(TAG, "onKey Building = " + profileEntry.GetBuilding().GetName() + " numOwned = " + numOwned+ " key="+key);
 			}
 		}
 		return false;
@@ -306,6 +326,20 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			}
 		}
 	}
+	private void ProfileSetSelectedProfile(String profileName)
+	{
+		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
+		int itemIndex = m_profilesAdapter.getPosition(profileName);
+		int numItems = profileSpinner.getCount();
+		if ((itemIndex < 0) || (itemIndex >= numItems))
+		{
+			Log.i(TAG,"ProfileSetSelectedProfile:"+profileName+" NOT FOUND");
+			return;
+		}
+		Log.i(TAG,"ProfileSetSelectedProfile:"+profileName+" "+itemIndex);
+		profileSpinner.setSelection(itemIndex);
+	}
+	
 	private void ProfileSelect()
 	{
 		Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
@@ -691,6 +725,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	}
 	private int LoadAllProfiles() 
 	{
+		Log.i(TAG,"LoadAllProfiles");
 		int numProfiles = 0;
 		String[] fileNames = fileList();
 		int numFiles = fileNames.length;
