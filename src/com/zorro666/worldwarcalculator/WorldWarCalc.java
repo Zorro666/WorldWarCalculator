@@ -420,6 +420,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			plusButtonView.setTag(profileEntry);
 		}
 		
+		m_activeProfile.SortIncomeCheapness();
+		TextView hintView = (TextView)findViewById(R.id.hintText);
+		WWProfileEntry cheapestIncome = m_activeProfile.GetSortedIncomeEntry(0);
+		WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
+		String hintText = "Buy " + cheapestIncomeBuilding.GetName();
+		hintView.setText(hintText);
 		Log.i(TAG, "UpdateBuildingNumOwned: "+building.GetName()+" numOwned:"+numOwnedString);
 	}
 	
@@ -428,17 +434,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		WWBuilding building = profileEntry.GetBuilding();
 		
 		int numOwned =  profileEntry.GetNumOwned();
-		float value = building.GetValue(numOwned);
-		String valueString = Float.toString(value);
-		TextView valueView = building.GetViewValue();
-		valueView.setText(valueString);
+		float cheapness = building.GetCheapness(numOwned);
+		String cheapnessString = Float.toString(cheapness);
+		TextView cheapnessView = building.GetViewCheapness();
+		cheapnessView.setText(cheapnessString);
 
 		long currentCost = building.GetCurrentCost(numOwned);
 		String currentCostString = Long.toString(currentCost);
 		TextView currentCostText = building.GetViewCurrentCost();
 		currentCostText.setText(currentCostString);
 		
-		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" value:"+valueString+" currentCost:"+currentCostString);
+		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" cheapness:"+cheapnessString+" currentCost:"+currentCostString);
 	}
 
 	private void addRow(TableLayout parent, WWBuilding building, boolean oddRow) 
@@ -551,26 +557,26 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		building.SetViewPlusButton(plus);
 		row.addView(plus);
 		
-		TextView value = new TextView(row.getContext());
-		value.setKeyListener(new DigitsKeyListener());
-		value.setInputType(InputType.TYPE_CLASS_NUMBER);
-		value.setMinWidth((int)(textSize*6));
-		value.setWidth((int)(textSize*6));
-		value.setMaxWidth((int)(textSize*6));
-		value.setLines(1);
-		value.setMinLines(1);
-		value.setMaxLines(1);
-		value.setFilters(filters10);
-		value.setGravity(Gravity.TOP|Gravity.RIGHT);
-		value.setPadding(padLeft,padTop,padRight,padBottom);
-		value.setText(Float.toString(building.GetValue(numOwned)));
-		value.setTextSize(textSize);
-		value.setMinHeight(rowHeight);
-		value.setHeight(rowHeight);
-		value.setMaxHeight(rowHeight);
-		value.setBackgroundColor(colour);
-		building.SetViewValue(value);
-		row.addView(value);
+		TextView cheapness = new TextView(row.getContext());
+		cheapness.setKeyListener(new DigitsKeyListener());
+		cheapness.setInputType(InputType.TYPE_CLASS_NUMBER);
+		cheapness.setMinWidth((int)(textSize*6));
+		cheapness.setWidth((int)(textSize*6));
+		cheapness.setMaxWidth((int)(textSize*6));
+		cheapness.setLines(1);
+		cheapness.setMinLines(1);
+		cheapness.setMaxLines(1);
+		cheapness.setFilters(filters10);
+		cheapness.setGravity(Gravity.TOP|Gravity.RIGHT);
+		cheapness.setPadding(padLeft,padTop,padRight,padBottom);
+		cheapness.setText(Float.toString(building.GetCheapness(numOwned)));
+		cheapness.setTextSize(textSize);
+		cheapness.setMinHeight(rowHeight);
+		cheapness.setHeight(rowHeight);
+		cheapness.setMaxHeight(rowHeight);
+		cheapness.setBackgroundColor(colour);
+		building.SetViewCheapness(cheapness);
+		row.addView(cheapness);
 
 		TextView reward = new TextView(row.getContext());
 		reward.setKeyListener(new DigitsKeyListener());

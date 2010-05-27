@@ -1,7 +1,10 @@
+update best-buy text after entering number as well as when pressing +/- buttons
+put best-buy in text next to profile drop-down button
+put best-buy income or defence in text next to profile drop-down button
+Highlight the best buy building row : BOLD and Red
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 bug: enter number - switch app the new number is not saved
-Make best buy BOLD and Red
-all tabs - put best hint to the right of the "profile drop down" ?
+all tabs - put best hint to the right of the "profile drop down" ? (num to buy)
 make the UI buttons bigger
 display numbers as 340M or 18K if exact multiples can be found
 building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
@@ -16,5 +19,5 @@ profile tab - save profile should say "saved:ok" confirmation box
 unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
 make UI look nicer - ?????
 make +/- buttons look nicer
-use problem android bundle for save/restore - sharedstatebundle?????
+use proper android bundle for save/restore - sharedstatebundle?????
 add an icon for the app :)

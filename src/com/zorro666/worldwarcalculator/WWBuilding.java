@@ -7,12 +7,12 @@ import android.widget.Button;
 
 public class WWBuilding 
 {
-	public WWBuilding( final String name, final int baseCost, final int reward, final float valueMultiplier )
+	public WWBuilding( final String name, final int baseCost, final int reward, final float cheapnessMultiplier )
 	{
 		m_name = name;
 		m_baseCost = baseCost/BASE_COST_DIVISOR;
 		m_reward = reward;
-		m_valueMultiplier = valueMultiplier;
+		m_cheapnessMultiplier = cheapnessMultiplier;
 	}
 	public String GetName()
 	{
@@ -36,29 +36,29 @@ public class WWBuilding
 		return m_reward;
 	}
 	
-	public float GetValue(int numOwned)
+	public float GetCheapness(int numOwned)
 	{
-		float rawValue = GetRawValue(numOwned);
-		float value = rawValue * m_valueMultiplier;
-    	value = Math.round(value * 100.0f)/100.0f;
-		return value;
+		float rawCheapness = GetRawCheapness(numOwned);
+		float cheapness = rawCheapness * m_cheapnessMultiplier;
+    	cheapness = Math.round(cheapness * 100.0f)/100.0f;
+		return cheapness;
 	}
-	public float GetRawValue(int numOwned)
+	public float GetRawCheapness(int numOwned)
 	{
 		long cost = GetCurrentCost(numOwned);
 		int reward = GetReward();
-		float value = cost/(reward+0.0f);
-		value *= BASE_COST_DIVISOR;
-		return value;
+		float cheapness = cost/(reward+0.0f);
+		cheapness *= BASE_COST_DIVISOR;
+		return cheapness;
 	}
 	
 	public EditText GetViewNumOwned()
 	{
 		return m_viewNumOwned;
 	}
-	public TextView GetViewValue()
+	public TextView GetViewCheapness()
 	{
-		return m_viewValue;
+		return m_viewCheapness;
 	}
 	public TextView GetViewCurrentCost()
 	{
@@ -85,9 +85,9 @@ public class WWBuilding
 	{
 		m_viewNumOwned = viewNumOwned;
 	}
-	public void SetViewValue(TextView viewValue)
+	public void SetViewCheapness(TextView viewCheapness)
 	{
-		m_viewValue = viewValue;
+		m_viewCheapness = viewCheapness;
 	}
 	public void SetViewCurrentCost(TextView viewCurrentCost)
 	{
@@ -98,10 +98,10 @@ public class WWBuilding
 	private String m_name;
 	private long m_baseCost;
 	private int m_reward;
-	private float m_valueMultiplier;
+	private float m_cheapnessMultiplier;
 	private Button m_viewMinusButton;
 	private Button m_viewPlusButton;
 	private EditText m_viewNumOwned;
-	private TextView m_viewValue;
+	private TextView m_viewCheapness;
 	private TextView m_viewCurrentCost;
 }
