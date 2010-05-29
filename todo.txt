@@ -1,6 +1,5 @@
-update best-buy text after entering number as well as when pressing +/- buttons
-put best-buy in text next to profile drop-down button
-put best-buy income or defence in text next to profile drop-down button
+listener on tab change - update hint text 
+hint text - on the profile tab?
 Highlight the best buy building row : BOLD and Red
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 bug: enter number - switch app the new number is not saved

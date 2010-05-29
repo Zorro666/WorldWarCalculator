@@ -96,11 +96,21 @@ public class WWProfile
 			{
 				int iEntry = m_incomeCheapnessSorted[i];
 				int iNumOwned = m_incomeBuildings[iEntry].GetNumOwned();
-				float iCheapness = m_incomeBuildings[iEntry].GetBuilding().GetCheapness(iNumOwned);
+				WWBuilding iBuilding = m_incomeBuildings[iEntry].GetBuilding();
+				float iCheapness = 0.0f;
+				if (iBuilding != null)
+				{
+					iCheapness = iBuilding.GetCheapness(iNumOwned);
+				}
 				
 				int jEntry = m_incomeCheapnessSorted[j];
 				int jNumOwned = m_incomeBuildings[jEntry].GetNumOwned();
-				float jCheapness = m_incomeBuildings[jEntry].GetBuilding().GetCheapness(jNumOwned);
+				WWBuilding jBuilding = m_incomeBuildings[jEntry].GetBuilding();
+				float jCheapness = 0.0f;
+				if (jBuilding != null)
+				{
+					jCheapness = jBuilding.GetCheapness(jNumOwned);
+				}
 				if (jCheapness < iCheapness)
 				{
 					m_incomeCheapnessSorted[i] = jEntry;
@@ -113,8 +123,11 @@ public class WWProfile
 			int row = m_incomeCheapnessSorted[i];
 			WWProfileEntry entry = m_incomeBuildings[row];
 			WWBuilding building = entry.GetBuilding();
-			int numOwned = entry.GetNumOwned();
-			Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) );
+			if (building != null)
+			{
+				int numOwned = entry.GetNumOwned();
+				Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) );
+			}
 		}
 	}
 	public void SortDefenceCheapness()
@@ -122,14 +135,25 @@ public class WWProfile
 		// Very simple bubble sort - only 6 or 7 elements so be fine
 		for (int i=0; i<WorldWarCalc.NUM_DEFENCE_BUILDINGS-1;i++)
 		{
-			int iEntry = m_defenceCheapnessSorted[i];
-			int iNumOwned = m_defenceBuildings[iEntry].GetNumOwned();
-			float iCheapness = m_defenceBuildings[iEntry].GetBuilding().GetCheapness(iNumOwned);
 			for (int j=i+1; j<WorldWarCalc.NUM_DEFENCE_BUILDINGS;j++)
 			{
+				int iEntry = m_defenceCheapnessSorted[i];
+				int iNumOwned = m_defenceBuildings[iEntry].GetNumOwned();
+				float iCheapness = 0.0f;
+				WWBuilding iBuilding = m_defenceBuildings[iEntry].GetBuilding();
+				if (iBuilding != null)
+				{
+					iCheapness = iBuilding.GetCheapness(iNumOwned);
+				}
+				
 				int jEntry = m_defenceCheapnessSorted[j];
 				int jNumOwned = m_defenceBuildings[jEntry].GetNumOwned();
-				float jCheapness = m_defenceBuildings[jEntry].GetBuilding().GetCheapness(jNumOwned);
+				float jCheapness = 0.0f;
+				WWBuilding jBuilding = m_defenceBuildings[jEntry].GetBuilding();
+				if (jBuilding != null)
+				{
+					jCheapness = iBuilding.GetCheapness(jNumOwned);
+				}
 				if (jCheapness < iCheapness)
 				{
 					m_defenceCheapnessSorted[i] = jEntry;
@@ -142,8 +166,11 @@ public class WWProfile
 			int row = m_defenceCheapnessSorted[i];
 			WWProfileEntry entry = m_defenceBuildings[row];
 			WWBuilding building = entry.GetBuilding();
-			int numOwned = entry.GetNumOwned();
-			Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) );
+			if (building != null)
+			{
+				int numOwned = entry.GetNumOwned();
+				Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) );
+			}
 		}
 	}
 	

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener, OnItemSelectedListener
+public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener, OnItemSelectedListener, OnTabChangeListener
 {
 	/** Called when the activity is first created. */
 	@Override
@@ -140,6 +141,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		spec.setContent(R.id.DefenceView);
 		spec.setIndicator("Defence");
 		tabs.addTab(spec);
+		
+		tabs.setOnTabChangedListener(this);
 		tabs.setCurrentTab(1);
 	}
 	
@@ -236,6 +239,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			} 
 		}
 	}
+	public void onTabChanged(String tabId)
+	{
+		if (m_activeProfile != null)
+		{
+			UpdateHintText();
+		}
+	}
+	
 	public void onClick(View v) 
 	{
 		if (v.getId() == R.id.profileSaveButton) 
@@ -276,6 +287,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 						profileEntry.SetNumOwned(numOwned);
 						UpdateBuildingRow(profileEntry);
 						UpdateBuildingNumOwned(profileEntry);
+						UpdateHintText();
 						Log.i(TAG,"-/+ Button:"+building.GetName()+" Delta:"+delta);
 					}
 				}
@@ -302,6 +314,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				profileEntry.SetNumOwned(numOwned);
 				
 				UpdateBuildingRow(profileEntry);
+				UpdateHintText();
 
 				Log.i(TAG, "onKey Building = " + profileEntry.GetBuilding().GetName() + " numOwned = " + numOwned+ " key="+key);
 			}
@@ -396,6 +409,37 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			UpdateBuildingRow(profileEntry);
 			UpdateBuildingNumOwned(profileEntry);
 		}
+		UpdateHintText();
+	}
+	private void UpdateHintText()
+	{
+		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
+		String tabName = tabs.getCurrentTabTag();
+		Log.i(TAG,"tabName="+tabName);
+
+		TextView hintView = (TextView)findViewById(R.id.hintText);
+		String hintText = "Unknown";
+		if (tabName.equals("Income"))
+		{
+			m_activeProfile.SortIncomeCheapness();
+			WWProfileEntry cheapestIncome = m_activeProfile.GetSortedIncomeEntry(0);
+			WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
+			if (cheapestIncomeBuilding != null)
+			{
+				hintText = "Buy " + cheapestIncomeBuilding.GetName();
+			}
+		}
+		else if (tabName.equals("Defence"))
+		{
+			m_activeProfile.SortDefenceCheapness();
+			WWProfileEntry cheapestDefence = m_activeProfile.GetSortedDefenceEntry(0);
+			WWBuilding cheapestDefenceBuilding = cheapestDefence.GetBuilding();
+			if (cheapestDefenceBuilding != null)
+			{
+				hintText = "Buy " + cheapestDefenceBuilding.GetName();
+			}
+		}
+		hintView.setText(hintText);
 	}
 	
 	private void UpdateBuildingNumOwned( WWProfileEntry profileEntry )
@@ -419,13 +463,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			plusButtonView.setTag(profileEntry);
 		}
-		
-		m_activeProfile.SortIncomeCheapness();
-		TextView hintView = (TextView)findViewById(R.id.hintText);
-		WWProfileEntry cheapestIncome = m_activeProfile.GetSortedIncomeEntry(0);
-		WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
-		String hintText = "Buy " + cheapestIncomeBuilding.GetName();
-		hintView.setText(hintText);
 		Log.i(TAG, "UpdateBuildingNumOwned: "+building.GetName()+" numOwned:"+numOwnedString);
 	}
 	
