@@ -13,6 +13,7 @@ public class WWBuilding
 		m_baseCost = baseCost/BASE_COST_DIVISOR;
 		m_reward = reward;
 		m_cheapnessMultiplier = cheapnessMultiplier;
+		m_cheapnessPerBuy = (GetCheapness(1) - GetCheapness(0));
 	}
 	public String GetName()
 	{
@@ -26,7 +27,8 @@ public class WWBuilding
 	
 	public long GetCurrentCost(int numOwned)
 	{
-		long cost = m_baseCost + (long)numOwned * ( m_baseCost / (long)10 );
+		long deltaCost = ( m_baseCost / (long)10 );
+		long cost = m_baseCost + (long)numOwned*deltaCost;
 		cost *= BASE_COST_DIVISOR;
 		return cost;
 	}
@@ -43,7 +45,11 @@ public class WWBuilding
     	cheapness = Math.round(cheapness * 100.0f)/100.0f;
 		return cheapness;
 	}
-	public float GetRawCheapness(int numOwned)
+	public float GetCheapnessPerBuy()
+	{
+		return m_cheapnessPerBuy;
+	}
+	private float GetRawCheapness(int numOwned)
 	{
 		long cost = GetCurrentCost(numOwned);
 		int reward = GetReward();
@@ -99,6 +105,7 @@ public class WWBuilding
 	private long m_baseCost;
 	private int m_reward;
 	private float m_cheapnessMultiplier;
+	private float m_cheapnessPerBuy;
 	private Button m_viewMinusButton;
 	private Button m_viewPlusButton;
 	private EditText m_viewNumOwned;

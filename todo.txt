@@ -1,7 +1,8 @@
-listener on tab change - update hint text 
-hint text - on the profile tab?
+Put the second best building to buy on the hint display
 Highlight the best buy building row : BOLD and Red
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
+put the header row in the table - to stop the confusion and out of sync scrolling issues
+bug: switching apps might lose the profile name and be working with the default profile?
 bug: enter number - switch app the new number is not saved
 all tabs - put best hint to the right of the "profile drop down" ? (num to buy)
 make the UI buttons bigger
@@ -19,4 +20,5 @@ unify the Income & Defence buildings list into a single collection which can be 
 make UI look nicer - ?????
 make +/- buttons look nicer
 use proper android bundle for save/restore - sharedstatebundle?????
+hint text - on the profile tab - what should the hint be (needs saving?)
 add an icon for the app :)

@@ -426,7 +426,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
 			if (cheapestIncomeBuilding != null)
 			{
-				hintText = "Buy " + cheapestIncomeBuilding.GetName();
+				int numToBuy = m_activeProfile.GetIncomeNumToBuy(0);
+				hintText = "Buy " + numToBuy + " " + cheapestIncomeBuilding.GetName();
 			}
 		}
 		else if (tabName.equals("Defence"))
@@ -436,7 +437,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			WWBuilding cheapestDefenceBuilding = cheapestDefence.GetBuilding();
 			if (cheapestDefenceBuilding != null)
 			{
-				hintText = "Buy " + cheapestDefenceBuilding.GetName();
+				int numToBuy = m_activeProfile.GetDefenceNumToBuy(0);
+				hintText = "Buy " + numToBuy + " " + cheapestDefenceBuilding.GetName();
 			}
 		}
 		hintView.setText(hintText);
@@ -554,16 +556,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setInputType(InputType.TYPE_CLASS_NUMBER);
 		number.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		number.setKeyListener(new DigitsKeyListener());
-		number.setMinWidth((int)(textSize*2.5f));
-		number.setWidth((int)(textSize*2.5f));
-		number.setMaxWidth((int)(textSize*2.5f));
+		number.setMinWidth((int)(textSize*3.5f));
+		number.setWidth((int)(textSize*3.5f));
+		number.setMaxWidth((int)(textSize*3.5f));
 		number.setMinLines(1);
 		number.setMaxLines(1);
 		number.setFilters(filters4);
 		number.setLines(1);
 		number.setGravity(Gravity.TOP|Gravity.RIGHT);
 		number.setText(Integer.toString(numOwned));
-		number.setPadding(padLeft,padTop,padRight,padBottom);
+		number.setPadding(10,padTop,10,padBottom);
 		number.setOnKeyListener(this);
 		number.setSelectAllOnFocus(true);
 		number.setMinHeight(rowHeight);
@@ -597,9 +599,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		TextView cheapness = new TextView(row.getContext());
 		cheapness.setKeyListener(new DigitsKeyListener());
 		cheapness.setInputType(InputType.TYPE_CLASS_NUMBER);
-		cheapness.setMinWidth((int)(textSize*6));
-		cheapness.setWidth((int)(textSize*6));
-		cheapness.setMaxWidth((int)(textSize*6));
+		cheapness.setMinWidth((int)(textSize*5));
+		cheapness.setWidth((int)(textSize*5));
+		cheapness.setMaxWidth((int)(textSize*5));
 		cheapness.setLines(1);
 		cheapness.setMinLines(1);
 		cheapness.setMaxLines(1);
