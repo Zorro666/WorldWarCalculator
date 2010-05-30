@@ -418,7 +418,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Log.i(TAG,"tabName="+tabName);
 
 		TextView hintView = (TextView)findViewById(R.id.hintText);
-		String hintText = "Unknown";
+		String hintText = "";
 		if (tabName.equals("Income"))
 		{
 			m_activeProfile.SortIncomeCheapness();
@@ -429,6 +429,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				int numToBuy = m_activeProfile.GetIncomeNumToBuy(0);
 				hintText = "Buy " + numToBuy + " " + cheapestIncomeBuilding.GetName();
 			}
+			cheapestIncome = m_activeProfile.GetSortedIncomeEntry(1);
+			cheapestIncomeBuilding = cheapestIncome.GetBuilding();
+			if (cheapestIncomeBuilding != null)
+			{
+				int numToBuy = m_activeProfile.GetIncomeNumToBuy(1);
+				hintText += "\n";
+				hintText += "Buy " + numToBuy + " " + cheapestIncomeBuilding.GetName();
+			}
 		}
 		else if (tabName.equals("Defence"))
 		{
@@ -438,9 +446,22 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			if (cheapestDefenceBuilding != null)
 			{
 				int numToBuy = m_activeProfile.GetDefenceNumToBuy(0);
-				hintText = "Buy " + numToBuy + " " + cheapestDefenceBuilding.GetName();
+				hintText += "Buy " + numToBuy + " " + cheapestDefenceBuilding.GetName();
+			}
+			cheapestDefence = m_activeProfile.GetSortedDefenceEntry(1);
+			cheapestDefenceBuilding = cheapestDefence.GetBuilding();
+			if (cheapestDefenceBuilding != null)
+			{
+				int numToBuy = m_activeProfile.GetDefenceNumToBuy(1);
+				hintText += "\n";
+				hintText += "Buy " + numToBuy + " " + cheapestDefenceBuilding.GetName();
 			}
 		}
+		else
+		{
+			hintText = "Unknown";
+		}
+		Log.i(TAG,"UpdateHintText:"+hintText);
 		hintView.setText(hintText);
 	}
 	

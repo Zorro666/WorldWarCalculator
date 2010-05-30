@@ -1,4 +1,3 @@
-Put the second best building to buy on the hint display
 Highlight the best buy building row : BOLD and Red
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 put the header row in the table - to stop the confusion and out of sync scrolling issues
