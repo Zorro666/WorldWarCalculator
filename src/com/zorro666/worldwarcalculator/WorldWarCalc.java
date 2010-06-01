@@ -85,11 +85,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Button deleteProfile = (Button) findViewById(R.id.profileDeleteButton);
 		deleteProfile.setOnClickListener(this);
 
-		EditText profileName = (EditText)findViewById(R.id.profileName);
-		profileName.setOnFocusChangeListener(this);
+		//EditText profileName = (EditText)findViewById(R.id.profileName);
+		//profileName.setOnFocusChangeListener(this);
 
 		Spinner profileNameView = (Spinner)findViewById(R.id.profileSpinner);
 		profileNameView.setOnItemSelectedListener(this);
+		
+		Button renameProfile = (Button) findViewById(R.id.profileRenameButton);
+		renameProfile.setOnClickListener(this);
 		
 		// An option would be to subclass it and implement getView function to make it work with WWProfile
 		m_profilesAdapter.setDropDownViewResource(android.R.layout. simple_spinner_dropdown_item);
@@ -153,16 +156,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		super.onStart();
 		
 		LoadAllProfiles();
-		Log.i(TAG,"onStart LoadAppState");
-		LoadAppState();
-
-		// Set selected item to match the active profile
-		if (m_profilesAdapter.getCount() == 0)
-		{
-			ProfileNew();
-		}
-
-		ProfileSetSelectedProfile(m_activeProfileName);
 	}
 
 	@Override
@@ -179,6 +172,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		Log.i(TAG,"onResume");
 		super.onResume();
+		
+		Log.i(TAG,"onResume LoadAppState");
+		LoadAppState();
+
+		// Set selected item to match the active profile
+		if (m_profilesAdapter.getCount() == 0)
+		{
+			ProfileNew();
+		}
+
+		ProfileSetSelectedProfile(m_activeProfileName);
 	}
 	
 	// Another application comes in front of this view
@@ -233,9 +237,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{ 
 			if (hasFocus == false) 
 			{ 
-				EditText profileNameView = (EditText)v;
-				String newName = profileNameView.getText().toString();
-				ProfileRename(newName);
+//				EditText profileNameView = (EditText)v;
+//				String newName = profileNameView.getText().toString();
+//				ProfileRename(newName);
 			} 
 		}
 	}
@@ -260,6 +264,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		else if (v.getId() == R.id.profileDeleteButton)
 		{
 			ProfileDelete();
+		}
+		else if (v.getId() == R.id.profileRenameButton)
+		{
+			EditText profileNameView = (EditText)findViewById(R.id.profileName);
+			String newName = profileNameView.getText().toString();
+			ProfileRename(newName);
 		}
 		else
 		{
@@ -455,6 +465,18 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				int numToBuy = m_activeProfile.GetDefenceNumToBuy(1);
 				hintText += "\n";
 				hintText += "Buy " + numToBuy + " " + cheapestDefenceBuilding.GetName();
+			}
+		}
+		else if (tabName.equals("Profile"))
+		{
+			hintText ="";
+			hintText += "A:" + m_activeProfile.GetName();
+			hintText += " N:" + m_activeProfileName;
+			Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
+			String itemName = (String)profileSpinner.getSelectedItem();
+			if (itemName != null)
+			{
+				hintText += "\nS:" + itemName;
 			}
 		}
 		else

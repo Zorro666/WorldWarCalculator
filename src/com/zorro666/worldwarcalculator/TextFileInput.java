@@ -1,7 +1,6 @@
 package com.zorro666.worldwarcalculator;
 
-import android.util.Log;
-
+//import android.util.Log;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
@@ -26,14 +25,14 @@ public class TextFileInput
     	{
     		value = Integer.parseInt(tempStr);
     	}
-   		Log.i(TAG, "value = " + value);
+   		//Log.i(TAG, "value = " + value);
     	
     	return value;
     }
     public String ReadString() throws IOException
     {
    		int length = m_inputStream.read();
-    	Log.i(TAG, "length = " + length);
+    	//Log.i(TAG, "length = " + length);
     	if ( length>0)
     	{
     		byte[] byteBuffer = new byte[length];
@@ -41,7 +40,7 @@ public class TextFileInput
     		if (result==length)
     		{
     			String str = new String(byteBuffer);
-    			Log.i(TAG, "str = " + str);
+    			//Log.i(TAG, "str = " + str);
     		
     			return str;
     		}
@@ -49,7 +48,7 @@ public class TextFileInput
 		return "";
     }
     
-    private static final String TAG = "IN";
+    //private static final String TAG = "IN";
     
     private BufferedInputStream m_inputStream;
 }

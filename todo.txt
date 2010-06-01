@@ -1,23 +1,18 @@
 Highlight the best buy building row : BOLD and Red
-sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 put the header row in the table - to stop the confusion and out of sync scrolling issues
-bug: switching apps might lose the profile name and be working with the default profile?
+sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 bug: enter number - switch app the new number is not saved
-all tabs - put best hint to the right of the "profile drop down" ? (num to buy)
-make the UI buttons bigger
 display numbers as 340M or 18K if exact multiples can be found
 building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 income tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
-all tabs - put best n hints (2 or 3) to the right of the "profile drop down" ?
-hint tab - show hint data - how many of the best buildings to buy (sorted list)
-all tabs - put a profile save button next to the profile dropdown?
-Try to get a header row working - with linked scrolling
+hint tab - show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
 profile tab - need button to load profile - would reload to undo changes - needs a confirmation box first
 profile tab - delete profile should ask yes/no
 profile tab - save profile should say "saved:ok" confirmation box
-unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
-make UI look nicer - ?????
 make +/- buttons look nicer
-use proper android bundle for save/restore - sharedstatebundle?????
-hint text - on the profile tab - what should the hint be (needs saving?)
+make UI look nicer - ?????
+profile tab : what should the hint be (needs saving?)
 add an icon for the app :)
+Try to get a header row working - with linked scrolling
+unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
+unify the profile class - have a single class for type of building - then the profile can just have "incomeProfile", "defenceProfile"
