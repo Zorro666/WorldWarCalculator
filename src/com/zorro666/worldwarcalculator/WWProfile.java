@@ -152,6 +152,10 @@ public class WWProfile
 					float floatNumToBuy = deltaCheapness/cheapnessPerBuy;
 					floatNumToBuy = (float)Math.ceil((double)floatNumToBuy);
 					int numToBuy = (int)floatNumToBuy;
+					if (numToBuy == 0)
+					{
+						numToBuy = 1;
+					}
 					m_incomeNumToBuy[i] = numToBuy;
 				}
 			}
@@ -222,6 +226,10 @@ public class WWProfile
 					float floatNumToBuy = deltaCheapness/cheapnessPerBuy;
 					floatNumToBuy = (float)Math.ceil((double)floatNumToBuy);
 					int numToBuy = (int)floatNumToBuy;
+					if (numToBuy == 0)
+					{
+						numToBuy = 1;
+					}
 					m_defenceNumToBuy[i] = numToBuy;
 				}
 			}

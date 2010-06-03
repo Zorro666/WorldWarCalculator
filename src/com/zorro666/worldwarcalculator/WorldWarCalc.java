@@ -68,6 +68,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		m_activeProfile = new WWProfile("default");
 		m_activeProfileName = m_activeProfile.GetName();
+		m_bestBuildingToBuy = "";
 		
 		m_profileNames = new ArrayList<String>();
 		m_profiles = new HashMap<String, WWProfile>(DEFAULT_NUM_PROFILES);
@@ -100,22 +101,28 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		profileNameView.setSelection(0);
 		
 		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
-		boolean row;
-		row = true;
+		boolean evenRow;
+		evenRow = true;
 		for (int i = 0; i < m_numDefenceBuildings; i++) 
 		{
 			WWBuilding building = m_defenceBuildings[i];
-			addRow(defenceView, building, row);
-			row ^= true;
+			addRow(defenceView, building);
+			
+			TableRow row = building.GetViewRow();
+			SetDefaultRowColours(row,evenRow);
+			evenRow ^= true;
 		}
 
 		TableLayout incomeView = (TableLayout) findViewById(R.id.IncomeViewData);
-		row = true;
+		evenRow = true;
 		for (int i = 0; i < m_numIncomeBuildings; i++) 
 		{
 			WWBuilding building = m_incomeBuildings[i];
-			addRow(incomeView, building, row);
-			row ^= true;
+			addRow(incomeView, building);
+			
+			TableRow row = building.GetViewRow();
+			SetDefaultRowColours(row,evenRow);
+			evenRow ^= true;
 		}
 
 		m_incomeViewHeader = (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
@@ -144,6 +151,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		spec.setContent(R.id.DefenceView);
 		spec.setIndicator("Defence");
 		tabs.addTab(spec);
+		
+		// Create a new default profile to use - do this before the tab listener is set so the tab listener code has a valid profile to work with!
+		ProfileNew();
 		
 		tabs.setOnTabChangedListener(this);
 		tabs.setCurrentTab(1);
@@ -247,7 +257,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		if (m_activeProfile != null)
 		{
-			UpdateHintText();
+			UpdateDisplay();
 		}
 	}
 	
@@ -297,7 +307,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 						profileEntry.SetNumOwned(numOwned);
 						UpdateBuildingRow(profileEntry);
 						UpdateBuildingNumOwned(profileEntry);
-						UpdateHintText();
+						UpdateDisplay();
 						Log.i(TAG,"-/+ Button:"+building.GetName()+" Delta:"+delta);
 					}
 				}
@@ -324,7 +334,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				profileEntry.SetNumOwned(numOwned);
 				
 				UpdateBuildingRow(profileEntry);
-				UpdateHintText();
+				UpdateDisplay();
 
 				Log.i(TAG, "onKey Building = " + profileEntry.GetBuilding().GetName() + " numOwned = " + numOwned+ " key="+key);
 			}
@@ -419,7 +429,58 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			UpdateBuildingRow(profileEntry);
 			UpdateBuildingNumOwned(profileEntry);
 		}
+		UpdateDisplay();
+	}
+	private void HighlightBestBuildingToBuy(String bestBuildingToBuy)
+	{
+		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
+		String tabName = tabs.getCurrentTabTag();
+
+		if (tabName.equals("Income"))
+		{
+			boolean evenRow;
+			evenRow = true;
+			for (int i = 0; i < m_activeProfile.GetNumIncomeBuildings(); i++) 
+			{
+				WWProfileEntry profileEntry = m_activeProfile.GetIncomeBuilding(i);
+				WWBuilding building = profileEntry.GetBuilding();
+				
+				if (building != null)
+				{
+					TableRow row = building.GetViewRow();
+					//Reset colours to normal or highlight if this is the best building to buy
+					boolean highlight = (building.GetName().equals(bestBuildingToBuy));
+					SetRowColours(row,evenRow,highlight);
+				}
+				evenRow ^= true;
+			}
+		}
+		else if (tabName.equals("Defence"))
+		{
+			boolean evenRow;
+			evenRow = true;
+			for (int i = 0; i < m_activeProfile.GetNumDefenceBuildings(); i++) 
+			{
+				WWProfileEntry profileEntry = m_activeProfile.GetDefenceBuilding(i);
+				WWBuilding building = profileEntry.GetBuilding();
+				
+				if (building != null)
+				{
+					TableRow row = building.GetViewRow();
+					//Highlight if this is the best building to buy
+					//Reset colours to normal or highlight if this is the best building to buy
+					boolean highlight = (building.GetName().equals(bestBuildingToBuy));
+					SetRowColours(row,evenRow,highlight);
+				}
+				evenRow ^= true;
+			}
+		}
+	}
+	private void UpdateDisplay()
+	{
 		UpdateHintText();
+		// Now highlight the best buy row in bold & red
+		HighlightBestBuildingToBuy(m_bestBuildingToBuy);
 	}
 	private void UpdateHintText()
 	{
@@ -429,6 +490,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		TextView hintView = (TextView)findViewById(R.id.hintText);
 		String hintText = "";
+		String bestBuildingToBuy = "";
 		if (tabName.equals("Income"))
 		{
 			m_activeProfile.SortIncomeCheapness();
@@ -436,8 +498,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
 			if (cheapestIncomeBuilding != null)
 			{
+				bestBuildingToBuy = cheapestIncomeBuilding.GetName();
 				int numToBuy = m_activeProfile.GetIncomeNumToBuy(0);
-				hintText = "Buy " + numToBuy + " " + cheapestIncomeBuilding.GetName();
+				hintText = "Buy " + numToBuy + " " + bestBuildingToBuy;
 			}
 			cheapestIncome = m_activeProfile.GetSortedIncomeEntry(1);
 			cheapestIncomeBuilding = cheapestIncome.GetBuilding();
@@ -455,8 +518,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			WWBuilding cheapestDefenceBuilding = cheapestDefence.GetBuilding();
 			if (cheapestDefenceBuilding != null)
 			{
+				bestBuildingToBuy = cheapestDefenceBuilding.GetName();
 				int numToBuy = m_activeProfile.GetDefenceNumToBuy(0);
-				hintText += "Buy " + numToBuy + " " + cheapestDefenceBuilding.GetName();
+				hintText += "Buy " + numToBuy + " " + bestBuildingToBuy;
 			}
 			cheapestDefence = m_activeProfile.GetSortedDefenceEntry(1);
 			cheapestDefenceBuilding = cheapestDefence.GetBuilding();
@@ -484,6 +548,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			hintText = "Unknown";
 		}
 		Log.i(TAG,"UpdateHintText:"+hintText);
+		m_bestBuildingToBuy = bestBuildingToBuy;
 		hintView.setText(hintText);
 	}
 	
@@ -529,7 +594,31 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" cheapness:"+cheapnessString+" currentCost:"+currentCostString);
 	}
 
-	private void addRow(TableLayout parent, WWBuilding building, boolean oddRow) 
+	private void SetDefaultRowColours(TableRow row,boolean evenRow)
+	{
+		SetRowColours(row,evenRow,false);
+	}
+	private void SetRowColours(TableRow row,boolean evenRow,boolean highlight)
+	{
+		int colour = evenRow ? Color.BLACK : Color.DKGRAY;
+		colour = highlight ? Color.RED : colour;
+		int numChildren = row.getChildCount();
+		for (int i=0; i<numChildren; i++)
+		{
+			View element = row.getChildAt(i);
+			int id = element.getId();
+			if ((id == 123456) || (id == 654321))
+			{
+				// Special case for the minus & plus buttons
+				element.setBackgroundColor(0xFFA0A0A0);
+			}
+			else
+			{
+				element.setBackgroundColor(colour);
+			}
+		}
+	}
+	private void addRow(TableLayout parent, WWBuilding building) 
 	{
 		final float textSize = 14.0f;
 		final int rowHeight = 40;
@@ -541,7 +630,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		final int numOwned = 0;
 		
-		int colour = oddRow ? Color.BLACK : Color.DKGRAY;
+		int colour = Color.BLUE;
 		
 		InputFilter[] filters4 = new InputFilter[1];
 		filters4[0] = new InputFilter.LengthFilter(4);
@@ -557,6 +646,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		TableRow row = new TableRow(parent.getContext());
 		row.setPadding(0,0,0,0);
+		building.SetViewRow(row);
 
 		TextView name = new TextView(row.getContext());
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
@@ -1053,6 +1143,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private List<String> m_profileNames;
 	private WWProfile m_activeProfile;
 	private String m_activeProfileName;
+	private String m_bestBuildingToBuy;
 
 	HorizontalScrollView m_incomeViewHeader;
 	HorizontalScrollView m_incomeViewScroll;

@@ -1,17 +1,17 @@
-Highlight the best buy building row : BOLD and Red
+bug: the number text is getting left with the red text value
+bug: enter number - switch app the new number is not saved
 put the header row in the table - to stop the confusion and out of sync scrolling issues
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
-bug: enter number - switch app the new number is not saved
 display numbers as 340M or 18K if exact multiples can be found
 building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 income tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
-hint tab - show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
 profile tab - need button to load profile - would reload to undo changes - needs a confirmation box first
 profile tab - delete profile should ask yes/no
 profile tab - save profile should say "saved:ok" confirmation box
 make +/- buttons look nicer
 make UI look nicer - ?????
 profile tab : what should the hint be (needs saving?)
+hint tab - show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
 add an icon for the app :)
 Try to get a header row working - with linked scrolling
 unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
