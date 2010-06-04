@@ -600,7 +600,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	}
 	private void SetRowColours(TableRow row,boolean evenRow,boolean highlight)
 	{
-		int colour = evenRow ? Color.BLACK : Color.DKGRAY;
+		int colour = evenRow ? Color.BLUE : Color.DKGRAY;
 		colour = highlight ? Color.RED : colour;
 		int numChildren = row.getChildCount();
 		for (int i=0; i<numChildren; i++)
@@ -611,6 +611,26 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			{
 				// Special case for the minus & plus buttons
 				element.setBackgroundColor(0xFFA0A0A0);
+			}
+			else if (id == 2468)
+			{
+				if (element.getClass() == EditText.class)
+				{
+					EditText number = (EditText)element;
+					if (highlight == false)
+					{
+						// Special case for the number text default non-highlight colour
+						number.setBackgroundColor(colour);
+						number.setTextColor(Color.WHITE);
+						number.setHighlightColor(Color.RED);
+					}
+					else
+					{
+						number.setBackgroundColor(colour);
+						number.setTextColor(Color.WHITE);
+						number.setHighlightColor(Color.BLACK);
+					}
+				}
 			}
 			else
 			{
@@ -708,6 +728,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setTextColor(0xFFFFFFFF);
 		number.setBackgroundDrawable(null);
 		number.setBackgroundColor(0xFF444444);
+		number.setId(2468);
 		building.SetViewNumOwned(number);
 		row.addView(number);
 
