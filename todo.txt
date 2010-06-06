@@ -1,11 +1,10 @@
-bug: the number text is getting left with the red text value - it is android doing it!!!!!!!!!!!!!!!!!!!!
-bug: enter number - switch app the new number is not saved
 put the header row in the table - to stop the confusion and out of sync scrolling issues
+profile tab - need a copy profile button
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 display numbers as 340M or 18K if exact multiples can be found
 building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 income tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
-profile tab - need a copy profile button
+annoyance: the number text is getting left with the red text value - it is android doing it - leaving the text as highlighted!!!!
 profile tab - need button to load profile - would reload to undo changes - needs a confirmation box first
 profile tab - delete profile should ask yes/no
 profile tab - save profile should say "saved:ok" confirmation box

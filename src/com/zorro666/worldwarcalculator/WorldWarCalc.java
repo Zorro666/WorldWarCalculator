@@ -371,6 +371,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		Log.i(TAG,"ProfileSetSelectedProfile:"+profileName+" "+itemIndex);
 		profileSpinner.setSelection(itemIndex);
+		ProfileSelect();
 	}
 	
 	private void ProfileSelect()
