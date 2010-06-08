@@ -1,4 +1,7 @@
-put the header row in the table - to stop the confusion and out of sync scrolling issues
+linked header row: getScrollX(), getScrollY() - working but smooth scrolling and scroll after motion event needs to be captured
+linked header row: new class override onDraw() to keep them in sync?
+bug: profile rename + save = wrong profile being displayed
+bug: profile rename = copy when you restart the app
 profile tab - need a copy profile button
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 display numbers as 340M or 18K if exact multiples can be found
@@ -13,6 +16,5 @@ make UI look nicer - ?????
 profile tab : what should the hint be (needs saving?)
 hint tab - show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
 add an icon for the app :)
-Try to get a header row working - with linked scrolling
 unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
 unify the profile class - have a single class for type of building - then the profile can just have "incomeProfile", "defenceProfile"

@@ -1,8 +1,10 @@
 package com.zorro666.worldwarcalculator;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.Canvas;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.util.AttributeSet;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,7 +41,41 @@ import java.util.HashMap;
 
 public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener, OnItemSelectedListener, OnTabChangeListener
 {
-	/** Called when the activity is first created. */
+     //A custom HorizontalScrollView 
+    public static class LinkedHorizontalScrollView extends HorizontalScrollView 
+    {
+        // we need this constructor for LayoutInflater
+        public LinkedHorizontalScrollView(Context context, AttributeSet attrs) 
+        {
+            super(context, attrs);
+            m_linkedView = null;
+        }
+           
+        @Override
+        protected void onDraw(Canvas canvas) 
+        {
+        	super.onDraw(canvas);
+        	if (m_linkedView != null)
+        	{
+        		// Keep the linked view in sync
+        		int myScrollX = getScrollX();
+				int linkedScrollX = m_linkedView.getScrollX();
+				if (myScrollX != linkedScrollX)
+				{
+					int y = m_linkedView.getScrollY();
+					m_linkedView.scrollTo(myScrollX,y);
+				}
+        	}
+        }
+        
+        public void setLinkedView(View linkedView)
+        {
+        	m_linkedView = linkedView;
+        }
+        
+        private View m_linkedView;
+    }
+    /** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -126,11 +163,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 
 		m_incomeViewHeader = (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
-		//m_incomeViewHeader.setOnTouchListener(this);
+		m_incomeViewHeader.setOnTouchListener(this);
+		m_incomeViewHeader.setSmoothScrollingEnabled(true);
 
-		m_incomeViewScroll = (HorizontalScrollView)findViewById(R.id.IncomeViewScroll);
+		m_incomeViewScroll = (LinkedHorizontalScrollView)findViewById(R.id.IncomeViewScroll);
 		m_incomeViewScroll.setOnTouchListener(this);
 		m_incomeViewScroll.setSmoothScrollingEnabled(true);
+		m_incomeViewScroll.setLinkedView(m_incomeViewHeader);
 
 		final TabHost tabs = (TabHost) findViewById(R.id.tabhost);
 		tabs.setup();
@@ -232,7 +271,23 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		if (v == m_incomeViewScroll) 
 		{
-			m_incomeViewHeader.onTouchEvent(event);
+			int scrollX0 = v.getScrollX();
+			int scrollY0 = v.getScrollY();
+			
+			boolean result = v.onTouchEvent(event);
+			
+			int scrollX1= v.getScrollX();
+			int scrollY1= v.getScrollY();
+			
+			// Keep the horizontal motion in sync
+			int x = m_incomeViewHeader.getScrollX();
+			if (scrollX1 != x)
+			{
+				int y = m_incomeViewHeader.getScrollY();
+				m_incomeViewHeader.scrollTo(scrollX1,y);
+			}
+			Log.i(TAG,"onTouch BEFORE: "+scrollX0+","+scrollY0+" AFTER: "+scrollX1+","+scrollY1);
+			return result;
 		}
 		if (v == m_incomeViewHeader) 
 		{
@@ -1168,5 +1223,5 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private String m_bestBuildingToBuy;
 
 	HorizontalScrollView m_incomeViewHeader;
-	HorizontalScrollView m_incomeViewScroll;
+	LinkedHorizontalScrollView m_incomeViewScroll;
 }
