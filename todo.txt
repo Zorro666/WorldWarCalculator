@@ -1,8 +1,9 @@
-linked header row: getScrollX(), getScrollY() - working but smooth scrolling and scroll after motion event needs to be captured
-linked header row: new class override onDraw() to keep them in sync?
+linked header row: working quite well - perhaps try to capture fling events?
+linked header row: disable manual scrolling of the header row
 bug: profile rename + save = wrong profile being displayed
 bug: profile rename = copy when you restart the app
 profile tab - need a copy profile button
+linked header row: connect header row scrolling to the main view?
 sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 display numbers as 340M or 18K if exact multiples can be found
 building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
