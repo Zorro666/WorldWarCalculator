@@ -70,10 +70,10 @@
         				>
     				</EditText>
 					<Button
-    					android:id="@+id/profileRenameButton"
+    					android:id="@+id/profileCopyButton"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
-						android:text="Rename"
+						android:text="Copy"
 						android:padding="5dp">
 					</Button>
 				</LinearLayout>
@@ -120,62 +120,19 @@
 				android:layout_width="fill_parent"
 				android:layout_height="fill_parent"
 				android:padding="0dp">
-					<HorizontalScrollView
-						android:id="@+id/IncomeViewHeader"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:scrollbars="none"
+				<HorizontalScrollView
+					android:id="@+id/IncomeViewHeader"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:scrollbars="none"
+					android:padding="0dp">
+					<TableLayout
+						android:id="@+id/IncomeViewHeaderData"
+						android:layout_width="fill_parent"
+						android:layout_height="fill_parent"
 						android:padding="0dp">
-						<TableLayout
-							android:layout_width="fill_parent"
-							android:layout_height="fill_parent"
-							android:padding="0dp">
-						<TableRow>
-							<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="Building"
-								android:width="136px"
-								android:padding="5dp">
-							</TextView>
-							<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="Number"
-								android:width="72px"
-								android:padding="5dp">
-							</TextView>
-							<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="Cost Benefit"
-								android:width="120px"
-								android:padding="5dp">
-							</TextView>
-							<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="Reward"
-								android:width="96px"
-								android:padding="5dp">
-							</TextView>
-							<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="Current Cost"
-								android:width="92px"
-								android:padding="5dp">
-							</TextView>
-							<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="Base Cost"
-								android:width="92px"
-								android:padding="5dp">
-							</TextView>
-						</TableRow>
-						</TableLayout>
-					</HorizontalScrollView>
+					</TableLayout>
+				</HorizontalScrollView>
 				<ScrollView
 					android:id="@+id/IncomeViewScrollParent"
 					android:layout_width="fill_parent"
@@ -196,25 +153,47 @@
 						</TableLayout>
 					</view>
 				</ScrollView>
-				</LinearLayout>
-			<ScrollView
+			</LinearLayout>
+			<LinearLayout
 				android:id="@+id/DefenceViewTab"
+				android:orientation="vertical"
 				android:layout_width="fill_parent"
 				android:layout_height="fill_parent"
-				android:scrollbars="vertical"
-				android:padding="5dp">
+				android:padding="0dp">
 				<HorizontalScrollView
+					android:id="@+id/DefenceViewHeader"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:scrollbars="none"
+					android:padding="0dp">
+					<TableLayout
+						android:id="@+id/DefenceViewHeaderData"
+						android:layout_width="fill_parent"
+						android:layout_height="fill_parent"
+						android:padding="0dp">
+					</TableLayout>
+				</HorizontalScrollView>
+				<ScrollView
+					android:id="@+id/DefenceViewScrollParent"
 					android:layout_width="fill_parent"
 					android:layout_height="fill_parent"
+					android:scrollbars="none"
 					android:padding="5dp">
-					<TableLayout 
-						android:id="@+id/DefenceView"
+					<view
+    					class="com.zorro666.worldwarcalculator.WorldWarCalc$LinkedHorizontalScrollView" 
+						android:id="@+id/DefenceViewScroll"
 						android:layout_width="fill_parent"
 						android:layout_height="fill_parent"
 						android:padding="5dp">
-					</TableLayout>
-				</HorizontalScrollView>
-			</ScrollView>
+						<TableLayout
+							android:id="@+id/DefenceViewData"
+							android:layout_width="fill_parent"
+							android:layout_height="fill_parent"
+							android:padding="0dp">
+						</TableLayout>
+					</view>
+				</ScrollView>
+			</LinearLayout>
 		</FrameLayout>
 	</TabHost>
 </LinearLayout>

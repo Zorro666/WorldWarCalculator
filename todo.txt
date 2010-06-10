@@ -1,21 +1,20 @@
+bug: delete lots of profiles then it crashes
+bug: profile copy : wrong profile being displayed after saving
 linked header row: working quite well - perhaps try to capture fling events?
-linked header row: disable manual scrolling of the header row
-bug: profile rename + save = wrong profile being displayed
-bug: profile rename = copy when you restart the app
-profile tab - need a copy profile button
 linked header row: connect header row scrolling to the main view?
-sort out the life cycle state saving - use onSave, onRestore bundles instead of files
-display numbers as 340M or 18K if exact multiples can be found
-building tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
-income tab - show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
+app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files
+all tabs: display numbers as 340M or 18K if exact multiples can be found
+building tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
+income tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 annoyance: the number text is getting left with the red text value - it is android doing it - leaving the text as highlighted!!!!
-profile tab - need button to load profile - would reload to undo changes - needs a confirmation box first
-profile tab - delete profile should ask yes/no
-profile tab - save profile should say "saved:ok" confirmation box
-make +/- buttons look nicer
-make UI look nicer - ?????
-profile tab : what should the hint be (needs saving?)
-hint tab - show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
-add an icon for the app :)
-unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
-unify the profile class - have a single class for type of building - then the profile can just have "incomeProfile", "defenceProfile"
+profile tab: need button to load profile - would reload to undo changes - needs a confirmation box first
+profile tab: delete profile should ask yes/no
+profile tab: save profile should say "saved:ok" confirmation box
+ui: make +/- buttons look nicer
+ui: make +/- buttons : UI display like buttons with down & up states
+ui: make UI look nicer - colour scheme ideas?
+profile tab: what should the hint be (needs saving?)
+hint tab: show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
+app: add an icon :)
+java: unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
+java: unify the profile class - have a single class for type of building - then the profile can just have "incomeProfile", "defenceProfile"

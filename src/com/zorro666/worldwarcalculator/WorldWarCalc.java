@@ -129,15 +129,19 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Spinner profileNameView = (Spinner)findViewById(R.id.profileSpinner);
 		profileNameView.setOnItemSelectedListener(this);
 		
-		Button renameProfile = (Button) findViewById(R.id.profileRenameButton);
-		renameProfile.setOnClickListener(this);
+		Button copyProfile = (Button) findViewById(R.id.profileCopyButton);
+		copyProfile.setOnClickListener(this);
 		
 		// An option would be to subclass it and implement getView function to make it work with WWProfile
 		m_profilesAdapter.setDropDownViewResource(android.R.layout. simple_spinner_dropdown_item);
 		profileNameView.setAdapter(m_profilesAdapter);
 		profileNameView.setSelection(0);
 		
-		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceView);
+		// Make the defence view layout
+		TableLayout defenceViewHeaderData = (TableLayout) findViewById(R.id.DefenceViewHeaderData);
+		addHeaderRow(defenceViewHeaderData);
+		
+		TableLayout defenceView = (TableLayout) findViewById(R.id.DefenceViewData);
 		boolean evenRow;
 		evenRow = true;
 		for (int i = 0; i < m_numDefenceBuildings; i++) 
@@ -149,7 +153,25 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			SetDefaultRowColours(row,evenRow);
 			evenRow ^= true;
 		}
+		// Add the final separator row
+		TableRow sep = new TableRow(defenceView.getContext());
+		sep.setBackgroundColor(Color.WHITE);
+		sep.setPadding(0,1,0,1);
+		defenceView.addView(sep);
 
+		m_defenceViewHeader = (HorizontalScrollView)findViewById(R.id.DefenceViewHeader);
+		m_defenceViewHeader.setOnTouchListener(this);
+		m_defenceViewHeader.setSmoothScrollingEnabled(true);
+
+		m_defenceViewScroll = (LinkedHorizontalScrollView)findViewById(R.id.DefenceViewScroll);
+		m_defenceViewScroll.setOnTouchListener(this);
+		m_defenceViewScroll.setSmoothScrollingEnabled(true);
+		m_defenceViewScroll.setLinkedView(m_defenceViewHeader);
+		
+		// Make the income view layout
+		TableLayout incomeViewHeaderData = (TableLayout) findViewById(R.id.IncomeViewHeaderData);
+		addHeaderRow(incomeViewHeaderData);
+		
 		TableLayout incomeView = (TableLayout) findViewById(R.id.IncomeViewData);
 		evenRow = true;
 		for (int i = 0; i < m_numIncomeBuildings; i++) 
@@ -161,6 +183,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			SetDefaultRowColours(row,evenRow);
 			evenRow ^= true;
 		}
+		// Add the final separator row
+		sep = new TableRow(incomeView.getContext());
+		sep.setBackgroundColor(Color.WHITE);
+		sep.setPadding(0,1,0,1);
+		incomeView.addView(sep);
 
 		m_incomeViewHeader = (HorizontalScrollView)findViewById(R.id.IncomeViewHeader);
 		m_incomeViewHeader.setOnTouchListener(this);
@@ -187,7 +214,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		tabs.addTab(spec);
 
 		spec = tabs.newTabSpec("Defence");
-		spec.setContent(R.id.DefenceView);
+		spec.setContent(R.id.DefenceViewTab);
 		spec.setIndicator("Defence");
 		tabs.addTab(spec);
 		
@@ -291,22 +318,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		if (v == m_incomeViewHeader) 
 		{
-			//m_incomeViewScroll.onTouchEvent(event);
+			return true;
 		}
 		return v.onTouchEvent(event);
 	}
 
 	public void onFocusChange(View v, boolean hasFocus) 
 	{ 
-		if (v.getId()==R.id.profileName) 
-		{ 
-			if (hasFocus == false) 
-			{ 
-//				EditText profileNameView = (EditText)v;
-//				String newName = profileNameView.getText().toString();
-//				ProfileRename(newName);
-			} 
-		}
 	}
 	public void onTabChanged(String tabId)
 	{
@@ -330,11 +348,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			ProfileDelete();
 		}
-		else if (v.getId() == R.id.profileRenameButton)
+		else if (v.getId() == R.id.profileCopyButton)
 		{
 			EditText profileNameView = (EditText)findViewById(R.id.profileName);
 			String newName = profileNameView.getText().toString();
 			ProfileRename(newName);
+			ProfileSetSelectedProfile(m_activeProfileName);
+			//Save all profiles then reload them to make the copy permanent and also to keep the internal data in sync
+			SaveAllProfiles();
+			SaveAppState();
+			LoadAllProfiles();
+			LoadAppState();
 		}
 		else
 		{
@@ -694,6 +718,123 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			}
 		}
 	}
+	private void addHeaderRow(TableLayout parent)
+	{
+		final float textSize = 14.0f;
+		final int rowHeight = 20;
+		
+		final int padTop = 0;
+		final int padBottom = 0;
+		final int padLeft = 1;
+		final int padRight = 1;
+		
+		final int colour = Color.DKGRAY;
+		TableRow row = new TableRow(parent.getContext());
+		row.setPadding(0,0,0,0);
+
+		TextView name = new TextView(row.getContext());
+		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		name.setTextSize(textSize);
+		name.setMinWidth(130);
+		name.setWidth(130);
+		name.setMaxWidth(130);
+		name.setLines(1);
+		name.setMinLines(1);
+		name.setMaxLines(1);
+		name.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		name.setPadding(padLeft,padTop,padRight,padBottom);
+		name.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		name.setMinHeight(rowHeight);
+		name.setHeight(rowHeight);
+		name.setMaxHeight(rowHeight);
+		name.setBackgroundColor(colour);
+		name.setText("Building");
+		row.addView(name);
+
+		TextView number = new TextView(row.getContext());
+		number.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		number.setTextSize(textSize);
+		number.setMinWidth(96);
+		number.setWidth(96);
+		number.setMaxWidth(96);
+		number.setLines(1);
+		number.setMinLines(1);
+		number.setMaxLines(1);
+		number.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		number.setPadding(padLeft,padTop,padRight,padBottom);
+		number.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		number.setBackgroundColor(colour);
+		number.setText("Number");
+		row.addView(number);
+
+		TextView cheapness = new TextView(row.getContext());
+		cheapness.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		cheapness.setTextSize(textSize);
+		cheapness.setMinWidth((int)(textSize*5.5f));
+		cheapness.setWidth((int)(textSize*5.5f));
+		cheapness.setMaxWidth((int)(textSize*5.5f));
+		cheapness.setLines(1);
+		cheapness.setMinLines(1);
+		cheapness.setMaxLines(1);
+		cheapness.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		cheapness.setPadding(padLeft,padTop,padRight,padBottom);
+		cheapness.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		cheapness.setBackgroundColor(colour);
+		cheapness.setText("Cheapness");
+		row.addView(cheapness);
+
+		TextView reward = new TextView(row.getContext());
+		reward.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		reward.setTextSize(textSize);
+		reward.setMinWidth((int)(textSize*4.5f));
+		reward.setWidth((int)(textSize*4.5f));
+		reward.setMaxWidth((int)(textSize*4.5f));
+		reward.setMinLines(1);
+		reward.setMaxLines(1);
+		reward.setLines(1);
+		reward.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		reward.setPadding(padLeft,padTop,padRight,padBottom);
+		reward.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		reward.setBackgroundColor(colour);
+		reward.setText("Reward");
+		row.addView(reward);
+
+		TextView currentCost = new TextView(row.getContext());
+		currentCost.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		currentCost.setTextSize(textSize);
+		currentCost.setMinWidth((int)(textSize*7.5f));
+		currentCost.setWidth((int)(textSize*7.5f));
+		currentCost.setMaxWidth((int)(textSize*7.5f));
+		currentCost.setMinLines(1);
+		currentCost.setMaxLines(1);
+		currentCost.setLines(1);
+		currentCost.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		currentCost.setPadding(padLeft,padTop,padRight,padBottom);
+		currentCost.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		currentCost.setBackgroundColor(colour);
+		currentCost.setText("Current Cost");
+		row.addView(currentCost);
+
+		TextView baseCost = new TextView(row.getContext());
+		baseCost.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		baseCost.setTextSize(textSize);
+		baseCost.setMinWidth((int)(textSize*5.5f));
+		baseCost.setWidth((int)(textSize*5.5f));
+		baseCost.setMaxWidth((int)(textSize*5.5f));
+		baseCost.setMinLines(1);
+		baseCost.setMaxLines(1);
+		baseCost.setLines(1);
+		baseCost.setPadding(padLeft,padTop,padRight,padBottom);
+		baseCost.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		baseCost.setPadding(padLeft,padTop,padRight,padBottom);
+		baseCost.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		baseCost.setBackgroundColor(colour);
+		baseCost.setText("Base Cost");
+		row.addView(baseCost);
+		
+		parent.addView(row);
+	}
+	
 	private void addRow(TableLayout parent, WWBuilding building) 
 	{
 		final float textSize = 14.0f;
@@ -719,6 +860,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		InputFilter[] filters13 = new InputFilter[1];
 		filters13[0] = new InputFilter.LengthFilter(13);
+		
+		TableRow sep = new TableRow(parent.getContext());
+		sep.setBackgroundColor(Color.WHITE);
+		sep.setPadding(0,1,0,1);
+		parent.addView(sep);
 		
 		TableRow row = new TableRow(parent.getContext());
 		row.setPadding(0,0,0,0);
@@ -807,8 +953,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		row.addView(plus);
 		
 		TextView cheapness = new TextView(row.getContext());
-		cheapness.setKeyListener(new DigitsKeyListener());
-		cheapness.setInputType(InputType.TYPE_CLASS_NUMBER);
 		cheapness.setMinWidth((int)(textSize*5));
 		cheapness.setWidth((int)(textSize*5));
 		cheapness.setMaxWidth((int)(textSize*5));
@@ -828,8 +972,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		row.addView(cheapness);
 
 		TextView reward = new TextView(row.getContext());
-		reward.setKeyListener(new DigitsKeyListener());
-		reward.setInputType(InputType.TYPE_CLASS_NUMBER);
 		reward.setMinWidth((int)(textSize*4.5f));
 		reward.setWidth((int)(textSize*4.5f));
 		reward.setMaxWidth((int)(textSize*4.5f));
@@ -848,8 +990,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		row.addView(reward);
 
 		TextView currentCost = new TextView(row.getContext());
-		currentCost.setKeyListener(new DigitsKeyListener());
-		currentCost.setInputType(InputType.TYPE_CLASS_NUMBER);
 		currentCost.setMinWidth((int)(textSize*8.0f));
 		currentCost.setWidth((int)(textSize*8.0f));
 		currentCost.setMaxWidth((int)(textSize*8.0f));
@@ -869,8 +1009,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		row.addView(currentCost);
 
 		TextView baseCost = new TextView(row.getContext());
-		baseCost.setKeyListener(new DigitsKeyListener());
-		baseCost.setInputType(InputType.TYPE_CLASS_NUMBER);
 		baseCost.setMinWidth((int)(textSize*5.5f));
 		baseCost.setWidth((int)(textSize*5.5f));
 		baseCost.setMaxWidth((int)(textSize*5.5f));
@@ -890,11 +1028,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		parent.addView(row);
 		
-		TableRow sep = new TableRow(parent.getContext());
-		sep.setBackgroundColor(Color.WHITE);
-		sep.setPadding(0,1,0,1);
-
-		parent.addView(sep);
 	}
 
 	private String MakeProfileFileName(String profileName)
@@ -1222,6 +1355,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private String m_activeProfileName;
 	private String m_bestBuildingToBuy;
 
+	HorizontalScrollView m_defenceViewHeader;
+	LinkedHorizontalScrollView m_defenceViewScroll;
+	
 	HorizontalScrollView m_incomeViewHeader;
 	LinkedHorizontalScrollView m_incomeViewScroll;
 }
