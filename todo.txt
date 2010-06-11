@@ -1,5 +1,3 @@
-bug: delete lots of profiles then it crashes
-bug: profile copy : wrong profile being displayed after saving
 linked header row: working quite well - perhaps try to capture fling events?
 linked header row: connect header row scrolling to the main view?
 app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files

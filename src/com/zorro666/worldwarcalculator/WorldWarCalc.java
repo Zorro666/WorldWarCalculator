@@ -249,16 +249,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Log.i(TAG,"onResume");
 		super.onResume();
 		
-		Log.i(TAG,"onResume LoadAppState");
-		LoadAppState();
-
-		// Set selected item to match the active profile
-		if (m_profilesAdapter.getCount() == 0)
-		{
-			ProfileNew();
-		}
-
-		ProfileSetSelectedProfile(m_activeProfileName);
+		Log.i(TAG,"onResume RestoreAppState");
+		RestoreAppState();
 	}
 	
 	// Another application comes in front of this view
@@ -353,12 +345,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			EditText profileNameView = (EditText)findViewById(R.id.profileName);
 			String newName = profileNameView.getText().toString();
 			ProfileRename(newName);
-			ProfileSetSelectedProfile(m_activeProfileName);
 			//Save all profiles then reload them to make the copy permanent and also to keep the internal data in sync
 			SaveAllProfiles();
 			SaveAppState();
 			LoadAllProfiles();
-			LoadAppState();
+			RestoreAppState();
 		}
 		else
 		{
@@ -437,6 +428,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				ProfileSelect();
 			}
 		}
+	}
+	private void RestoreAppState()
+	{
+		LoadAppState();
+		// Set selected item to match the active profile
+		if (m_profilesAdapter.getCount() == 0)
+		{
+			ProfileNew();
+		}
+
+		ProfileSetSelectedProfile(m_activeProfileName);
 	}
 	private void ProfileSetSelectedProfile(String profileName)
 	{
@@ -1244,6 +1246,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			return;
 		}
 		String name = m_activeProfile.GetName();
+		int index = m_profilesAdapter.getPosition(name);
+		
 		m_profiles.remove(name);
 		m_profilesAdapter.remove(name);
 		
@@ -1262,7 +1266,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			ProfileNew();
 		}
-		ProfileSelect();
+		//Catch deleting the last item in the list
+		if (index >= m_profilesAdapter.getCount())
+		{
+			index = m_profilesAdapter.getCount()-1;
+		}
+		if (index >=0)
+		{
+			String newProfileName = m_profilesAdapter.getItem(index);
+			ProfileSetSelectedProfile(newProfileName);
+		}
 	}
 
 	private WWProfile CreateNewProfile(String name) 
