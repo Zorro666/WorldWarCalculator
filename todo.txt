@@ -1,7 +1,6 @@
-linked header row: working quite well - perhaps try to capture fling events?
-linked header row: connect header row scrolling to the main view?
 app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files
-all tabs: display numbers as 340M or 18K if exact multiples can be found
+linked header row: connect header row scrolling to the main view?
+linked header row: working quite well - perhaps try to capture fling events?
 building tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 income tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 annoyance: the number text is getting left with the red text value - it is android doing it - leaving the text as highlighted!!!!

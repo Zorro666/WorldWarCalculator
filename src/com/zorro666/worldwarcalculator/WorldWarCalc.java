@@ -669,7 +669,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		cheapnessView.setText(cheapnessString);
 
 		long currentCost = building.GetCurrentCost(numOwned);
-		String currentCostString = Long.toString(currentCost);
+		String currentCostString =  PrettyPrintNumber(currentCost);
 		TextView currentCostText = building.GetViewCurrentCost();
 		currentCostText.setText(currentCostString);
 		
@@ -1001,7 +1001,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		currentCost.setFilters(filters13);
 		currentCost.setPadding(padLeft,padTop,padRight,padBottom);
 		currentCost.setGravity(Gravity.TOP|Gravity.RIGHT);
-		currentCost.setText(Long.toString(building.GetCurrentCost(numOwned)));
+		currentCost.setText(PrettyPrintNumber(building.GetCurrentCost(numOwned)));
 		currentCost.setTextSize(textSize);
 		currentCost.setMinHeight(rowHeight);
 		currentCost.setHeight(rowHeight);
@@ -1020,7 +1020,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setFilters(filters8);
 		baseCost.setPadding(padLeft,padTop,padRight,padBottom);
 		baseCost.setGravity(Gravity.TOP|Gravity.RIGHT);
-		baseCost.setText(Long.toString(building.GetBaseCost()));
+		baseCost.setText(PrettyPrintNumber(building.GetBaseCost()));
 		baseCost.setTextSize(textSize);
 		baseCost.setMinHeight(rowHeight);
 		baseCost.setHeight(rowHeight);
@@ -1346,6 +1346,27 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		String profileName = profile.GetName();
 		String profileFileName = MakeProfileFileName(profileName);
 		SaveProfile(profileFileName,profile);
+	}
+	private String PrettyPrintNumber(long number)
+	{
+		String result;
+		if (((number/1000000)*1000000) == number)
+		{
+			int numberInMillions = (int)(number/1000000);
+			result = Integer.toString(numberInMillions);
+			result += "M";
+		}
+		else if (((number/1000)*1000) == number)
+		{
+			int numberInThousands = (int)(number/1000);
+			result = Integer.toString(numberInThousands);
+			result += "K";
+		}
+		else 
+		{
+			result = Long.toString(number);
+		}
+		return result;
 	}
 
 	private static final String TAG = "WWCALC";
