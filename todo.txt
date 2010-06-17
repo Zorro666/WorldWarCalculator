@@ -1,3 +1,5 @@
+profile tab: copy button don't save & reload just to get the old profile back in the list - do a proper copy
+app: only save changed data to the bundle
 app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 linked header row: connect header row scrolling to the main view?
 linked header row: working quite well - perhaps try to capture fling events?
@@ -15,3 +17,19 @@ hint tab: show hint data - how many of the best buildings to buy (sorted list) -
 app: add an icon :)
 java: unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
 java: unify the profile class - have a single class for type of building - then the profile can just have "incomeProfile", "defenceProfile"
+
+onPause - save to disk
+onDestroy -> isFinishing() = user quit else system freeing up resources
+onSaveInstance() - called just before on pause -> takes Bundle object
+onRestoreInstance() - called after onStart() takes the bundle created by onSaveInstance() but also onCreate() takes the bundle
+
+onCreate = only called when activity is first created
+onRestart -> load from disk -> onStart
+onRestoreInstance() -> restore from bundle = deltas on top of disk data
+onStart = do loading if not restored from bundle
+-> onResume -> live with the user
+-> onSaveInstance() -> onPause -> save memory data to bundle
+onStop() -> not visible to user -> save to disk
+-> onRestart() - becomes visible again
+-> onDestroy()
+onDestroy() -> isFinishing() if user quit e.g. back button

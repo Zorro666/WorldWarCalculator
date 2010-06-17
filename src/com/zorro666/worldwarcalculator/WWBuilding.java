@@ -15,6 +15,7 @@ public class WWBuilding
 		m_reward = reward;
 		m_cheapnessMultiplier = cheapnessMultiplier;
 		m_cheapnessPerBuy = (GetCheapness(1) - GetCheapness(0));
+		m_changed=false;
 	}
 	public String GetName()
 	{
@@ -83,6 +84,7 @@ public class WWBuilding
 	public TableRow GetViewRow()
 	{
 		return m_viewRow;
+		
 	}
 	public void SetViewMinusButton(Button viewMinusButton)
 	{
@@ -108,6 +110,19 @@ public class WWBuilding
 	{
 		m_viewRow = viewRow;
 	}
+	public void SetChanged(boolean changed)
+	{
+		m_changed=changed;
+	}
+	public boolean HasChanged()
+	{
+		boolean changed=m_changed;
+		if (changed == true)
+		{
+			return true;
+		}
+		return false;
+	}
 	
 	private final int BASE_COST_DIVISOR=100;
 	private String m_name;
@@ -121,4 +136,5 @@ public class WWBuilding
 	private TextView m_viewCheapness;
 	private TextView m_viewCurrentCost;
 	private TableRow m_viewRow;
+	private boolean m_changed;
 }

@@ -5,14 +5,7 @@ public class WWProfileEntry
 	public WWProfileEntry()
 	{
 		m_numOwned = 0;
-	}
-	public WWBuilding GetBuilding()
-	{
-		return m_building;
-	}
-	public int GetNumOwned()
-	{
-		return m_numOwned;
+		m_changed = false;
 	}
 	public void SetBuilding(WWBuilding building)
 	{
@@ -28,8 +21,45 @@ public class WWProfileEntry
 		{
 			return;
 		}
-		m_numOwned=numOwned;
+		if (numOwned != m_numOwned)
+		{
+			m_numOwned=numOwned;
+			m_changed=true;
+		}
+	}
+	public void SetChanged(boolean changed)
+	{
+		m_changed=changed;
+		if (changed == false)
+		{
+			m_building.SetChanged(false);
+		}
+	}
+	
+	public WWBuilding GetBuilding()
+	{
+		return m_building;
+	}
+	public int GetNumOwned()
+	{
+		return m_numOwned;
+	}
+	public boolean HasChanged()
+	{
+		boolean changed = m_changed;
+		if (changed == true)
+		{
+			return true;
+		}
+		//Strictly speaking the building can never change but that might change in the future ;)
+		changed = m_building.HasChanged();
+		if (changed == true)
+		{
+			return true;
+		}
+		return false;
 	}
 	private WWBuilding m_building;
 	private int m_numOwned;
+	private boolean m_changed;
 }

@@ -103,7 +103,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Nuclear Testing Facility", 100000000, 700000);
 		m_incomeBuildings[m_numIncomeBuildings++] = new WWIncomeBuilding( "Solar Satellite Network", 340000000, 1200000);
 
-		m_activeProfile = new WWProfile("default");
+		m_activeProfile = new WWProfile("default", NUM_INCOME_BUILDINGS, NUM_DEFENCE_BUILDINGS);
 		m_activeProfileName = m_activeProfile.GetName();
 		m_bestBuildingToBuy = "";
 		
@@ -226,12 +226,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	}
 	
 	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState)
+	{
+	}
+	
+	@Override
 	public void onStart()
 	{
 		Log.i(TAG,"onStart");
 		super.onStart();
 		
-		LoadAllProfiles();
+		LoadAllProfiles(true);
 	}
 
 	@Override
@@ -263,7 +268,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		// Save state in the onSaveInstanceState() override
 		// Restore state in the onRestoreInstanceState() override
 		// BAD BAD BAD BAD BAD
-		SaveAllProfiles();
+		SaveAllProfiles(false);
 		SaveAppState();
 	}
 
@@ -282,7 +287,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		super.onDestroy();
 		
 		Log.i(TAG,"onDestroy");
-		SaveAllProfiles();
+		SaveAllProfiles(true);
 		SaveAppState();
 	}
 	
@@ -330,15 +335,18 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	{
 		if (v.getId() == R.id.profileSaveButton) 
 		{
-			ProfileSave(m_activeProfile);
+			ProfileSave(m_activeProfile,true);
+			UpdateDisplay();
 		}
 		else if (v.getId() == R.id.profileNewButton) 
 		{
 			ProfileNew();
+			UpdateDisplay();
 		}
 		else if (v.getId() == R.id.profileDeleteButton)
 		{
 			ProfileDelete();
+			UpdateDisplay();
 		}
 		else if (v.getId() == R.id.profileCopyButton)
 		{
@@ -346,10 +354,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			String newName = profileNameView.getText().toString();
 			ProfileRename(newName);
 			//Save all profiles then reload them to make the copy permanent and also to keep the internal data in sync
-			SaveAllProfiles();
+			SaveAllProfiles(false);
 			SaveAppState();
-			LoadAllProfiles();
+			LoadAllProfiles(false);
 			RestoreAppState();
+			UpdateDisplay();
 		}
 		else
 		{
@@ -426,6 +435,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				String profileName = item.getText().toString();
 				Log.i(TAG,"onItemSelected["+position+"] = "+profileName);
 				ProfileSelect();
+				UpdateDisplay();
 			}
 		}
 	}
@@ -616,13 +626,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		else if (tabName.equals("Profile"))
 		{
 			hintText ="";
+			if (m_activeProfile.HasChanged())
+			{
+				hintText="Changed ";
+			}
 			hintText += "A:" + m_activeProfile.GetName();
-			hintText += " N:" + m_activeProfileName;
+			hintText += "\nN:" + m_activeProfileName;
 			Spinner profileSpinner = (Spinner)findViewById(R.id.profileSpinner);
 			String itemName = (String)profileSpinner.getSelectedItem();
 			if (itemName != null)
 			{
-				hintText += "\nS:" + itemName;
+				hintText += " S:" + itemName;
 			}
 		}
 		else
@@ -630,6 +644,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			hintText = "Unknown";
 		}
 		Log.i(TAG,"UpdateHintText:"+hintText);
+		
 		m_bestBuildingToBuy = bestBuildingToBuy;
 		hintView.setText(hintText);
 	}
@@ -655,7 +670,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			plusButtonView.setTag(profileEntry);
 		}
-		Log.i(TAG, "UpdateBuildingNumOwned: "+building.GetName()+" numOwned:"+numOwnedString);
+		//Log.i(TAG, "UpdateBuildingNumOwned: "+building.GetName()+" numOwned:"+numOwnedString);
 	}
 	
 	private void UpdateBuildingRow( WWProfileEntry profileEntry )
@@ -673,7 +688,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		TextView currentCostText = building.GetViewCurrentCost();
 		currentCostText.setText(currentCostString);
 		
-		Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" cheapness:"+cheapnessString+" currentCost:"+currentCostString);
+		//Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" cheapness:"+cheapnessString+" currentCost:"+currentCostString);
 	}
 
 	private void SetDefaultRowColours(TableRow row,boolean evenRow)
@@ -1105,15 +1120,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			return false;
 		}
 	}
-	private void SaveAllProfiles() 
+	private void SaveAllProfiles(boolean force) 
 	{
 		for (Map.Entry<String,WWProfile> entry: m_profiles.entrySet())
 		{
 			WWProfile profile = entry.getValue();
-			ProfileSave(profile);
+			ProfileSave(profile,force);
 		}
 	}
-	private int LoadAllProfiles() 
+	private int LoadAllProfiles(boolean force) 
 	{
 		Log.i(TAG,"LoadAllProfiles");
 		int numProfiles = 0;
@@ -1127,7 +1142,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				String baseProfileFileName = MakeProfileFileName("");
 				if (profileFileName.startsWith(baseProfileFileName))
 				{
-					if (LoadProfile(profileFileName) == true) 
+					if (LoadProfile(profileFileName,force) == true) 
 					{
 						numProfiles++;
 					}
@@ -1137,7 +1152,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return numProfiles;
 	}
 
-	private boolean LoadProfile(String profileFileName)
+	private boolean LoadProfile(String profileFileName,boolean force)
 	{
 		try 
 		{
@@ -1146,6 +1161,23 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			{
 				// Profile name
 				String name = inFile.ReadString();
+				if (force==false)
+				{
+					if (m_profiles.containsKey(name))
+					{
+						Log.i(TAG,"LoadProfile:"+name+" not loading because it is already loaded");
+						inFile.Close();
+						return true;
+					}
+				}
+				else
+				{
+					if (m_profiles.containsKey(name))
+					{
+						Log.i(TAG,"LoadProfile:"+name+" loading but it is already loaded");
+					}
+				}
+				
 				WWProfile tempProfile = CreateNewProfile(name);
 
 				// Number of each defence building
@@ -1164,6 +1196,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 				}
 				inFile.Close();
+				tempProfile.SetChanged(false);
 				ProfileAdd(tempProfile);
 				Log.i(TAG,"LoadProfile DONE:"+name+" file:"+profileFileName);
 			} 
@@ -1219,6 +1252,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				outFile.Close();
 				return false;
 			}
+			profile.SetChanged(false);
 			return true;
 		} 
 		catch (FileNotFoundException e) 
@@ -1283,7 +1317,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		WWProfile profile = m_profiles.get(name);
 		if (profile == null) 
 		{
-			profile = new WWProfile(name);
+			profile = new WWProfile(name, NUM_INCOME_BUILDINGS, NUM_DEFENCE_BUILDINGS);
 			Log.i(TAG, "CreateNewProfile:" + name);
 		}
 		for (int i = 0; i < m_numDefenceBuildings; i++) 
@@ -1341,8 +1375,23 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		ProfileSelect();
 	}
 
-	private void ProfileSave(WWProfile profile) 
+	private void ProfileSave(WWProfile profile,boolean force) 
 	{
+		if (force == false)
+		{
+			if (profile.HasChanged()==false)
+			{
+				Log.i(TAG,"ProfileSave:"+profile.GetName()+" not saving because it hasn't changed");
+				return;
+			}
+		}
+		else
+		{
+			if (profile.HasChanged()==false)
+			{
+				Log.i(TAG,"ProfileSave:"+profile.GetName()+" saving but it hasn't changed");
+			}
+		}
 		String profileName = profile.GetName();
 		String profileFileName = MakeProfileFileName(profileName);
 		SaveProfile(profileFileName,profile);
