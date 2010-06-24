@@ -1,4 +1,8 @@
-profile tab: copy button don't save & reload just to get the old profile back in the list - do a proper copy
+app: option to save & restore from sdcard : getExternalStorageState(), getExternalStorageDirectory()
+app: sdcard usage: save files to /Android/data/<package_name>/files/
+profile tab: copy button don't save & reload just to get the old profile back in the list - do a proper copy - NEEDS TESTING
+profile tab: implement the rename button
+app: use SharedPrefences system to store the app state
 app: only save changed data to the bundle
 app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 linked header row: connect header row scrolling to the main view?

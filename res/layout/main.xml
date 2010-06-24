@@ -87,9 +87,9 @@
 						android:layout_width="wrap_content"
 						android:layout_height="fill_parent"
 						android:text="Save"
-						android:minWidth="80dp"
-						android:maxWidth="80dp"
-						android:width="80dp"
+						android:minWidth="75dp"
+						android:maxWidth="75dp"
+						android:width="75dp"
 						android:padding="5dp">
 					</Button>
 					<Button
@@ -97,9 +97,9 @@
 						android:layout_width="wrap_content"
 						android:layout_height="fill_parent"
 						android:text="New"
-						android:minWidth="80dp"
-						android:maxWidth="80dp"
-						android:width="80dp"
+						android:minWidth="75dp"
+						android:maxWidth="75dp"
+						android:width="75dp"
 						android:padding="5dp">
 					</Button>
 					<Button
@@ -112,7 +112,45 @@
 						android:width="80dp"
 						android:padding="5dp">
 					</Button>
+					<Button
+	    				android:id="@+id/profileRenameButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Rename"
+						android:minWidth="80dp"
+						android:maxWidth="80dp"
+						android:width="80dp"
+						android:padding="5dp">
+					</Button>
 				</LinearLayout>
+				<LinearLayout
+					android:orientation="horizontal"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:padding="10dp">
+					<Button
+    					android:id="@+id/profileBackupButton"
+    					android:enabled="true"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Backup"
+						android:minWidth="80dp"
+						android:maxWidth="80dp"
+						android:width="80dp"
+						android:padding="5dp">
+					</Button>
+					<Button
+    					android:id="@+id/profileRestoreButton"
+    					android:enabled="true"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Restore"
+						android:minWidth="80dp"
+						android:maxWidth="80dp"
+						android:width="80dp"
+						android:padding="5dp">
+					</Button>
+    			</LinearLayout>
     		</LinearLayout>
 			<LinearLayout
 				android:id="@+id/IncomeViewTab"

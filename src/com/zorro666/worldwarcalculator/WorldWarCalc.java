@@ -1,43 +1,54 @@
 package com.zorro666.worldwarcalculator;
 
 import android.app.Activity;
+
 import android.content.Context;
+
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.Canvas;
-import android.widget.TabHost;
-import android.widget.TabHost.OnTabChangeListener;
+
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.HorizontalScrollView;
-import android.widget.ArrayAdapter;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.os.Environment;
+
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
+
+import android.util.AttributeSet;
+import android.util.Log;
+
 import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.method.DigitsKeyListener;
-import android.util.Log;
-import android.util.AttributeSet;
 
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener, OnItemSelectedListener, OnTabChangeListener
 {
@@ -131,6 +142,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		Button copyProfile = (Button) findViewById(R.id.profileCopyButton);
 		copyProfile.setOnClickListener(this);
+		
+		Button renameProfile = (Button) findViewById(R.id.profileRenameButton);
+		renameProfile.setOnClickListener(this);
+		
+		Button backup = (Button) findViewById(R.id.profileBackupButton);
+		backup.setOnClickListener(this);
+		
+		Button restore = (Button) findViewById(R.id.profileRestoreButton);
+		restore.setOnClickListener(this);
 		
 		// An option would be to subclass it and implement getView function to make it work with WWProfile
 		m_profilesAdapter.setDropDownViewResource(android.R.layout. simple_spinner_dropdown_item);
@@ -329,6 +349,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			UpdateDisplay();
 		}
+		//For the profile tab update the "backup" "restore" buttons
+		if (tabId.equals("Profile"))
+		{
+			UpdateProfileTabDisplay();
+		}
 	}
 	
 	public void onClick(View v) 
@@ -348,16 +373,30 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			ProfileDelete();
 			UpdateDisplay();
 		}
+		else if (v.getId() == R.id.profileRenameButton)
+		{
+			EditText profileNameView = (EditText)findViewById(R.id.profileName);
+			String newName = profileNameView.getText().toString();
+			
+			ProfileRename(newName);
+			UpdateDisplay();
+		}
 		else if (v.getId() == R.id.profileCopyButton)
 		{
 			EditText profileNameView = (EditText)findViewById(R.id.profileName);
 			String newName = profileNameView.getText().toString();
-			ProfileRename(newName);
-			//Save all profiles then reload them to make the copy permanent and also to keep the internal data in sync
-			SaveAllProfiles(false);
-			SaveAppState();
-			LoadAllProfiles(false);
-			RestoreAppState();
+		
+			ProfileCopy(newName);
+			UpdateDisplay();
+		}
+		else if (v.getId() == R.id.profileBackupButton)
+		{
+			BackupData();
+			UpdateDisplay();
+		}
+		else if (v.getId() == R.id.profileRestoreButton)
+		{
+			RestoreData();
 			UpdateDisplay();
 		}
 		else
@@ -568,8 +607,26 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			}
 		}
 	}
+	private void UpdateProfileTabDisplay()
+	{
+		boolean backupFileFound = TestForExternalStoragePrivateFile();
+		Button restoreButton = (Button)findViewById(R.id.profileRestoreButton);
+		restoreButton.setEnabled(backupFileFound);
+			
+		boolean storageWritable = IsExternalStorageWritable();
+		Button backupButton = (Button)findViewById(R.id.profileBackupButton);
+		backupButton.setEnabled(storageWritable);
+	}
 	private void UpdateDisplay()
 	{
+		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
+		String tabName = tabs.getCurrentTabTag();
+		//For the profile tab update the "backup" "restore" buttons
+		if (tabName.equals("Profile"))
+		{
+			UpdateProfileTabDisplay();
+		}
+		
 		UpdateHintText();
 		// Now highlight the best buy row in bold & red
 		HighlightBestBuildingToBuy(m_bestBuildingToBuy);
@@ -1311,6 +1368,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			ProfileSetSelectedProfile(newProfileName);
 		}
 	}
+	private void ProfileCopy(String newName)
+	{
+		//make a new profile from the existing profile 
+		WWProfile tempProfile = CreateNewProfile(newName);
+		tempProfile.Copy(m_activeProfile);
+		tempProfile.SetName(newName);
+		ProfileAdd(tempProfile);
+	}
 
 	private WWProfile CreateNewProfile(String name) 
 	{
@@ -1346,7 +1411,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			if (oldName.equals(newName) == false)
 			{
 				Log.i(TAG, "ProfileRename: "+oldName+"->"+newName);
-				//m_profileNames.remove(oldName);
 				m_profilesAdapter.remove(oldName);
 				m_profiles.remove(oldName);
 				m_activeProfile.SetName(newName);
@@ -1361,10 +1425,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		String name = profile.GetName();
 		if (m_profiles.containsKey(name) == false) 
 		{
-			//m_profileNames.add(name);
-			m_profiles.put(name, profile);
 			Log.i(TAG,"ProfileAdd:"+name);
+			m_profiles.put(name, profile);
 			m_profilesAdapter.add(name);
+			m_activeProfile = profile;
+			m_activeProfileName = m_activeProfile.GetName();
 		}
 		
 		// Update the selected profile in the drop down list
@@ -1416,6 +1481,133 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			result = Long.toString(number);
 		}
 		return result;
+	}
+	private boolean IsExternalStorageWritable() 
+	{
+	    String state = Environment.getExternalStorageState();
+	    if (Environment.MEDIA_MOUNTED.equals(state)) 
+	    {
+	    	return true;
+	    } 
+	    return false;
+	}
+	private boolean IsExternalStorageReadable() 
+	{
+	    String state = Environment.getExternalStorageState();
+	    if (Environment.MEDIA_MOUNTED.equals(state)) 
+	    {
+	    	return true;
+	    }
+	    else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) 
+	    {
+	    	return true;
+	    } 
+	    return false;
+	}
+	private File GetExternalStoragePrivateFile(boolean writable) 
+	{
+		if (IsExternalStorageReadable() == false)
+		{
+			return null;
+		}
+		if (writable && (IsExternalStorageWritable() == false))
+		{
+			return null;
+		}
+		File baseExternalDir = Environment.getExternalStorageDirectory();
+	    if (baseExternalDir == null) 
+	    {
+	    	return null;
+	    }
+		//sdcard usage: save files to /Android/data/<package_name>/files/
+		String appExternalDirName = "/Android/data/"+getPackageName()+"/files/";
+	    File appExternalDir = new File(baseExternalDir, appExternalDirName);
+	    if (appExternalDir == null)
+	    {
+	    	return null;
+	    }
+	    Log.i(TAG,"appExternalDir="+appExternalDir.getAbsolutePath());
+	    File appExternalFile = new File(appExternalDir, "AppState.test");
+	    if (appExternalFile != null)
+	    {
+	    	Log.i(TAG,"appExternalFile="+appExternalFile.getAbsolutePath());
+	    }
+	    return appExternalFile;
+	}
+	private boolean TestForExternalStoragePrivateFile() 
+	{
+		File appExternalFile = GetExternalStoragePrivateFile(false);
+		if (appExternalFile == null)
+		{
+			return false;
+		}
+		if (appExternalFile.exists() && appExternalFile.isFile())
+		{
+			return true;
+		}
+		return false;
+	}
+	private File CreateExternalStoragePrivateFile() 
+	{
+		File appExternalFile = GetExternalStoragePrivateFile(true);
+		if (appExternalFile == null)
+		{
+			Log.i(TAG,"CreateExternalStoragePrivateFile: appExternalFile is NULL");
+			return null;
+		}
+		//mkdirs returns true if all the dirs exist, false = error or the dirs already exist!
+		if (appExternalFile.mkdirs() == false)
+		{
+			Log.i(TAG,"CreateExternalStoragePrivateFile: mkdirs failed "+appExternalFile.getName());
+			return null;
+		}
+		return appExternalFile;
+	}
+	private boolean BackupData()
+	{
+		Log.i(TAG,"BackupData");
+		File appStateFile = CreateExternalStoragePrivateFile();
+		if (appStateFile == null)
+		{
+			Log.i(TAG,"BackupData appStateFile is NULL");
+			return false;
+		}
+		try 
+		{
+			FileOutputStream outFileStream = new FileOutputStream(appStateFile);
+			TextFileOutput outFile = new TextFileOutput(outFileStream);
+			try 
+			{
+				// Active profile
+				String activeProfile = m_activeProfileName;
+				outFile.WriteString(activeProfile);
+				Log.i(TAG,"BackupData activeProfile:"+activeProfile);
+				
+				outFile.Close();
+				Log.i(TAG,"BackupData DONE file:"+appStateFile.getName());
+			} 
+			catch (IOException e) 
+			{
+				Log.i(TAG,"BackupData inner exception");
+				outFile.Close();
+				return false;
+			}
+			return true;
+		} 
+		catch (FileNotFoundException e) 
+		{
+			Log.i(TAG,"BackupData: FileNotFound");
+			return false;
+		}
+		catch (IOException e) 
+		{
+			Log.i(TAG,"BackupData outer exception");
+			return false;
+		}
+	}
+	private boolean RestoreData()
+	{
+		return false;
 	}
 
 	private static final String TAG = "WWCALC";

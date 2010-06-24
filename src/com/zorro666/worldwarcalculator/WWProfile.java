@@ -193,8 +193,8 @@ public class WWProfile
 			WWBuilding building = entry.GetBuilding();
 			if (building != null)
 			{
-				int numOwned = entry.GetNumOwned();
-				Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumToBuy " + m_incomeNumToBuy[i]);
+				//int numOwned = entry.GetNumOwned();
+				//Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumToBuy " + m_incomeNumToBuy[i]);
 			}
 		}
 	}
@@ -267,8 +267,8 @@ public class WWProfile
 			WWBuilding building = entry.GetBuilding();
 			if (building != null)
 			{
-				int numOwned = entry.GetNumOwned();
-				Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumToBuy " + m_defenceNumToBuy[i]);
+				//int numOwned = entry.GetNumOwned();
+				//Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumToBuy " + m_defenceNumToBuy[i]);
 			}
 		}
 	}
@@ -299,6 +299,21 @@ public class WWProfile
 			}
 		}
 		return false;
+	}
+	public void Copy(WWProfile other)
+	{
+		m_name=other.m_name;
+		for (int i=0; i<m_defenceBuildings.length;i++)
+		{
+			int numOwned = other.m_defenceBuildings[i].GetNumOwned();
+			m_defenceBuildings[i].SetNumOwned(numOwned);
+		}
+		for (int i=0; i<m_incomeBuildings.length;i++)
+		{
+			int numOwned = other.m_incomeBuildings[i].GetNumOwned();
+			m_incomeBuildings[i].SetNumOwned(numOwned);
+		}
+		m_changed=true;
 	}
 	
 	private static final String TAG = "PROFILE";
