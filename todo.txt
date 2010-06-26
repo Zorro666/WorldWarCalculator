@@ -1,4 +1,5 @@
 app: option to save & restore from sdcard : getExternalStorageState(), getExternalStorageDirectory()
+app: save & restore app and profiles need to work from arbitary File passed in
 app: sdcard usage: save files to /Android/data/<package_name>/files/
 profile tab: copy button don't save & reload just to get the old profile back in the list - do a proper copy - NEEDS TESTING
 profile tab: implement the rename button

@@ -1112,35 +1112,46 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	
 	private boolean SaveAppState() 
 	{
-		String fileName = "AppState";
+		String fileName = APPSTATE_FILENAME;
 		try 
 		{
-			TextFileOutput outFile = new TextFileOutput(openFileOutput( fileName, MODE_PRIVATE));
+			FileOutputStream outStream = openFileOutput(fileName, MODE_PRIVATE);
+			boolean result = SaveAppStateToStream(outStream);
+			Log.i(TAG,"SaveAppState DONE file:"+fileName);
+			return result;
+		}
+		catch (FileNotFoundException e) 
+		{
+			Log.i(TAG,"SaveAppState FileNotFound:"+fileName);
+			return false;
+		}
+	}
+	
+	private boolean SaveAppStateToStream(FileOutputStream outStream)
+	{ 
+		TextFileOutput outFile = new TextFileOutput(outStream);
+		try 
+		{
+			// Active profile
+			String activeProfile = m_activeProfileName;
+			outFile.WriteString(activeProfile);
+			Log.i(TAG,"SaveAppState activeProfile:"+activeProfile);
+			
+			outFile.Close();
+		} 
+		catch (IOException e) 
+		{
 			try 
-			{
-				// Active profile
-				String activeProfile = m_activeProfileName;
-				outFile.WriteString(activeProfile);
-				Log.i(TAG,"SaveAppState activeProfile:"+activeProfile);
-				
-				outFile.Close();
-				Log.i(TAG,"SaveAppState DONE file:"+fileName);
-			} 
-			catch (IOException e) 
 			{
 				outFile.Close();
 				return false;
 			}
-			return true;
-		} 
-		catch (FileNotFoundException e) 
-		{
-			return false;
+			catch (IOException e2) 
+			{
+				return false;
+			}
 		}
-		catch (IOException e) 
-		{
-			return false;
-		}
+		return true;
 	}
 		
 	private boolean LoadAppState() 
@@ -1556,12 +1567,43 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			return null;
 		}
 		//mkdirs returns true if all the dirs exist, false = error or the dirs already exist!
-		if (appExternalFile.mkdirs() == false)
+		File dirFile = appExternalFile.getParentFile();
+		if (dirFile != null)
 		{
-			Log.i(TAG,"CreateExternalStoragePrivateFile: mkdirs failed "+appExternalFile.getName());
-			return null;
+			if (!dirFile.exists())
+			{
+				if (dirFile.mkdirs() == false)
+				{
+					Log.i(TAG,"CreateExternalStoragePrivateFile: mkdirs failed "+dirFile.getName());
+					return null;
+				}
+			}
+			try
+			{
+				if (appExternalFile.exists())
+				{
+					if (!appExternalFile.isFile())
+					{
+						appExternalFile.delete();
+					}
+				}
+				if (!appExternalFile.exists())
+				{
+					if (appExternalFile.createNewFile() == false)
+					{
+						Log.i(TAG,"CreateExternalStoragePrivateFile: createNewFile failed "+appExternalFile.getName());
+						return null;
+					}
+				}
+				return appExternalFile;
+			}
+			catch (IOException e) 
+			{
+				Log.i(TAG,"CreateExternalStoragePrivateFile: createNewFile IOException "+appExternalFile.getName());
+				return null;
+			}
 		}
-		return appExternalFile;
+		return null;
 	}
 	private boolean BackupData()
 	{
@@ -1572,36 +1614,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			Log.i(TAG,"BackupData appStateFile is NULL");
 			return false;
 		}
-		try 
+		try
 		{
 			FileOutputStream outFileStream = new FileOutputStream(appStateFile);
-			TextFileOutput outFile = new TextFileOutput(outFileStream);
-			try 
-			{
-				// Active profile
-				String activeProfile = m_activeProfileName;
-				outFile.WriteString(activeProfile);
-				Log.i(TAG,"BackupData activeProfile:"+activeProfile);
-				
-				outFile.Close();
-				Log.i(TAG,"BackupData DONE file:"+appStateFile.getName());
-			} 
-			catch (IOException e) 
-			{
-				Log.i(TAG,"BackupData inner exception");
-				outFile.Close();
-				return false;
-			}
-			return true;
-		} 
+			boolean result = SaveAppStateToStream(outFileStream);
+			Log.i(TAG,"BackupData DONE result="+result);
+			return result;
+		}
 		catch (FileNotFoundException e) 
 		{
-			Log.i(TAG,"BackupData: FileNotFound");
-			return false;
-		}
-		catch (IOException e) 
-		{
-			Log.i(TAG,"BackupData outer exception");
+			Log.i(TAG,"BackupData FileNotFound:"+appStateFile.getName());
 			return false;
 		}
 	}
@@ -1613,6 +1635,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	private static final String TAG = "WWCALC";
 	private static final String PROFILE_HEADER = "WWProfile";
 	private static final String PROFILE_VERSION = "1";
+	private static final String APPSTATE_FILENAME = "AppState";
 
 	public static final int NUM_DEFENCE_BUILDINGS = 6;
 	public static final int NUM_INCOME_BUILDINGS = 8;
