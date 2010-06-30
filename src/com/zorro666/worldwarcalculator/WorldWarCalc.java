@@ -1684,6 +1684,29 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		boolean result = true;
 		
+		if (IsExternalStorageWritable() == false)
+		{
+			Log.i(TAG,"BackupData external storage is not writeable");
+			return false;
+		}
+		File appExternalDir = GetExternalStoragePrivateDirectory();
+		if (appExternalDir == null)
+		{
+			Log.i(TAG,"BackupData appExternalDir is null");
+			return false;
+		}
+		// Delete any existing files
+		String[] fileNames = GetFilelistFromExternalStorage();
+		for (int i=0; i<fileNames.length; i++)
+		{
+			String fileName = fileNames[i];
+			File externalFile = new File(appExternalDir,fileName);
+			if (externalFile.isFile())
+			{
+				externalFile.delete();
+			}
+		}
+		
 		// Save the AppState data
 		File appStateFile = CreateExternalStoragePrivateFile(APPSTATE_FILENAME);
 		if (appStateFile == null)
@@ -1707,19 +1730,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			return false;
 		}
 		//Save the profiles
-		File appExternalDir = GetExternalStoragePrivateDirectory();
-		if (appExternalDir == null)
-		{
-			return false;
-		}
 		for (Map.Entry<String,WWProfile> entry: m_profiles.entrySet())
 		{
 			WWProfile profile = entry.getValue();
 			String profileName = profile.GetName();
 			String profileFileName = MakeProfileFileName(profileName);
+			File externalProfileFile = new File(appExternalDir,profileFileName);
 			try
 			{
-				File externalProfileFile = new File(appExternalDir,profileFileName);
 				FileOutputStream outStream = new FileOutputStream(externalProfileFile);
 				if (SaveProfile(profileFileName,profile,outStream) == false)
 				{
