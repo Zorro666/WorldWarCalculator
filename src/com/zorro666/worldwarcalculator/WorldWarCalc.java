@@ -41,6 +41,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -256,7 +257,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Log.i(TAG,"onStart");
 		super.onStart();
 		
-		LoadAllProfiles(true);
+		LoadAllProfilesFromPrivateData(true);
 	}
 
 	@Override
@@ -275,6 +276,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		super.onResume();
 		
 		Log.i(TAG,"onResume RestoreAppState");
+		LoadAppState();
 		RestoreAppState();
 	}
 	
@@ -396,7 +398,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		else if (v.getId() == R.id.profileRestoreButton)
 		{
-			RestoreData();
+			if (RestoreData()==true)
+			{
+				RestoreAppState();
+			}
 			UpdateDisplay();
 		}
 		else
@@ -480,7 +485,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	}
 	private void RestoreAppState()
 	{
-		LoadAppState();
 		// Set selected item to match the active profile
 		if (m_profilesAdapter.getCount() == 0)
 		{
@@ -609,7 +613,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	}
 	private void UpdateProfileTabDisplay()
 	{
-		boolean backupFileFound = TestForExternalStoragePrivateFile();
+		boolean backupFileFound = TestForBackupData();
 		Button restoreButton = (Button)findViewById(R.id.profileRestoreButton);
 		restoreButton.setEnabled(backupFileFound);
 			
@@ -1135,7 +1139,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			// Active profile
 			String activeProfile = m_activeProfileName;
 			outFile.WriteString(activeProfile);
-			Log.i(TAG,"SaveAppState activeProfile:"+activeProfile);
+			Log.i(TAG,"SaveAppStateToStream activeProfile:"+activeProfile);
 			
 			outFile.Close();
 		} 
@@ -1156,37 +1160,47 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 	private boolean LoadAppState() 
 	{
-		String fileName = "AppState";
+		String fileName = APPSTATE_FILENAME;
 		try 
 		{
-			TextFileInput inFile = new TextFileInput(openFileInput(fileName));
-			try 
-			{
-				// Active profile
-				String activeProfile = inFile.ReadString();
-				Log.i(TAG,"LoadAppState activeProfile:"+activeProfile);
-				
-				inFile.Close();
-				Log.i(TAG,"LoadAppState DONE file:"+fileName);
-				
-				m_activeProfileName = activeProfile;
-			} 
-			catch (IOException e) 
-			{
-				inFile.Close();
-				return false;
-			}
-			return true;
+			FileInputStream inStream = openFileInput(fileName);
+			boolean result = LoadAppStateFromStream(inStream);
+			Log.i(TAG,"LoadAppState DONE file:"+fileName);
+			return result;
 		} 
 		catch (FileNotFoundException e) 
 		{
 			Log.i(TAG,"LoadAppState FileNotFound:"+fileName);
 			return false;
 		}
+	}
+			
+	private boolean LoadAppStateFromStream(FileInputStream inStream)
+	{
+		TextFileInput inFile = new TextFileInput(inStream);
+		try 
+		{
+			// Active profile
+			String activeProfile = inFile.ReadString();
+			Log.i(TAG,"LoadAppStateFromStream activeProfile:"+activeProfile);
+			
+			inFile.Close();
+				
+			m_activeProfileName = activeProfile;
+		} 
 		catch (IOException e) 
 		{
-			return false;
+			try
+			{
+				inFile.Close();
+				return false;
+			}
+			catch (IOException e2)
+			{
+				return false;
+			}
 		}
+		return true;
 	}
 	private void SaveAllProfiles(boolean force) 
 	{
@@ -1196,11 +1210,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			ProfileSave(profile,force);
 		}
 	}
-	private int LoadAllProfiles(boolean force) 
+	private int LoadAllProfilesFromPrivateData(boolean force) 
+	{
+		String[] fileNames = fileList();
+		return LoadAllProfiles(force,fileNames);
+	}
+	private int LoadAllProfiles(boolean force, String[] fileNames) 
 	{
 		Log.i(TAG,"LoadAllProfiles");
 		int numProfiles = 0;
-		String[] fileNames = fileList();
 		int numFiles = fileNames.length;
 		if (numFiles > 0) 
 		{
@@ -1210,9 +1228,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				String baseProfileFileName = MakeProfileFileName("");
 				if (profileFileName.startsWith(baseProfileFileName))
 				{
-					if (LoadProfile(profileFileName,force) == true) 
+					try
 					{
-						numProfiles++;
+						FileInputStream inStream = openFileInput(profileFileName);
+						if (LoadProfile(profileFileName,force,inStream) == true) 
+						{
+							numProfiles++;
+						}
+					}
+					catch (FileNotFoundException e) 
+					{
 					}
 				}
 			}
@@ -1220,117 +1245,108 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		return numProfiles;
 	}
 
-	private boolean LoadProfile(String profileFileName,boolean force)
+	private boolean LoadProfile(String profileFileName,boolean force,FileInputStream inStream)
 	{
+		TextFileInput inFile = new TextFileInput(inStream);
 		try 
 		{
-			TextFileInput inFile = new TextFileInput( openFileInput(profileFileName));
-			try 
+			// Profile name
+			String name = inFile.ReadString();
+			if (force==false)
 			{
-				// Profile name
-				String name = inFile.ReadString();
-				if (force==false)
+				if (m_profiles.containsKey(name))
 				{
-					if (m_profiles.containsKey(name))
-					{
-						Log.i(TAG,"LoadProfile:"+name+" not loading because it is already loaded");
-						inFile.Close();
-						return true;
-					}
+					Log.i(TAG,"LoadProfile:"+name+" not loading because it is already loaded");
+					inFile.Close();
+					return true;
 				}
-				else
-				{
-					if (m_profiles.containsKey(name))
-					{
-						Log.i(TAG,"LoadProfile:"+name+" loading but it is already loaded");
-					}
-				}
-				
-				WWProfile tempProfile = CreateNewProfile(name);
-
-				// Number of each defence building
-				int numDefenceBuildings = inFile.ReadInt();
-				for (int i = 0; i < numDefenceBuildings; i++) 
-				{
-					int number = inFile.ReadInt();
-					tempProfile.SetNumDefenceBuilding(i, number);
-				}
-				// Number of each income building
-				int numIncomeBuildings = inFile.ReadInt();
-				for (int i = 0; i < numIncomeBuildings; i++) 
-				{
-					int number = inFile.ReadInt();
-					tempProfile.SetNumIncomeBuilding(i, number);
-
-				}
-				inFile.Close();
-				tempProfile.SetChanged(false);
-				ProfileAdd(tempProfile);
-				Log.i(TAG,"LoadProfile DONE:"+name+" file:"+profileFileName);
-			} 
-			catch (IOException e) 
-			{
-				inFile.Close();
-				return false;
 			}
-			return true;
+			else
+			{
+				if (m_profiles.containsKey(name))
+				{
+					Log.i(TAG,"LoadProfile:"+name+" loading but it is already loaded");
+				}
+			}
+			
+			WWProfile tempProfile = CreateNewProfile(name);
+			
+			// Number of each defence building
+			int numDefenceBuildings = inFile.ReadInt();
+			for (int i = 0; i < numDefenceBuildings; i++) 
+			{
+				int number = inFile.ReadInt();
+				tempProfile.SetNumDefenceBuilding(i, number);
+			}
+			// Number of each income building
+			int numIncomeBuildings = inFile.ReadInt();
+			for (int i = 0; i < numIncomeBuildings; i++) 
+			{
+				int number = inFile.ReadInt();
+				tempProfile.SetNumIncomeBuilding(i, number);
+				
+			}
+			inFile.Close();
+			tempProfile.SetChanged(false);
+			ProfileAdd(tempProfile);
+			Log.i(TAG,"LoadProfile DONE:"+name+" file:"+profileFileName);
 		} 
-		catch (FileNotFoundException e) 
-		{
-			return false;
-		}
 		catch (IOException e) 
 		{
+			try
+			{
+				inFile.Close();
+			}
+			catch (IOException e2)
+			{
+			}
 			return false;
 		}
+		return true;
 	}
 
-	private boolean SaveProfile(String profileFileName,WWProfile profile) 
+	private boolean SaveProfile(String profileFileName,WWProfile profile,FileOutputStream outStream) 
 	{
+		TextFileOutput outFile = new TextFileOutput(outStream);
+		String name = profile.GetName();
 		try 
 		{
-			TextFileOutput outFile = new TextFileOutput(openFileOutput( profileFileName, MODE_PRIVATE));
-			String name = profile.GetName();
-			try 
-			{
-				// Profile name
-				outFile.WriteString(name);
+			// Profile name
+			outFile.WriteString(name);
 
-				// Number of each defence building
-				int numDefenceBuildings = profile.GetNumDefenceBuildings();
-				outFile.WriteInt(numDefenceBuildings);
-				for (int i = 0; i < numDefenceBuildings; i++) 
-				{
-					int number = profile.GetNumDefenceBuilding(i);
-					outFile.WriteInt(number);
-				}
-				// Number of each income building
-				int numIncomeBuildings = profile .GetNumIncomeBuildings();
-				outFile.WriteInt(numIncomeBuildings);
-				for (int i = 0; i < numIncomeBuildings; i++) 
-				{
-					int number = profile.GetNumIncomeBuilding(i);
-					outFile.WriteInt(number);
-				}
-				outFile.Close();
-				Log.i(TAG,"SaveProfile DONE:"+name+" file:"+profileFileName);
-			} 
-			catch (IOException e) 
+			// Number of each defence building
+			int numDefenceBuildings = profile.GetNumDefenceBuildings();
+			outFile.WriteInt(numDefenceBuildings);
+			for (int i = 0; i < numDefenceBuildings; i++) 
+			{
+				int number = profile.GetNumDefenceBuilding(i);
+				outFile.WriteInt(number);
+			}
+			// Number of each income building
+			int numIncomeBuildings = profile .GetNumIncomeBuildings();
+			outFile.WriteInt(numIncomeBuildings);
+			for (int i = 0; i < numIncomeBuildings; i++) 
+			{
+				int number = profile.GetNumIncomeBuilding(i);
+				outFile.WriteInt(number);
+			}
+			outFile.Close();
+			Log.i(TAG,"SaveProfile DONE:"+name+" file:"+profileFileName);
+		} 
+		catch (IOException e) 
+		{
+			try
 			{
 				outFile.Close();
 				return false;
 			}
-			profile.SetChanged(false);
-			return true;
-		} 
-		catch (FileNotFoundException e) 
-		{
-			return false;
+			catch (IOException e2)
+			{
+				return false;
+			}
 		}
-		catch (IOException e) 
-		{
-			return false;
-		}
+		profile.SetChanged(false);
+		return true;
 	}
 
 	private void ProfileNew() 
@@ -1470,7 +1486,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		String profileName = profile.GetName();
 		String profileFileName = MakeProfileFileName(profileName);
-		SaveProfile(profileFileName,profile);
+		try
+		{
+			FileOutputStream outStream = openFileOutput( profileFileName, MODE_PRIVATE);
+			SaveProfile(profileFileName,profile,outStream);
+		}
+		catch (FileNotFoundException e)
+		{
+			return;
+		}
 	}
 	private String PrettyPrintNumber(long number)
 	{
@@ -1515,19 +1539,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	    } 
 	    return false;
 	}
-	private File GetExternalStoragePrivateFile(boolean writable) 
+	private File GetExternalStoragePrivateDirectory()
 	{
 		if (IsExternalStorageReadable() == false)
-		{
-			return null;
-		}
-		if (writable && (IsExternalStorageWritable() == false))
 		{
 			return null;
 		}
 		File baseExternalDir = Environment.getExternalStorageDirectory();
 	    if (baseExternalDir == null) 
 	    {
+	    	Log.i(TAG,"baseExternalDir is NULL");
 	    	return null;
 	    }
 		//sdcard usage: save files to /Android/data/<package_name>/files/
@@ -1538,16 +1559,29 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	    	return null;
 	    }
 	    Log.i(TAG,"appExternalDir="+appExternalDir.getAbsolutePath());
-	    File appExternalFile = new File(appExternalDir, "AppState.test");
+	    return appExternalDir;
+	}
+	private File GetExternalStoragePrivateFile(boolean writable, String fileName) 
+	{
+		if (IsExternalStorageReadable() == false)
+		{
+			return null;
+		}
+		if (writable && (IsExternalStorageWritable() == false))
+		{
+			return null;
+		}
+		File appExternalDir = GetExternalStoragePrivateDirectory();
+	    File appExternalFile = new File(appExternalDir, fileName);
 	    if (appExternalFile != null)
 	    {
 	    	Log.i(TAG,"appExternalFile="+appExternalFile.getAbsolutePath());
 	    }
 	    return appExternalFile;
 	}
-	private boolean TestForExternalStoragePrivateFile() 
+	private boolean TestForExternalStoragePrivateFile(String fileName) 
 	{
-		File appExternalFile = GetExternalStoragePrivateFile(false);
+		File appExternalFile = GetExternalStoragePrivateFile(false,fileName);
 		if (appExternalFile == null)
 		{
 			return false;
@@ -1558,9 +1592,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		return false;
 	}
-	private File CreateExternalStoragePrivateFile() 
+	private File CreateExternalStoragePrivateFile(String fileName) 
 	{
-		File appExternalFile = GetExternalStoragePrivateFile(true);
+		File appExternalFile = GetExternalStoragePrivateFile(true,fileName);
 		if (appExternalFile == null)
 		{
 			Log.i(TAG,"CreateExternalStoragePrivateFile: appExternalFile is NULL");
@@ -1605,10 +1639,53 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		return null;
 	}
+	private boolean TestForBackupData() 
+	{
+		String[] fileNames = GetFilelistFromExternalStorage();
+		if (fileNames.length == 0)
+		{
+			return false;
+		}
+		String baseProfileFileName = MakeProfileFileName("");
+		String appStateFileName = APPSTATE_FILENAME;
+		for (int i=0; i<fileNames.length; i++)
+		{
+			String fileName = fileNames[i];
+			if (fileName.startsWith(baseProfileFileName))
+			{
+				Log.i(TAG,"TestForBackupData: found profile data:"+fileName);
+				return true;
+			}
+			if (fileName.equals(appStateFileName))
+			{
+				Log.i(TAG,"TestForBackupData: found AppState data:"+fileName);
+				return true;
+			}
+			if (fileName.startsWith(baseProfileFileName))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	private String[] GetFilelistFromExternalStorage() 
+	{
+		File appExternalDir = GetExternalStoragePrivateDirectory();
+		String[] fileNames = appExternalDir.list();
+		for (int i=0; i<fileNames.length; i++)
+		{
+			Log.i(TAG,"externalFile["+i+"] = "+fileNames[i]);
+		}
+		return fileNames;
+	}
 	private boolean BackupData()
 	{
-		Log.i(TAG,"BackupData");
-		File appStateFile = CreateExternalStoragePrivateFile();
+		Log.i(TAG,"BackupData: AppState");
+		
+		boolean result = true;
+		
+		// Save the AppState data
+		File appStateFile = CreateExternalStoragePrivateFile(APPSTATE_FILENAME);
 		if (appStateFile == null)
 		{
 			Log.i(TAG,"BackupData appStateFile is NULL");
@@ -1616,20 +1693,113 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		try
 		{
-			FileOutputStream outFileStream = new FileOutputStream(appStateFile);
-			boolean result = SaveAppStateToStream(outFileStream);
+			FileOutputStream outStream = new FileOutputStream(appStateFile);
+			result = SaveAppStateToStream(outStream);
 			Log.i(TAG,"BackupData DONE result="+result);
-			return result;
+			if (result == false)
+			{
+				return false;
+			}
 		}
 		catch (FileNotFoundException e) 
 		{
 			Log.i(TAG,"BackupData FileNotFound:"+appStateFile.getName());
 			return false;
 		}
+		//Save the profiles
+		File appExternalDir = GetExternalStoragePrivateDirectory();
+		if (appExternalDir == null)
+		{
+			return false;
+		}
+		for (Map.Entry<String,WWProfile> entry: m_profiles.entrySet())
+		{
+			WWProfile profile = entry.getValue();
+			String profileName = profile.GetName();
+			String profileFileName = MakeProfileFileName(profileName);
+			try
+			{
+				File externalProfileFile = new File(appExternalDir,profileFileName);
+				FileOutputStream outStream = new FileOutputStream(externalProfileFile);
+				if (SaveProfile(profileFileName,profile,outStream) == false)
+				{
+					result = false;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				return false;
+			}
+		}
+		return result;
 	}
 	private boolean RestoreData()
 	{
-		return false;
+		Log.i(TAG,"RestoreData: AppState");
+		
+		File appExternalDir = GetExternalStoragePrivateDirectory();
+		if (appExternalDir == null)
+		{
+			return false;
+		}
+		
+		boolean result = false;
+		
+		// Get the file names that could be loaded
+		String[] fileNames = GetFilelistFromExternalStorage();
+		String baseProfileFileName = MakeProfileFileName("");
+		// Loop over loading the profiles first
+		for (int i=0; i<fileNames.length; i++)
+		{
+			String fileName = fileNames[i];
+			Log.i(TAG,"RestoreData:externalFile["+i+"] = "+fileName);
+			if (fileName.startsWith(baseProfileFileName))
+			{
+				Log.i(TAG,"RestoreData: found profile data to load:"+fileName);
+				File externalProfileFile = new File(appExternalDir,fileName);
+				try
+				{
+					FileInputStream inStream = new FileInputStream(externalProfileFile);
+					if (LoadProfile(fileName,true,inStream) == true)
+					{
+						result = true;
+					}
+				}
+				catch (FileNotFoundException e)
+				{
+					Log.i(TAG,"RestoreData:externalFile not found exception:"+fileName);
+					return false;
+				}
+			}
+		}
+		// Load the AppState data if it exists
+		if (TestForExternalStoragePrivateFile(APPSTATE_FILENAME)==false)
+		{
+			Log.i(TAG,"RestoreData: TestForExternalStoragePrivateFile failed");
+			return result;
+		}
+		File appStateFile = GetExternalStoragePrivateFile(false, APPSTATE_FILENAME);
+		if (appStateFile == null)
+		{
+			Log.i(TAG,"RestoreData appStateFile is NULL");
+			return false;
+		}
+		try
+		{
+			FileInputStream inStream = new FileInputStream(appStateFile);
+			result = LoadAppStateFromStream(inStream);
+			Log.i(TAG,"Restore DONE result="+result);
+			if (result==false)
+			{
+				return false;
+			}
+		}
+		catch (FileNotFoundException e) 
+		{
+			Log.i(TAG,"Restore FileNotFound:"+appStateFile.getName());
+			return false;
+		}
+		return true;
 	}
 
 	private static final String TAG = "WWCALC";
