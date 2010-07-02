@@ -33,10 +33,12 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TabWidget;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -629,6 +631,39 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		if (tabName.equals("Profile"))
 		{
 			UpdateProfileTabDisplay();
+		}
+		long totalDefence = m_activeProfile.GetTotalDefence();
+		String totalDefenceString = PrettyPrintNumber(totalDefence);
+		Log.i(TAG,"totalDefence="+totalDefence+" "+totalDefenceString);
+		
+		long totalIncome = m_activeProfile.GetTotalIncome();
+		String totalIncomeString = PrettyPrintNumber(totalIncome);
+		Log.i(TAG,"totalIncome="+totalIncome+" "+totalIncomeString);
+		
+		int numTabs=tabs.getChildCount();
+		if (numTabs>0)
+		{
+			int tabIndex = tabs.getCurrentTab();
+			TabWidget tabWidget = tabs.getTabWidget();
+			RelativeLayout tabIndicator = (RelativeLayout)tabWidget.getChildAt(tabIndex);
+			int numChild = tabIndicator.getChildCount();
+			Log.i(TAG,"numChild="+numChild);
+			if (numChild>1)
+			{
+				TextView textView = (TextView)tabIndicator.getChildAt(1);
+				String textString = textView.getText().toString();
+				Log.i(TAG,"textString="+textString);
+				if (textString.contains("Income"))
+				{
+					String tabTitle = "Income " + totalIncomeString;
+					textView.setText(tabTitle);
+				}
+				else if (textString.contains("Defence"))
+				{
+					String tabTitle = "Defence " + totalDefenceString;
+					textView.setText(tabTitle);
+				}
+			}
 		}
 		
 		UpdateHintText();
@@ -1512,6 +1547,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			result += "K";
 		}
 		else 
+		{
+			result = Long.toString(number);
+		}
+		//Catch trivial case
+		if (number == 0)
 		{
 			result = Long.toString(number);
 		}

@@ -315,6 +315,30 @@ public class WWProfile
 		}
 		m_changed=true;
 	}
+	public long GetTotalIncome()
+	{
+		long totalIncome = 0;
+		for (int i=0; i<m_incomeBuildings.length;i++)
+		{
+			int numOwned = m_incomeBuildings[i].GetNumOwned();
+			int reward = m_incomeBuildings[i].GetBuilding().GetReward();
+			long income = numOwned * reward;
+			totalIncome += income;
+		}
+		return totalIncome;
+	}
+	public long GetTotalDefence()
+	{
+		long totalDefence = 0;
+		for (int i=0; i<m_defenceBuildings.length;i++)
+		{
+			int numOwned = m_defenceBuildings[i].GetNumOwned();
+			int reward = m_defenceBuildings[i].GetBuilding().GetReward();
+			long defence = numOwned * reward;
+			totalDefence += defence;
+		}
+		return totalDefence;
+	}
 	
 	private static final String TAG = "PROFILE";
 	private String m_name;
