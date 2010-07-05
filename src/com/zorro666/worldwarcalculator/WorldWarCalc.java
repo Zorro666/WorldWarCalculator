@@ -632,6 +632,18 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			UpdateProfileTabDisplay();
 		}
+		
+		UpdateTabTitles();
+		
+		UpdateHintText();
+		
+		// Now highlight the best buy row in bold & red
+		HighlightBestBuildingToBuy(m_bestBuildingToBuy);
+	}
+	private void UpdateTabTitles()
+	{
+		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
+		
 		long totalDefence = m_activeProfile.GetTotalDefence();
 		String totalDefenceString = PrettyPrintNumber(totalDefence);
 		Log.i(TAG,"totalDefence="+totalDefence+" "+totalDefenceString);
@@ -640,19 +652,19 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		String totalIncomeString = PrettyPrintNumber(totalIncome);
 		Log.i(TAG,"totalIncome="+totalIncome+" "+totalIncomeString);
 		
-		int numTabs=tabs.getChildCount();
-		if (numTabs>0)
+		TabWidget tabWidget = tabs.getTabWidget();
+		int numTabs = tabWidget.getChildCount();
+		Log.i(TAG,"numTabs="+numTabs);
+		for (int tabIndex=0; tabIndex<numTabs; tabIndex++)
 		{
-			int tabIndex = tabs.getCurrentTab();
-			TabWidget tabWidget = tabs.getTabWidget();
 			RelativeLayout tabIndicator = (RelativeLayout)tabWidget.getChildAt(tabIndex);
 			int numChild = tabIndicator.getChildCount();
-			Log.i(TAG,"numChild="+numChild);
 			if (numChild>1)
 			{
 				TextView textView = (TextView)tabIndicator.getChildAt(1);
+				textView.setSingleLine(false);
 				String textString = textView.getText().toString();
-				Log.i(TAG,"textString="+textString);
+				Log.i(TAG,"tabTextString="+textString);
 				if (textString.contains("Income"))
 				{
 					String tabTitle = "Income " + totalIncomeString;
@@ -663,12 +675,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					String tabTitle = "Defence " + totalDefenceString;
 					textView.setText(tabTitle);
 				}
+				else if (textString.contains("Profile"))
+				{
+					String tabTitle = "Profile";
+					if (m_activeProfile.HasChanged())
+					{
+						tabTitle += " Changed";
+					}
+					textView.setText(tabTitle);
+				}
 			}
 		}
-		
-		UpdateHintText();
-		// Now highlight the best buy row in bold & red
-		HighlightBestBuildingToBuy(m_bestBuildingToBuy);
 	}
 	private void UpdateHintText()
 	{

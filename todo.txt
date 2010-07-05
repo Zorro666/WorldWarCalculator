@@ -1,4 +1,8 @@
-tabs: show total income & total defence on tab title
+tabs: show total income & total defence on tab title - in a pretty way (, per thousand), edit tab widget - add another text field? - make image smaller?
+tabs: what to show on the profile tab?
+app: new pretty print function - format with , per thousand
+building tab: show total reward from each building owned (numOwned*reward)
+building tab: show total cost spent so far for each building
 app tab: should restore wipe local data and replace with the restored version?
 profile tab: copy button don't save & reload just to get the old profile back in the list - do a proper copy - NEEDS TESTING
 profile tab: implement the rename button
