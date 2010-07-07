@@ -645,26 +645,23 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
 		
 		long totalDefence = m_activeProfile.GetTotalDefence();
-		String totalDefenceString = PrettyPrintNumber(totalDefence);
-		Log.i(TAG,"totalDefence="+totalDefence+" "+totalDefenceString);
+		String totalDefenceString = PrettyPrintNumber(totalDefence,true);
 		
 		long totalIncome = m_activeProfile.GetTotalIncome();
-		String totalIncomeString = PrettyPrintNumber(totalIncome);
-		Log.i(TAG,"totalIncome="+totalIncome+" "+totalIncomeString);
+		String totalIncomeString = PrettyPrintNumber(totalIncome,true);
 		
 		TabWidget tabWidget = tabs.getTabWidget();
 		int numTabs = tabWidget.getChildCount();
-		Log.i(TAG,"numTabs="+numTabs);
 		for (int tabIndex=0; tabIndex<numTabs; tabIndex++)
 		{
 			RelativeLayout tabIndicator = (RelativeLayout)tabWidget.getChildAt(tabIndex);
 			int numChild = tabIndicator.getChildCount();
 			if (numChild>1)
 			{
+				//ImageView imageView = (ImageView)tabIndicator.getChildAt(0);
 				TextView textView = (TextView)tabIndicator.getChildAt(1);
 				textView.setSingleLine(false);
 				String textString = textView.getText().toString();
-				Log.i(TAG,"tabTextString="+textString);
 				if (textString.contains("Income"))
 				{
 					String tabTitle = "Income " + totalIncomeString;
@@ -797,9 +794,19 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		cheapnessView.setText(cheapnessString);
 
 		long currentCost = building.GetCurrentCost(numOwned);
-		String currentCostString =  PrettyPrintNumber(currentCost);
+		String currentCostString =  PrettyPrintNumber(currentCost,true);
 		TextView currentCostText = building.GetViewCurrentCost();
 		currentCostText.setText(currentCostString);
+		
+		long totalReward = building.GetTotalReward(numOwned);
+		String totalRewardString =  PrettyPrintNumber(totalReward,true);
+		TextView totalRewardText = building.GetViewTotalReward();
+		totalRewardText.setText(totalRewardString);
+		
+		long totalCost = building.GetTotalCost(numOwned);
+		String totalCostString =  PrettyPrintNumber(totalCost,true);
+		TextView totalCostText = building.GetViewTotalCost();
+		totalCostText.setText(totalCostString);
 		
 		//Log.i(TAG, "UpdateBuildingRow: "+building.GetName()+" cheapness:"+cheapnessString+" currentCost:"+currentCostString);
 	}
@@ -962,6 +969,40 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setText("Base Cost");
 		row.addView(baseCost);
 		
+		TextView totalReward = new TextView(row.getContext());
+		totalReward.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		totalReward.setTextSize(textSize);
+		totalReward.setMinWidth((int)(textSize*8.5f));
+		totalReward.setWidth((int)(textSize*8.5f));
+		totalReward.setMaxWidth((int)(textSize*8.5f));
+		totalReward.setMinLines(1);
+		totalReward.setMaxLines(1);
+		totalReward.setLines(1);
+		totalReward.setPadding(padLeft,padTop,padRight,padBottom);
+		totalReward.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		totalReward.setPadding(padLeft,padTop,padRight,padBottom);
+		totalReward.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		totalReward.setBackgroundColor(colour);
+		totalReward.setText("Total Reward");
+		row.addView(totalReward);
+		
+		TextView totalCost = new TextView(row.getContext());
+		totalCost.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		totalCost.setTextSize(textSize);
+		totalCost.setMinWidth((int)(textSize*5.5f));
+		totalCost.setWidth((int)(textSize*5.5f));
+		totalCost.setMaxWidth((int)(textSize*5.5f));
+		totalCost.setMinLines(1);
+		totalCost.setMaxLines(1);
+		totalCost.setLines(1);
+		totalCost.setPadding(padLeft,padTop,padRight,padBottom);
+		totalCost.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		totalCost.setPadding(padLeft,padTop,padRight,padBottom);
+		totalCost.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		totalCost.setBackgroundColor(colour);
+		totalCost.setText("Total Cost");
+		row.addView(totalCost);
+		
 		parent.addView(row);
 	}
 	
@@ -987,6 +1028,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		InputFilter[] filters10 = new InputFilter[1];
 		filters10[0] = new InputFilter.LengthFilter(10);
+
+		InputFilter[] filters11 = new InputFilter[1];
+		filters11[0] = new InputFilter.LengthFilter(11);
 
 		InputFilter[] filters13 = new InputFilter[1];
 		filters13[0] = new InputFilter.LengthFilter(13);
@@ -1041,9 +1085,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setInputType(InputType.TYPE_CLASS_NUMBER);
 		number.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		number.setKeyListener(new DigitsKeyListener());
-		number.setMinWidth((int)(textSize*3.5f));
-		number.setWidth((int)(textSize*3.5f));
-		number.setMaxWidth((int)(textSize*3.5f));
+		number.setMinWidth((int)(textSize*3.8f));
+		number.setWidth((int)(textSize*3.8f));
+		number.setMaxWidth((int)(textSize*3.8f));
 		number.setMinLines(1);
 		number.setMaxLines(1);
 		number.setFilters(filters4);
@@ -1108,10 +1152,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		reward.setMinLines(1);
 		reward.setMaxLines(1);
 		reward.setLines(1);
-		reward.setFilters(filters8);
+		reward.setFilters(filters10);
 		reward.setPadding(padLeft,padTop,padRight,padBottom);
 		reward.setGravity(Gravity.TOP|Gravity.RIGHT);
-		reward.setText(Integer.toString(building.GetReward()));
+		reward.setText(String.format("%,d",building.GetReward()));
 		reward.setTextSize(textSize);
 		reward.setMinHeight(rowHeight);
 		reward.setHeight(rowHeight);
@@ -1129,7 +1173,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		currentCost.setFilters(filters13);
 		currentCost.setPadding(padLeft,padTop,padRight,padBottom);
 		currentCost.setGravity(Gravity.TOP|Gravity.RIGHT);
-		currentCost.setText(PrettyPrintNumber(building.GetCurrentCost(numOwned)));
+		currentCost.setText(PrettyPrintNumber(building.GetCurrentCost(numOwned),true));
 		currentCost.setTextSize(textSize);
 		currentCost.setMinHeight(rowHeight);
 		currentCost.setHeight(rowHeight);
@@ -1148,7 +1192,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setFilters(filters8);
 		baseCost.setPadding(padLeft,padTop,padRight,padBottom);
 		baseCost.setGravity(Gravity.TOP|Gravity.RIGHT);
-		baseCost.setText(PrettyPrintNumber(building.GetBaseCost()));
+		baseCost.setText(PrettyPrintNumber(building.GetBaseCost(),true));
 		baseCost.setTextSize(textSize);
 		baseCost.setMinHeight(rowHeight);
 		baseCost.setHeight(rowHeight);
@@ -1156,8 +1200,43 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		baseCost.setBackgroundColor(colour);
 		row.addView(baseCost);
 		
-		parent.addView(row);
+		TextView totalReward = new TextView(row.getContext());
+		totalReward.setMinWidth((int)(textSize*8.5f));
+		totalReward.setWidth((int)(textSize*8.5f));
+		totalReward.setMaxWidth((int)(textSize*8.5f));
+		totalReward.setMinLines(1);
+		totalReward.setMaxLines(1);
+		totalReward.setLines(1);
+		totalReward.setFilters(filters11);
+		totalReward.setPadding(padLeft,padTop,padRight,padBottom);
+		totalReward.setGravity(Gravity.TOP|Gravity.RIGHT);
+		building.SetViewTotalReward(totalReward);
+		totalReward.setTextSize(textSize);
+		totalReward.setMinHeight(rowHeight);
+		totalReward.setHeight(rowHeight);
+		totalReward.setMaxHeight(rowHeight);
+		totalReward.setBackgroundColor(colour);
+		row.addView(totalReward);
 		
+		TextView totalCost = new TextView(row.getContext());
+		totalCost.setMinWidth((int)(textSize*9.5f));
+		totalCost.setWidth((int)(textSize*9.5f));
+		totalCost.setMaxWidth((int)(textSize*9.5f));
+		totalCost.setMinLines(1);
+		totalCost.setMaxLines(1);
+		totalCost.setLines(1);
+		totalCost.setFilters(filters11);
+		totalCost.setPadding(padLeft,padTop,padRight,padBottom);
+		totalCost.setGravity(Gravity.TOP|Gravity.RIGHT);
+		building.SetViewTotalCost(totalCost);
+		totalCost.setTextSize(textSize);
+		totalCost.setMinHeight(rowHeight);
+		totalCost.setHeight(rowHeight);
+		totalCost.setMaxHeight(rowHeight);
+		totalCost.setBackgroundColor(colour);
+		row.addView(totalCost);
+		
+		parent.addView(row);
 	}
 
 	private String MakeProfileFileName(String profileName)
@@ -1548,30 +1627,41 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			return;
 		}
 	}
-	private String PrettyPrintNumber(long number)
+	private String PrettyPrintNumber(long number,boolean commas)
 	{
-		String result;
+		String numberString = "0";
+		String unitsString = "";
+		long newNumber = number;
 		if (((number/1000000)*1000000) == number)
 		{
-			int numberInMillions = (int)(number/1000000);
-			result = Integer.toString(numberInMillions);
-			result += "M";
+			newNumber = (long)(number/1000000);
+			unitsString = "M";
 		}
 		else if (((number/1000)*1000) == number)
 		{
-			int numberInThousands = (int)(number/1000);
-			result = Integer.toString(numberInThousands);
-			result += "K";
+			newNumber = (long)(number/1000);
+			unitsString = "K";
 		}
 		else 
 		{
-			result = Long.toString(number);
+			newNumber = number;
+			unitsString ="";
 		}
 		//Catch trivial case
 		if (number == 0)
 		{
-			result = Long.toString(number);
+			newNumber = number;
+			unitsString ="";
 		}
+		if (commas)
+		{
+			numberString = String.format("%,d", newNumber);
+		}
+		else
+		{
+			numberString = Long.toString(newNumber);
+		}
+		String result = numberString + unitsString;
 		return result;
 	}
 	private boolean IsExternalStorageWritable() 

@@ -35,6 +35,23 @@ public class WWBuilding
 		return cost;
 	}
 	
+	public long GetTotalReward(int numOwned)
+	{
+		long total = numOwned * GetReward();
+		return total;
+	}
+	
+	public long GetTotalCost(int numOwned)
+	{
+		// SUM(0,n) = base*(1+0.1*n)
+		// => base*(1+0.1*SUM(0,n))
+		// => base*(1+0.1*(n*(n-1)/2)
+		long sumN = (numOwned*(numOwned-1))/2;
+		long baseCost = GetBaseCost();
+		long total = baseCost*(1+sumN/10);
+		return total;
+	}
+	
 	public int GetReward()
 	{
 		return m_reward;
@@ -68,6 +85,16 @@ public class WWBuilding
 	{
 		return m_viewCheapness;
 	}
+	public TextView GetViewTotalReward()
+	{
+		return m_viewTotalReward;
+	}
+	
+	public TextView GetViewTotalCost()
+	{
+		return m_viewTotalCost;
+	}
+	
 	public TextView GetViewCurrentCost()
 	{
 		return m_viewCurrentCost;
@@ -106,6 +133,14 @@ public class WWBuilding
 	{
 		m_viewCurrentCost = viewCurrentCost;
 	}
+	public void SetViewTotalReward(TextView viewTotalReward)
+	{
+		m_viewTotalReward = viewTotalReward;
+	}
+	public void SetViewTotalCost(TextView viewTotalCost)
+	{
+		m_viewTotalCost = viewTotalCost;
+	}
 	public void SetViewRow(TableRow viewRow)
 	{
 		m_viewRow = viewRow;
@@ -135,6 +170,8 @@ public class WWBuilding
 	private EditText m_viewNumOwned;
 	private TextView m_viewCheapness;
 	private TextView m_viewCurrentCost;
+	private TextView m_viewTotalReward;
+	private TextView m_viewTotalCost;
 	private TableRow m_viewRow;
 	private boolean m_changed;
 }
