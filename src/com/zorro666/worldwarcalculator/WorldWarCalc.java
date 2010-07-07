@@ -1,8 +1,10 @@
 package com.zorro666.worldwarcalculator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 
 import android.content.Context;
+import android.content.DialogInterface;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -53,7 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener, OnItemSelectedListener, OnTabChangeListener
+public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchListener, OnClickListener, OnFocusChangeListener, OnItemSelectedListener, OnTabChangeListener, DialogInterface.OnClickListener
 {
      //A custom HorizontalScrollView 
     public static class LinkedHorizontalScrollView extends HorizontalScrollView 
@@ -96,6 +98,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		Log.i(TAG,"onCreate");
 		super.onCreate(savedInstanceState);
 		
+		m_dialogAction = DIALOG_NONE;
+	
 		m_defenceBuildings = new WWBuilding[NUM_DEFENCE_BUILDINGS];
 		m_incomeBuildings = new WWBuilding[NUM_INCOME_BUILDINGS];
 		m_numDefenceBuildings = 0;
@@ -360,6 +364,26 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 	}
 	
+	public void onClick(DialogInterface dialog, int which)
+	{
+		if (which == DialogInterface.BUTTON_POSITIVE)
+		{
+			if (m_dialogAction == DIALOG_RESTORE)
+			{
+				if (RestoreData()==true)
+				{
+					RestoreAppState();
+				}
+				UpdateDisplay();
+			}
+		}
+		else
+		{
+			Log.i(TAG,"onClick ignore dialog action="+m_dialogAction+" which="+which);
+		}
+		m_dialogAction = DIALOG_NONE;
+	}
+	
 	public void onClick(View v) 
 	{
 		if (v.getId() == R.id.profileSaveButton) 
@@ -400,11 +424,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		else if (v.getId() == R.id.profileRestoreButton)
 		{
-			if (RestoreData()==true)
-			{
-				RestoreAppState();
-			}
-			UpdateDisplay();
+			m_dialogAction = DIALOG_RESTORE;
+			AlertDialog.Builder alertBox = new AlertDialog.Builder(this);
+			alertBox.create();
+			alertBox.setMessage("This will overwrite all local data\nAre you sure?");
+			alertBox.setCancelable(true);
+			alertBox.setTitle("Restore Data: Warning");
+			alertBox.setIcon(android.R.drawable.star_big_on);
+			alertBox.setPositiveButton("Yes", this);
+			alertBox.setNegativeButton("No", this);
+			alertBox.show();
+			
 		}
 		else
 		{
@@ -1976,6 +2006,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	public static final int NUM_INCOME_BUILDINGS = 8;
 	public static final int DEFAULT_NUM_PROFILES = 8;
 
+	private static final int DIALOG_NONE = 0;
+	private static final int DIALOG_RESTORE = 1;
+	private static final int DIALOG_BACKUP = 2;
+	private int m_dialogAction;
+	
 	private int m_numDefenceBuildings;
 	private int m_numIncomeBuildings;
 	private WWBuilding[] m_defenceBuildings;
