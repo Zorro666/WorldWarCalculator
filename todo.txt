@@ -1,6 +1,9 @@
-app tab: should restore wipe local data and replace with the restored version?
+app tab: dialog if save fails - NEEDS TESTING
+app tab: dialog if delete fails - NEEDS TESTING
 profile tab: copy button shouldn't save & reload just to get the old profile back in the list - do a proper copy - NEEDS TESTING
 profile tab: implement the rename button - NEEDS TESTING
+
+app tab: backup/restore info dialogs could show how many profiles restored/saved
 app: update the costs to match the new costs
 app: use SharedPrefences system to store the app state
 app: only save changed data to the bundle
@@ -9,10 +12,7 @@ linked header row: connect header row scrolling to the main view?
 linked header row: working quite well - perhaps try to capture fling events?
 building tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 income tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
-annoyance: the number text is getting left with the red text value - it is android doing it - leaving the text as highlighted!!!!
 profile tab: need button to load profile - would reload to undo changes - needs a confirmation box first
-profile tab: delete profile should ask yes/no
-profile tab: save profile should say "saved:ok" confirmation box
 ui: make +/- buttons : UI display like buttons with down & up states
 ui: make +/- buttons look nicer
 ui: make UI look nicer - colour scheme ideas?
@@ -22,6 +22,7 @@ java: unify the Income & Defence buildings list into a single collection which c
 java: unify the profile class - have a single class for type of building - then the profile can just have "incomeProfile", "defenceProfile"
 java: the building static info should be ptrs or refs not copied into every profile entry and every profile
 tabs: edit tab widget - add another text field? - make image smaller?
+annoyance: the number text is getting left with the red text value - it is android doing it - leaving the text as highlighted!!!!
 
 onPause - save to disk
 onDestroy -> isFinishing() = user quit else system freeing up resources
