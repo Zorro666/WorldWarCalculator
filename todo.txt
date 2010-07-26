@@ -1,3 +1,7 @@
+building tab: show num to buy next to the buildings (0-99,99+)
+income tab: show num to buy next to the buildings (0-99,99+)
+ui: make +/- buttons look nicer - try the + & - icons in Android
+
 app tab: dialog if save fails - NEEDS TESTING
 app tab: dialog if delete fails - NEEDS TESTING
 profile tab: copy button shouldn't save & reload just to get the old profile back in the list - do a proper copy - NEEDS TESTING
@@ -10,11 +14,8 @@ app: only save changed data to the bundle
 app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 linked header row: connect header row scrolling to the main view?
 linked header row: working quite well - perhaps try to capture fling events?
-building tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
-income tab: show num to buy next to the buildings (0,1,2,3,4,5,6,7,8,9,9+)
 profile tab: need button to load profile - would reload to undo changes - needs a confirmation box first
 ui: make +/- buttons : UI display like buttons with down & up states
-ui: make +/- buttons look nicer
 ui: make UI look nicer - colour scheme ideas?
 hint tab: show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
 app: add an icon :)

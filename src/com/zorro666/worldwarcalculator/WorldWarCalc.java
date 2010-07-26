@@ -488,6 +488,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					if ((numOwned >= 0) && (numOwned <= 9999))
 					{
 						profileEntry.SetNumOwned(numOwned);
+						ComputeNumToBuy();
 						UpdateBuildingRow(profileEntry);
 						UpdateBuildingNumOwned(profileEntry);
 						UpdateDisplay();
@@ -516,6 +517,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				}
 				profileEntry.SetNumOwned(numOwned);
 				
+				ComputeNumToBuy();
 				UpdateBuildingRow(profileEntry);
 				UpdateDisplay();
 
@@ -612,6 +614,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 	
 	private void UpdateBuildingsView()
 	{
+		ComputeNumToBuy();
 		for (int i = 0; i < m_activeProfile.GetNumDefenceBuildings(); i++) 
 		{
 			WWProfileEntry profileEntry = m_activeProfile.GetDefenceBuilding(i);
@@ -742,6 +745,19 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			}
 		}
 	}
+	private void ComputeNumToBuy()
+	{
+		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
+		String tabName = tabs.getCurrentTabTag();
+		if (tabName.equals("Income"))
+		{
+			m_activeProfile.SortIncomeCheapness();
+		}
+		else if (tabName.equals("Defence"))
+		{
+			m_activeProfile.SortDefenceCheapness();
+		}
+	}
 	private void UpdateHintText()
 	{
 		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
@@ -753,22 +769,21 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		String bestBuildingToBuy = "";
 		if (tabName.equals("Income"))
 		{
-			m_activeProfile.SortIncomeCheapness();
 			WWProfileEntry cheapestIncome = m_activeProfile.GetSortedIncomeEntry(0);
 			WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
 			if (cheapestIncomeBuilding != null)
 			{
 				bestBuildingToBuy = cheapestIncomeBuilding.GetName();
-				int numToBuy = m_activeProfile.GetIncomeNumToBuy(0);
-				hintText = "Buy " + numToBuy + " " + bestBuildingToBuy;
+				int numBuy = m_activeProfile.GetIncomeNumBuy(0);
+				hintText = "Buy " + numBuy + " " + bestBuildingToBuy;
 			}
 			cheapestIncome = m_activeProfile.GetSortedIncomeEntry(1);
 			cheapestIncomeBuilding = cheapestIncome.GetBuilding();
 			if (cheapestIncomeBuilding != null)
 			{
-				int numToBuy = m_activeProfile.GetIncomeNumToBuy(1);
+				int numBuy = m_activeProfile.GetIncomeNumBuy(1);
 				hintText += "\n";
-				hintText += "Buy " + numToBuy + " " + cheapestIncomeBuilding.GetName();
+				hintText += "Buy " + numBuy + " " + cheapestIncomeBuilding.GetName();
 			}
 		}
 		else if (tabName.equals("Defence"))
@@ -779,16 +794,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			if (cheapestDefenceBuilding != null)
 			{
 				bestBuildingToBuy = cheapestDefenceBuilding.GetName();
-				int numToBuy = m_activeProfile.GetDefenceNumToBuy(0);
-				hintText += "Buy " + numToBuy + " " + bestBuildingToBuy;
+				int numBuy = m_activeProfile.GetDefenceNumBuy(0);
+				hintText += "Buy " + numBuy + " " + bestBuildingToBuy;
 			}
 			cheapestDefence = m_activeProfile.GetSortedDefenceEntry(1);
 			cheapestDefenceBuilding = cheapestDefence.GetBuilding();
 			if (cheapestDefenceBuilding != null)
 			{
-				int numToBuy = m_activeProfile.GetDefenceNumToBuy(1);
+				int numBuy = m_activeProfile.GetDefenceNumBuy(1);
 				hintText += "\n";
-				hintText += "Buy " + numToBuy + " " + cheapestDefenceBuilding.GetName();
+				hintText += "Buy " + numBuy + " " + cheapestDefenceBuilding.GetName();
 			}
 		}
 		else if (tabName.equals("Profile"))
@@ -926,6 +941,22 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		final int colour = Color.DKGRAY;
 		TableRow row = new TableRow(parent.getContext());
 		row.setPadding(0,0,0,0);
+
+		TextView buy = new TextView(row.getContext());
+		buy.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		buy.setTextSize(textSize);
+		buy.setMinWidth((int)(3.0f*textSize));
+		buy.setWidth((int)(3.0f*textSize));
+		buy.setMaxWidth((int)(3.0f*textSize));
+		buy.setLines(1);
+		buy.setMinLines(1);
+		buy.setMaxLines(1);
+		buy.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		buy.setPadding(padLeft,padTop,padRight,padBottom);
+		buy.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		buy.setBackgroundColor(colour);
+		buy.setText("Buy");
+		row.addView(buy);
 
 		TextView name = new TextView(row.getContext());
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
@@ -1102,6 +1133,23 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		row.setPadding(0,0,0,0);
 		building.SetViewRow(row);
 
+		TextView buy = new TextView(row.getContext());
+		buy.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		buy.setTextSize(textSize);
+		buy.setMinWidth((int)(3.0f*textSize));
+		buy.setWidth((int)(3.0f*textSize));
+		buy.setMaxWidth((int)(3.0f*textSize));
+		buy.setLines(2);
+		buy.setMinLines(2);
+		buy.setMaxLines(2);
+		buy.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		buy.setPadding(padLeft,padTop,padRight,padBottom);
+		buy.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		buy.setBackgroundColor(colour);
+		buy.setText("");
+		building.SetViewNumBuy(buy);
+		row.addView(buy);
+		
 		TextView name = new TextView(row.getContext());
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		name.setTextSize(textSize);
@@ -1977,7 +2025,10 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			try
 			{
 				FileOutputStream outStream = new FileOutputStream(externalProfileFile);
-				if (SaveProfile(profileFileName,profile,outStream) == false)
+				boolean wasChanged = profile.HasChanged();
+				boolean saveResult =  SaveProfile(profileFileName,profile,outStream);
+				profile.SetChanged(wasChanged);
+				if (saveResult == false)
 				{
 					result = false;
 				}

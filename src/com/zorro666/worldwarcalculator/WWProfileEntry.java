@@ -6,6 +6,7 @@ public class WWProfileEntry
 	{
 		m_numOwned = 0;
 		m_changed = false;
+		m_numBuy = 0;
 	}
 	public void SetBuilding(WWBuilding building)
 	{
@@ -27,6 +28,18 @@ public class WWProfileEntry
 			m_changed=true;
 		}
 	}
+	public void SetNumBuy(int numBuy)
+	{
+		if (numBuy < 0)
+		{
+			return;
+		}
+		if (numBuy > 9999)
+		{
+			return;
+		}
+		m_numBuy=numBuy;
+	}
 	public void SetChanged(boolean changed)
 	{
 		m_changed=changed;
@@ -39,6 +52,10 @@ public class WWProfileEntry
 	public WWBuilding GetBuilding()
 	{
 		return m_building;
+	}
+	public int GetNumBuy()
+	{
+		return m_numBuy;
 	}
 	public int GetNumOwned()
 	{
@@ -62,4 +79,5 @@ public class WWProfileEntry
 	private WWBuilding m_building;
 	private int m_numOwned;
 	private boolean m_changed;
+	private int m_numBuy;
 }

@@ -10,24 +10,24 @@ public class WWProfile
 	}
 	WWProfile(String name, int numIncomeBuildings, int numDefenceBuildings)
 	{
-		m_incomeNumToBuy = new int[numIncomeBuildings];
+		m_incomeNumBuy = new int[numIncomeBuildings];
 		m_incomeCheapnessSorted = new int[numIncomeBuildings];
 		m_incomeBuildings=new WWProfileEntry[numIncomeBuildings];
 		for (int i=0; i<m_incomeBuildings.length;i++)
 		{
 			m_incomeBuildings[i]=new WWProfileEntry();
 			m_incomeCheapnessSorted[i]=i;
-			m_incomeNumToBuy[i]=0;
+			m_incomeNumBuy[i]=0;
 		}
 		
-		m_defenceNumToBuy = new int[numDefenceBuildings];
+		m_defenceNumBuy = new int[numDefenceBuildings];
 		m_defenceCheapnessSorted = new int[numDefenceBuildings];
 		m_defenceBuildings=new WWProfileEntry[numDefenceBuildings];
 		for (int i=0; i<m_defenceBuildings.length;i++)
 		{
 			m_defenceBuildings[i]=new WWProfileEntry();
 			m_defenceCheapnessSorted[i]=i;
-			m_defenceNumToBuy[i]=0;
+			m_defenceNumBuy[i]=0;
 		}
 		m_name=name;
 		m_changed=false;
@@ -103,13 +103,13 @@ public class WWProfile
 		return m_defenceBuildings[index];
 	}
 	
-	public int GetIncomeNumToBuy(int index)
+	public int GetIncomeNumBuy(int index)
 	{
-		return m_incomeNumToBuy[index];
+		return m_incomeNumBuy[index];
 	}
-	public int GetDefenceNumToBuy(int index)
+	public int GetDefenceNumBuy(int index)
 	{
-		return m_defenceNumToBuy[index];
+		return m_defenceNumBuy[index];
 	}
 	public WWProfileEntry GetSortedIncomeEntry(int index)
 	{
@@ -172,29 +172,31 @@ public class WWProfile
 				{
 					float thisCheapness = thisBuilding.GetCheapness(thisNumOwned);
 					float nextCheapness = nextBuilding.GetCheapness(nextNumOwned);
-					float deltaCheapness = nextCheapness - thisCheapness;
+					float deltaCheapness = (nextCheapness - thisCheapness)+0.001f;
 					float cheapnessPerBuy = thisBuilding.GetCheapnessPerBuy();
-					float floatNumToBuy = deltaCheapness/cheapnessPerBuy;
-					floatNumToBuy = (float)Math.ceil((double)floatNumToBuy);
-					int numToBuy = (int)floatNumToBuy;
-					if (numToBuy == 0)
+					float floatNumBuy = deltaCheapness/cheapnessPerBuy;
+					floatNumBuy = (float)Math.ceil((double)floatNumBuy);
+					int numBuy = (int)floatNumBuy;
+					if (numBuy == 0)
 					{
-						numToBuy = 1;
+						numBuy = 1;
 					}
-					m_incomeNumToBuy[i] = numToBuy;
+					m_incomeNumBuy[i] = numBuy;
 				}
 			}
 		}
-		m_incomeNumToBuy[numIncomeBuildings-1] = 0;
+		m_incomeNumBuy[numIncomeBuildings-1] = 0;
 		for (int i=0; i<numIncomeBuildings;i++)
 		{
 			int row = m_incomeCheapnessSorted[i];
 			WWProfileEntry entry = m_incomeBuildings[row];
+			int numBuy = m_incomeNumBuy[i];
+			entry.SetNumBuy(numBuy);
 			WWBuilding building = entry.GetBuilding();
 			if (building != null)
 			{
 				//int numOwned = entry.GetNumOwned();
-				//Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumToBuy " + m_incomeNumToBuy[i]);
+				//Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumBuy " + m_incomeNumBuy[i]);
 			}
 		}
 	}
@@ -246,29 +248,31 @@ public class WWProfile
 				{
 					float thisCheapness = thisBuilding.GetCheapness(thisNumOwned);
 					float nextCheapness = nextBuilding.GetCheapness(nextNumOwned);
-					float deltaCheapness = nextCheapness - thisCheapness;
+					float deltaCheapness = (nextCheapness - thisCheapness)+0.001f;
 					float cheapnessPerBuy = thisBuilding.GetCheapnessPerBuy();
-					float floatNumToBuy = deltaCheapness/cheapnessPerBuy;
-					floatNumToBuy = (float)Math.ceil((double)floatNumToBuy);
-					int numToBuy = (int)floatNumToBuy;
-					if (numToBuy == 0)
+					float floatNumBuy = deltaCheapness/cheapnessPerBuy;
+					floatNumBuy = (float)Math.ceil((double)floatNumBuy);
+					int numBuy = (int)floatNumBuy;
+					if (numBuy == 0)
 					{
-						numToBuy = 1;
+						numBuy = 1;
 					}
-					m_defenceNumToBuy[i] = numToBuy;
+					m_defenceNumBuy[i] = numBuy;
 				}
 			}
 		}
-		m_defenceNumToBuy[WorldWarCalc.NUM_DEFENCE_BUILDINGS-1] = 0;
+		m_defenceNumBuy[WorldWarCalc.NUM_DEFENCE_BUILDINGS-1] = 0;
 		for (int i=0; i<WorldWarCalc.NUM_DEFENCE_BUILDINGS;i++)
 		{
 			int row = m_defenceCheapnessSorted[i];
 			WWProfileEntry entry = m_defenceBuildings[row];
+			int numBuy = m_defenceNumBuy[i];
+			entry.SetNumBuy(numBuy);
 			WWBuilding building = entry.GetBuilding();
 			if (building != null)
 			{
 				//int numOwned = entry.GetNumOwned();
-				//Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumToBuy " + m_defenceNumToBuy[i]);
+				//Log.i("WWCALC", i + " " + building.GetName() + " Cheapness " + building.GetCheapness(numOwned) + " NumBuy " + m_defenceNumBuy[i]);
 			}
 		}
 	}
@@ -346,8 +350,8 @@ public class WWProfile
 	private WWProfileEntry[] m_defenceBuildings;
 	private int[] m_incomeCheapnessSorted;
 	private int[] m_defenceCheapnessSorted;
-	private int[] m_incomeNumToBuy;
-	private int[] m_defenceNumToBuy;
+	private int[] m_incomeNumBuy;
+	private int[] m_defenceNumBuy;
 	private boolean m_changed;
 }
     	

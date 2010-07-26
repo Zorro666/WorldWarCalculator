@@ -77,6 +77,10 @@ public class WWBuilding
 		return cheapness;
 	}
 	
+	public TextView GetViewNumBuy()
+	{
+		return m_viewNumOwned;
+	}
 	public EditText GetViewNumOwned()
 	{
 		return m_viewNumOwned;
@@ -112,6 +116,10 @@ public class WWBuilding
 	{
 		return m_viewRow;
 		
+	}
+	public void SetViewNumBuy(TextView viewNumBuy)
+	{
+		m_viewNumBuy = viewNumBuy;
 	}
 	public void SetViewMinusButton(Button viewMinusButton)
 	{
@@ -168,6 +176,7 @@ public class WWBuilding
 	private Button m_viewMinusButton;
 	private Button m_viewPlusButton;
 	private EditText m_viewNumOwned;
+	private TextView m_viewNumBuy;
 	private TextView m_viewCheapness;
 	private TextView m_viewCurrentCost;
 	private TextView m_viewTotalReward;
