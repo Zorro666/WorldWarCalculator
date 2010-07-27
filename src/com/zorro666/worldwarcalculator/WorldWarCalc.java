@@ -1227,8 +1227,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		plus.setMinHeight(rowHeight);
 		plus.setHeight(rowHeight);
 		plus.setMaxHeight(rowHeight);
-		plus.setBackgroundDrawable(null);
-		plus.setBackgroundColor(0xFFA0A0A0);
+		//plus.setBackgroundDrawable(null);
+		//plus.setBackgroundResource(android.R.drawable.btn_default_small);
+		//plus.setBackgroundColor(0xFFA0A0A0);
 		plus.setText("+");
 		plus.setOnClickListener(this);
 		plus.setId(654321);
