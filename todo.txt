@@ -1,6 +1,8 @@
-building tab: show num to buy next to the buildings (0-99,99+)
-income tab: show num to buy next to the buildings (0-99,99+)
-ui: make +/- buttons look nicer - try the + & - icons in Android
+ui: make +/- buttons look nicer - make custom image
+app: update the costs to match the new costs
+app: add an icon :)
+ui: make +/- buttons : UI display like buttons with down & up states
+app: add support for the left button (options) - pop-up menu "Save", "Quit"
 
 app tab: dialog if save fails - NEEDS TESTING
 app tab: dialog if delete fails - NEEDS TESTING
@@ -8,17 +10,13 @@ profile tab: copy button shouldn't save & reload just to get the old profile bac
 profile tab: implement the rename button - NEEDS TESTING
 
 app tab: backup/restore info dialogs could show how many profiles restored/saved
-app: update the costs to match the new costs
 app: use SharedPrefences system to store the app state
 app: only save changed data to the bundle
 app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files
 linked header row: connect header row scrolling to the main view?
 linked header row: working quite well - perhaps try to capture fling events?
 profile tab: need button to load profile - would reload to undo changes - needs a confirmation box first
-ui: make +/- buttons : UI display like buttons with down & up states
 ui: make UI look nicer - colour scheme ideas?
-hint tab: show hint data - how many of the best buildings to buy (sorted list) - with cost for the hint
-app: add an icon :)
 java: unify the Income & Defence buildings list into a single collection which can be iterated over in WWProfile (perhaps with IF to get by type)
 java: unify the profile class - have a single class for type of building - then the profile can just have "incomeProfile", "defenceProfile"
 java: the building static info should be ptrs or refs not copied into every profile entry and every profile

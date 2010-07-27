@@ -649,6 +649,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 					//Reset colours to normal or highlight if this is the best building to buy
 					boolean highlight = (building.GetName().equals(bestBuildingToBuy));
 					SetRowColours(row,evenRow,highlight);
+					
+					int numBuy = profileEntry.GetNumBuy();
+					TextView numBuyView = building.GetViewNumBuy();
+					String numBuyString = Integer.toString(numBuy);
+					numBuyView.setText(numBuyString);
 				}
 				evenRow ^= true;
 			}
@@ -853,6 +858,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		{
 			plusButtonView.setTag(profileEntry);
 		}
+		
 		//Log.i(TAG, "UpdateBuildingNumOwned: "+building.GetName()+" numOwned:"+numOwnedString);
 	}
 	
@@ -942,22 +948,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		TableRow row = new TableRow(parent.getContext());
 		row.setPadding(0,0,0,0);
 
-		TextView buy = new TextView(row.getContext());
-		buy.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
-		buy.setTextSize(textSize);
-		buy.setMinWidth((int)(3.0f*textSize));
-		buy.setWidth((int)(3.0f*textSize));
-		buy.setMaxWidth((int)(3.0f*textSize));
-		buy.setLines(1);
-		buy.setMinLines(1);
-		buy.setMaxLines(1);
-		buy.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
-		buy.setPadding(padLeft,padTop,padRight,padBottom);
-		buy.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
-		buy.setBackgroundColor(colour);
-		buy.setText("Buy");
-		row.addView(buy);
-
 		TextView name = new TextView(row.getContext());
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		name.setTextSize(textSize);
@@ -992,6 +982,22 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		number.setBackgroundColor(colour);
 		number.setText("Number");
 		row.addView(number);
+
+		TextView buy = new TextView(row.getContext());
+		buy.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
+		buy.setTextSize(textSize);
+		buy.setMinWidth((int)(3.0f*textSize));
+		buy.setWidth((int)(3.0f*textSize));
+		buy.setMaxWidth((int)(3.0f*textSize));
+		buy.setLines(1);
+		buy.setMinLines(1);
+		buy.setMaxLines(1);
+		buy.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		buy.setPadding(padLeft,padTop,padRight,padBottom);
+		buy.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
+		buy.setBackgroundColor(colour);
+		buy.setText("Buy");
+		row.addView(buy);
 
 		TextView cheapness = new TextView(row.getContext());
 		cheapness.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
@@ -1109,6 +1115,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		
 		int colour = Color.BLUE;
 		
+		InputFilter[] filters3 = new InputFilter[1];
+		filters3[0] = new InputFilter.LengthFilter(3);
+
 		InputFilter[] filters4 = new InputFilter[1];
 		filters4[0] = new InputFilter.LengthFilter(4);
 
@@ -1133,23 +1142,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		row.setPadding(0,0,0,0);
 		building.SetViewRow(row);
 
-		TextView buy = new TextView(row.getContext());
-		buy.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
-		buy.setTextSize(textSize);
-		buy.setMinWidth((int)(3.0f*textSize));
-		buy.setWidth((int)(3.0f*textSize));
-		buy.setMaxWidth((int)(3.0f*textSize));
-		buy.setLines(2);
-		buy.setMinLines(2);
-		buy.setMaxLines(2);
-		buy.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
-		buy.setPadding(padLeft,padTop,padRight,padBottom);
-		buy.setShadowLayer(1.0f, 2.0f, 2.0f, Color.BLACK);
-		buy.setBackgroundColor(colour);
-		buy.setText("");
-		building.SetViewNumBuy(buy);
-		row.addView(buy);
-		
 		TextView name = new TextView(row.getContext());
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		name.setTextSize(textSize);
@@ -1214,6 +1206,17 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		building.SetViewNumOwned(number);
 		row.addView(number);
 
+/*
+		ImageButton plusImage = new ImageButton(row.getContext());
+		plusImage.setPadding(0,0,0,0);
+		plusImage.setMaxHeight(rowHeight);
+		//plusImage.setBackgroundColor(0xFFA0A0A0);
+		plusImage.setImageResource(android.R.drawable.btn_plus);
+		plusImage.setOnClickListener(this);
+		plusImage.setId(654321);
+		row.addView(plusImage);
+*/
+		
 		Button plus = new Button(row.getContext());
 		plus.setTextSize(textSize);
 		plus.setMinWidth((int)(textSize*2.0f));
@@ -1231,6 +1234,25 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		plus.setId(654321);
 		building.SetViewPlusButton(plus);
 		row.addView(plus);
+		
+		TextView buy = new TextView(row.getContext());
+		buy.setMinWidth((int)(3.0f*textSize));
+		buy.setWidth((int)(3.0f*textSize));
+		buy.setMaxWidth((int)(3.0f*textSize));
+		buy.setLines(1);
+		buy.setMinLines(1);
+		buy.setMaxLines(1);
+		buy.setFilters(filters3);
+		buy.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+		buy.setPadding(padLeft,padTop,padRight,padBottom);
+		buy.setText("");
+		buy.setTextSize(textSize);
+		buy.setMinHeight(rowHeight);
+		buy.setHeight(rowHeight);
+		buy.setMaxHeight(rowHeight);
+		buy.setBackgroundColor(colour);
+		building.SetViewNumBuy(buy);
+		row.addView(buy);
 		
 		TextView cheapness = new TextView(row.getContext());
 		cheapness.setMinWidth((int)(textSize*5));
@@ -2079,6 +2101,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				}
 			}
 		}
+		//Mark all the profiles as changed
+		for (Map.Entry<String,WWProfile> entry: m_profiles.entrySet())
+		{
+			WWProfile profile = entry.getValue();
+			profile.SetChanged(true);
+		}
+		
 		// Load the AppState data if it exists
 		if (TestForExternalStoragePrivateFile(APPSTATE_FILENAME)==false)
 		{

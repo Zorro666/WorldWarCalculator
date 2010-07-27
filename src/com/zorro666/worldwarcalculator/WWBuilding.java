@@ -79,7 +79,7 @@ public class WWBuilding
 	
 	public TextView GetViewNumBuy()
 	{
-		return m_viewNumOwned;
+		return m_viewNumBuy;
 	}
 	public EditText GetViewNumOwned()
 	{
