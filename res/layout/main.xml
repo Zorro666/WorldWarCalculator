@@ -8,22 +8,16 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
 		>
-		<Spinner 
-			android:id="@+id/profileSpinner"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:drawSelectorOnTop="true"
-    	    android:prompt="@string/profile_prompt"
-		/>
 		<TextView 
 			android:id="@+id/hintText"
     	    android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 	        android:textSize="12dp"
 	        android:text="Hint"
+	        android:lines="2"
 			android:textStyle="bold"
-	        android:gravity="right|top"
-		/>
+	        android:gravity="right|top">
+		</TextView>
 	</LinearLayout>
 	<TabHost
 	    android:id="@+id/tabhost"
@@ -46,6 +40,42 @@
 				android:layout_width="fill_parent"
 				android:layout_height="fill_parent"
 				android:padding="0dp">
+				<LinearLayout
+					android:orientation="horizontal"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:padding="10dp">
+					<Spinner 
+						android:id="@+id/profileSpinner"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:drawSelectorOnTop="true"
+						android:minWidth="75dp"
+						android:maxWidth="75dp"
+						android:width="75dp"
+    	    			android:prompt="@string/profile_prompt">
+					</Spinner>
+					<Button
+    					android:id="@+id/profileSaveButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Save"
+						android:minWidth="75dp"
+						android:maxWidth="75dp"
+						android:width="75dp"
+						android:padding="5dp">
+					</Button>
+					<Button
+	    				android:id="@+id/profileDeleteButton"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="Delete"
+						android:minWidth="80dp"
+						android:maxWidth="80dp"
+						android:width="80dp"
+						android:padding="5dp">
+					</Button>
+				</LinearLayout>
 				<LinearLayout
 					android:orientation="horizontal"
 					android:layout_width="fill_parent"
@@ -83,16 +113,6 @@
 					android:layout_height="wrap_content"
 					android:padding="10dp">
 					<Button
-    					android:id="@+id/profileSaveButton"
-						android:layout_width="wrap_content"
-						android:layout_height="fill_parent"
-						android:text="Save"
-						android:minWidth="75dp"
-						android:maxWidth="75dp"
-						android:width="75dp"
-						android:padding="5dp">
-					</Button>
-					<Button
 	    				android:id="@+id/profileNewButton"
 						android:layout_width="wrap_content"
 						android:layout_height="fill_parent"
@@ -100,16 +120,6 @@
 						android:minWidth="75dp"
 						android:maxWidth="75dp"
 						android:width="75dp"
-						android:padding="5dp">
-					</Button>
-					<Button
-	    				android:id="@+id/profileDeleteButton"
-						android:layout_width="wrap_content"
-						android:layout_height="fill_parent"
-						android:text="Delete"
-						android:minWidth="80dp"
-						android:maxWidth="80dp"
-						android:width="80dp"
 						android:padding="5dp">
 					</Button>
 					<Button
@@ -151,7 +161,57 @@
 						android:padding="5dp">
 					</Button>
     			</LinearLayout>
-    		</LinearLayout>
+				<LinearLayout
+					android:orientation="horizontal"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:padding="10dp">
+					<TextView
+    	    			android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="ABC"
+						android:background="@android:color/white"
+						android:padding="1dp">
+					</TextView>
+					<Button
+    					android:id="@+id/profileTestMinusButton"
+    					android:enabled="true"
+						android:layout_width="wrap_content"
+						android:layout_height="fill_parent"
+						android:text="+"
+						android:background="@android:drawable/btn_plus"
+						android:minWidth="8dp"
+						android:maxWidth="8dp"
+						android:width="8dp"
+						android:padding="1dp">
+					</Button>
+					<TextView
+    	    			android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="ABC"
+						android:background="@android:color/white"
+						android:padding="1dp">
+					</TextView>
+					<ImageButton
+    					android:id="@+id/profileTestPlusButton"
+    					android:enabled="true"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:background="@android:drawable/btn_minus"
+						android:minWidth="2dp"
+						android:maxWidth="2dp"
+						android:width="2dp"
+						android:padding="1dp">
+					</ImageButton>
+					<TextView
+    	    			android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="ABC"
+						android:background="@android:color/white"
+						android:padding="1dp">
+					</TextView>
+    			</LinearLayout>
+   			</LinearLayout>
 			<LinearLayout
 				android:id="@+id/IncomeViewTab"
 				android:orientation="vertical"

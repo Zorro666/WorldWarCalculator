@@ -178,7 +178,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			
 			TableRow row = building.GetViewRow();
 			SetDefaultRowColours(row,evenRow);
-			evenRow ^= true;
+			//evenRow ^= true;
 		}
 		// Add the final separator row
 		TableRow sep = new TableRow(defenceView.getContext());
@@ -208,7 +208,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			
 			TableRow row = building.GetViewRow();
 			SetDefaultRowColours(row,evenRow);
-			evenRow ^= true;
+			//evenRow ^= true;
 		}
 		// Add the final separator row
 		sep = new TableRow(incomeView.getContext());
@@ -629,6 +629,22 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		UpdateDisplay();
 	}
+	private void SetRowColoursForProfileEntry(WWProfileEntry profileEntry,String bestBuildingToBuy,boolean evenRow)
+	{
+		WWBuilding building = profileEntry.GetBuilding();
+		if (building != null)
+		{
+			TableRow row = building.GetViewRow();
+			//Reset colours to normal or highlight if this is the best building to buy
+			boolean highlight = (building.GetName().equals(bestBuildingToBuy));
+			SetRowColours(row,evenRow,highlight);
+			
+			int numBuy = profileEntry.GetNumBuy();
+			TextView numBuyView = building.GetViewNumBuy();
+			String numBuyString = Integer.toString(numBuy);
+			numBuyView.setText(numBuyString);
+		}
+	}
 	private void HighlightBestBuildingToBuy(String bestBuildingToBuy)
 	{
 		final TabHost tabs = (TabHost)findViewById(R.id.tabhost);
@@ -641,21 +657,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			for (int i = 0; i < m_activeProfile.GetNumIncomeBuildings(); i++) 
 			{
 				WWProfileEntry profileEntry = m_activeProfile.GetIncomeBuilding(i);
-				WWBuilding building = profileEntry.GetBuilding();
 				
-				if (building != null)
-				{
-					TableRow row = building.GetViewRow();
-					//Reset colours to normal or highlight if this is the best building to buy
-					boolean highlight = (building.GetName().equals(bestBuildingToBuy));
-					SetRowColours(row,evenRow,highlight);
-					
-					int numBuy = profileEntry.GetNumBuy();
-					TextView numBuyView = building.GetViewNumBuy();
-					String numBuyString = Integer.toString(numBuy);
-					numBuyView.setText(numBuyString);
-				}
-				evenRow ^= true;
+				SetRowColoursForProfileEntry(profileEntry,bestBuildingToBuy,evenRow);
+				//evenRow ^= true;
 			}
 		}
 		else if (tabName.equals("Defence"))
@@ -665,17 +669,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			for (int i = 0; i < m_activeProfile.GetNumDefenceBuildings(); i++) 
 			{
 				WWProfileEntry profileEntry = m_activeProfile.GetDefenceBuilding(i);
-				WWBuilding building = profileEntry.GetBuilding();
-				
-				if (building != null)
-				{
-					TableRow row = building.GetViewRow();
-					//Highlight if this is the best building to buy
-					//Reset colours to normal or highlight if this is the best building to buy
-					boolean highlight = (building.GetName().equals(bestBuildingToBuy));
-					SetRowColours(row,evenRow,highlight);
-				}
-				evenRow ^= true;
+				SetRowColoursForProfileEntry(profileEntry,bestBuildingToBuy,evenRow);
+				//evenRow ^= true;
 			}
 		}
 	}
@@ -741,9 +736,12 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				else if (textString.contains("Profile"))
 				{
 					String tabTitle = "Profile";
+					tabTitle += " ";
+					tabTitle += m_activeProfileName;
 					if (m_activeProfile.HasChanged())
 					{
-						tabTitle += " Changed";
+						tabTitle += " ";
+						tabTitle += "Changed";
 					}
 					textView.setText(tabTitle);
 				}
@@ -774,41 +772,38 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		String bestBuildingToBuy = "";
 		if (tabName.equals("Income"))
 		{
-			WWProfileEntry cheapestIncome = m_activeProfile.GetSortedIncomeEntry(0);
-			WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
-			if (cheapestIncomeBuilding != null)
+			m_activeProfile.SortIncomeCheapness();
+			int numHints = 2;
+			hintText = "";
+			for (int i=0; i<numHints; i++)
 			{
-				bestBuildingToBuy = cheapestIncomeBuilding.GetName();
-				int numBuy = m_activeProfile.GetIncomeNumBuy(0);
-				hintText = "Buy " + numBuy + " " + bestBuildingToBuy;
-			}
-			cheapestIncome = m_activeProfile.GetSortedIncomeEntry(1);
-			cheapestIncomeBuilding = cheapestIncome.GetBuilding();
-			if (cheapestIncomeBuilding != null)
-			{
-				int numBuy = m_activeProfile.GetIncomeNumBuy(1);
-				hintText += "\n";
-				hintText += "Buy " + numBuy + " " + cheapestIncomeBuilding.GetName();
+				WWProfileEntry cheapestIncome = m_activeProfile.GetSortedIncomeEntry(i);
+				WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
+				if (cheapestIncomeBuilding != null)
+				{
+					bestBuildingToBuy = cheapestIncomeBuilding.GetName();
+					int numBuy = m_activeProfile.GetIncomeNumBuy(i);
+					hintText += "Buy " + numBuy + " " + bestBuildingToBuy;
+					hintText += "\n";
+				}
 			}
 		}
 		else if (tabName.equals("Defence"))
 		{
 			m_activeProfile.SortDefenceCheapness();
-			WWProfileEntry cheapestDefence = m_activeProfile.GetSortedDefenceEntry(0);
-			WWBuilding cheapestDefenceBuilding = cheapestDefence.GetBuilding();
-			if (cheapestDefenceBuilding != null)
+			int numHints = 2;
+			hintText = "";
+			for (int i=0; i<numHints; i++)
 			{
-				bestBuildingToBuy = cheapestDefenceBuilding.GetName();
-				int numBuy = m_activeProfile.GetDefenceNumBuy(0);
-				hintText += "Buy " + numBuy + " " + bestBuildingToBuy;
-			}
-			cheapestDefence = m_activeProfile.GetSortedDefenceEntry(1);
-			cheapestDefenceBuilding = cheapestDefence.GetBuilding();
-			if (cheapestDefenceBuilding != null)
-			{
-				int numBuy = m_activeProfile.GetDefenceNumBuy(1);
-				hintText += "\n";
-				hintText += "Buy " + numBuy + " " + cheapestDefenceBuilding.GetName();
+				WWProfileEntry cheapestDefence = m_activeProfile.GetSortedDefenceEntry(i);
+				WWBuilding cheapestDefenceBuilding = cheapestDefence.GetBuilding();
+				if (cheapestDefenceBuilding != null)
+				{
+					bestBuildingToBuy = cheapestDefenceBuilding.GetName();
+					int numBuy = m_activeProfile.GetDefenceNumBuy(i);
+					hintText += "Buy " + numBuy + " " + bestBuildingToBuy;
+					hintText += "\n";
+				}
 			}
 		}
 		else if (tabName.equals("Profile"))
@@ -951,9 +946,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		TextView name = new TextView(row.getContext());
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		name.setTextSize(textSize);
-		name.setMinWidth(130);
-		name.setWidth(130);
-		name.setMaxWidth(130);
+		name.setMinWidth(124);
+		name.setWidth(124);
+		name.setMaxWidth(124);
 		name.setLines(1);
 		name.setMinLines(1);
 		name.setMaxLines(1);
@@ -1145,9 +1140,9 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		TextView name = new TextView(row.getContext());
 		name.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD);
 		name.setTextSize(textSize);
-		name.setMinWidth(116);
-		name.setWidth(116);
-		name.setMaxWidth(116);
+		name.setMinWidth(110);
+		name.setWidth(110);
+		name.setMaxWidth(110);
 		name.setLines(2);
 		name.setMinLines(2);
 		name.setMaxLines(2);
@@ -1536,14 +1531,14 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			for (int i = 0; i < numDefenceBuildings; i++) 
 			{
 				int number = inFile.ReadInt();
-				tempProfile.SetNumDefenceBuilding(i, number);
+				tempProfile.SetNumOwnedDefenceBuilding(i, number);
 			}
 			// Number of each income building
 			int numIncomeBuildings = inFile.ReadInt();
 			for (int i = 0; i < numIncomeBuildings; i++) 
 			{
 				int number = inFile.ReadInt();
-				tempProfile.SetNumIncomeBuilding(i, number);
+				tempProfile.SetNumOwnedIncomeBuilding(i, number);
 				
 			}
 			inFile.Close();
@@ -1579,7 +1574,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			outFile.WriteInt(numDefenceBuildings);
 			for (int i = 0; i < numDefenceBuildings; i++) 
 			{
-				int number = profile.GetNumDefenceBuilding(i);
+				int number = profile.GetNumOwnedDefenceBuilding(i);
 				outFile.WriteInt(number);
 			}
 			// Number of each income building
@@ -1587,7 +1582,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			outFile.WriteInt(numIncomeBuildings);
 			for (int i = 0; i < numIncomeBuildings; i++) 
 			{
-				int number = profile.GetNumIncomeBuilding(i);
+				int number = profile.GetNumOwnedIncomeBuilding(i);
 				outFile.WriteInt(number);
 			}
 			outFile.Close();

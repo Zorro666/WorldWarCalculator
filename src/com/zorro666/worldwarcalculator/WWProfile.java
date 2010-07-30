@@ -52,7 +52,7 @@ public class WWProfile
 		m_name = name;
 		m_changed=true;
 	}
-	public void SetNumIncomeBuilding(int index,int number)
+	public void SetNumOwnedIncomeBuilding(int index,int number)
 	{
 		if ((index>=0) && (index<m_incomeBuildings.length))
 		{
@@ -63,7 +63,7 @@ public class WWProfile
 			}
 		}
 	}
-	public void SetNumDefenceBuilding(int index,int number)
+	public void SetNumOwnedDefenceBuilding(int index,int number)
 	{
 		if ((index>=0) && (index<m_defenceBuildings.length))
 		{
@@ -86,11 +86,11 @@ public class WWProfile
 	{
 		return m_defenceBuildings.length;
 	}
-	public int GetNumIncomeBuilding(int index)
+	public int GetNumOwnedIncomeBuilding(int index)
 	{
 		return m_incomeBuildings[index].GetNumOwned();
 	}
-	public int GetNumDefenceBuilding(int index)
+	public int GetNumOwnedDefenceBuilding(int index)
 	{
 		return m_defenceBuildings[index].GetNumOwned();
 	}

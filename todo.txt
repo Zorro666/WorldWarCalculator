@@ -1,8 +1,12 @@
 ui: make +/- buttons look nicer - make custom image
+app: shade rows ever so slightly by hint ranking -> brightest = top, darkest = bottom
 app: update the costs to match the new costs
 app: add an icon :)
 ui: make +/- buttons : UI display like buttons with down & up states
 app: add support for the left button (options) - pop-up menu "Save", "Quit"
+
+header row: try a double height header row, single line info display (add lots to it and enable auto-scrolling banner)
+linked header row: not working well on far right - check the widths and make the same
 
 app tab: dialog if save fails - NEEDS TESTING
 app tab: dialog if delete fails - NEEDS TESTING
