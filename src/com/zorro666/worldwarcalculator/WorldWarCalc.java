@@ -35,6 +35,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -467,32 +468,35 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		else
 		{
 			Object tag = v.getTag();
-			if (tag.getClass() == WWProfileEntry.class)
+			if (tag != null)
 			{
-				WWProfileEntry profileEntry = (WWProfileEntry) tag;
-				WWBuilding building = profileEntry.GetBuilding();
-				int delta = 0;
-				if (v.getId() == 123456)
+				if (tag.getClass() == WWProfileEntry.class)
 				{
-					delta = -1;
-					Log.i(TAG,"Minus Button:"+building.GetName());
-				}
-				if (v.getId() == 654321)
-				{
-					delta = +1;
-				}
-				if (delta != 0)
-				{
-					int numOwned = profileEntry.GetNumOwned();
-					numOwned += delta;
-					if ((numOwned >= 0) && (numOwned <= 9999))
+					WWProfileEntry profileEntry = (WWProfileEntry) tag;
+					WWBuilding building = profileEntry.GetBuilding();
+					int delta = 0;
+					if (v.getId() == 123456)
 					{
-						profileEntry.SetNumOwned(numOwned);
-						ComputeNumToBuy();
-						UpdateBuildingRow(profileEntry);
-						UpdateBuildingNumOwned(profileEntry);
-						UpdateDisplay();
-						Log.i(TAG,"-/+ Button:"+building.GetName()+" Delta:"+delta);
+						delta = -1;
+						Log.i(TAG,"Minus Button:"+building.GetName());
+					}
+					if (v.getId() == 654321)
+					{
+						delta = +1;
+					}
+					if (delta != 0)
+					{
+						int numOwned = profileEntry.GetNumOwned();
+						numOwned += delta;
+						if ((numOwned >= 0) && (numOwned <= 9999))
+						{
+							profileEntry.SetNumOwned(numOwned);
+							ComputeNumToBuy();
+							UpdateBuildingRow(profileEntry);
+							UpdateBuildingNumOwned(profileEntry);
+							UpdateDisplay();
+							Log.i(TAG,"-/+ Button:"+building.GetName()+" Delta:"+delta);
+						}
 					}
 				}
 			}
@@ -719,7 +723,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			int numChild = tabIndicator.getChildCount();
 			if (numChild>1)
 			{
-				//ImageView imageView = (ImageView)tabIndicator.getChildAt(0);
+				//IageView imageView = (ImageView)tabIndicator.getChildAt(0);
 				TextView textView = (TextView)tabIndicator.getChildAt(1);
 				textView.setSingleLine(false);
 				String textString = textView.getText().toString();
@@ -769,7 +773,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		TextView hintView = (TextView)findViewById(R.id.hintText);
 		String hintText = "";
-		String bestBuildingToBuy = "";
 		if (tabName.equals("Income"))
 		{
 			m_activeProfile.SortIncomeCheapness();
@@ -781,10 +784,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				WWBuilding cheapestIncomeBuilding = cheapestIncome.GetBuilding();
 				if (cheapestIncomeBuilding != null)
 				{
-					bestBuildingToBuy = cheapestIncomeBuilding.GetName();
+					String bestBuildingToBuy = cheapestIncomeBuilding.GetName();
 					int numBuy = m_activeProfile.GetIncomeNumBuy(i);
 					hintText += "Buy " + numBuy + " " + bestBuildingToBuy;
 					hintText += "\n";
+					
+					if (i==0)
+					{
+						m_bestBuildingToBuy=bestBuildingToBuy;
+					}
 				}
 			}
 		}
@@ -799,10 +807,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 				WWBuilding cheapestDefenceBuilding = cheapestDefence.GetBuilding();
 				if (cheapestDefenceBuilding != null)
 				{
-					bestBuildingToBuy = cheapestDefenceBuilding.GetName();
+					String bestBuildingToBuy = cheapestDefenceBuilding.GetName();
 					int numBuy = m_activeProfile.GetDefenceNumBuy(i);
 					hintText += "Buy " + numBuy + " " + bestBuildingToBuy;
 					hintText += "\n";
+					
+					if (i==0)
+					{
+						m_bestBuildingToBuy=bestBuildingToBuy;
+					}
 				}
 			}
 		}
@@ -828,7 +841,6 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		}
 		Log.i(TAG,"UpdateHintText:"+hintText);
 		
-		m_bestBuildingToBuy = bestBuildingToBuy;
 		hintView.setText(hintText);
 	}
 	
@@ -1156,6 +1168,16 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		name.setText(building.GetName());
 		row.addView(name);
 
+		ImageButton minusImage = new ImageButton(row.getContext());
+		minusImage.setPadding(0,0,0,0);
+		minusImage.setMinimumHeight(rowHeight);
+		minusImage.setMaxHeight(rowHeight);
+		minusImage.setImageResource(R.drawable.minus);
+		minusImage.setOnClickListener(this);
+		minusImage.setBackgroundColor(0xFFA0A0A0);
+		minusImage.setId(1234567);
+		row.addView(minusImage);
+		
 		Button minus = new Button(row.getContext());
 		minus.setTextSize(textSize);
 		minus.setMinWidth((int)(textSize*2.0f));
@@ -1201,16 +1223,15 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		building.SetViewNumOwned(number);
 		row.addView(number);
 
-/*
 		ImageButton plusImage = new ImageButton(row.getContext());
 		plusImage.setPadding(0,0,0,0);
+		plusImage.setMinimumHeight(rowHeight);
 		plusImage.setMaxHeight(rowHeight);
-		//plusImage.setBackgroundColor(0xFFA0A0A0);
-		plusImage.setImageResource(android.R.drawable.btn_plus);
+		plusImage.setImageResource(R.drawable.plus);
 		plusImage.setOnClickListener(this);
-		plusImage.setId(654321);
+		plusImage.setBackgroundColor(0xFFA0A0A0);
+		plusImage.setId(7654321);
 		row.addView(plusImage);
-*/
 		
 		Button plus = new Button(row.getContext());
 		plus.setTextSize(textSize);
@@ -1222,9 +1243,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		plus.setMinHeight(rowHeight);
 		plus.setHeight(rowHeight);
 		plus.setMaxHeight(rowHeight);
-		//plus.setBackgroundDrawable(null);
-		//plus.setBackgroundResource(android.R.drawable.btn_default_small);
-		//plus.setBackgroundColor(0xFFA0A0A0);
+		plus.setBackgroundColor(0xFFA0A0A0);
 		plus.setText("+");
 		plus.setOnClickListener(this);
 		plus.setId(654321);
