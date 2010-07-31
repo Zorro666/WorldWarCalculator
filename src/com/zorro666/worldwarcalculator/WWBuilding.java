@@ -2,7 +2,7 @@ package com.zorro666.worldwarcalculator;
 
 import android.widget.TextView;
 import android.widget.EditText;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TableRow;
 
 
@@ -104,11 +104,11 @@ public class WWBuilding
 		return m_viewCurrentCost;
 	}
 	
-	public Button GetViewMinusButton()
+	public ImageButton GetViewMinusButton()
 	{
 		return m_viewMinusButton;
 	}
-	public Button GetViewPlusButton()
+	public ImageButton GetViewPlusButton()
 	{
 		return m_viewPlusButton;
 	}
@@ -121,11 +121,11 @@ public class WWBuilding
 	{
 		m_viewNumBuy = viewNumBuy;
 	}
-	public void SetViewMinusButton(Button viewMinusButton)
+	public void SetViewMinusButton(ImageButton viewMinusButton)
 	{
 		m_viewMinusButton = viewMinusButton;
 	}
-	public void SetViewPlusButton(Button viewPlusButton)
+	public void SetViewPlusButton(ImageButton viewPlusButton)
 	{
 		m_viewPlusButton = viewPlusButton;
 	}
@@ -173,8 +173,8 @@ public class WWBuilding
 	private int m_reward;
 	private float m_cheapnessMultiplier;
 	private float m_cheapnessPerBuy;
-	private Button m_viewMinusButton;
-	private Button m_viewPlusButton;
+	private ImageButton m_viewMinusButton;
+	private ImageButton m_viewPlusButton;
 	private EditText m_viewNumOwned;
 	private TextView m_viewNumBuy;
 	private TextView m_viewCheapness;

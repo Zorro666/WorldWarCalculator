@@ -1,8 +1,6 @@
-ui: make +/- buttons look nicer - make custom image
+ui: make +/- buttons : UI display like buttons with down & up states
 app: shade rows ever so slightly by hint ranking -> brightest = top, darkest = bottom
 app: update the costs to match the new costs
-app: add an icon :)
-ui: make +/- buttons : UI display like buttons with down & up states
 app: add support for the left button (options) - pop-up menu "Save", "Quit"
 
 header row: try a double height header row, single line info display (add lots to it and enable auto-scrolling banner)
@@ -14,6 +12,7 @@ profile tab: copy button shouldn't save & reload just to get the old profile bac
 profile tab: implement the rename button - NEEDS TESTING
 
 app tab: backup/restore info dialogs could show how many profiles restored/saved
+
 app: use SharedPrefences system to store the app state
 app: only save changed data to the bundle
 app: sort out the life cycle state saving - use onSave, onRestore bundles instead of files

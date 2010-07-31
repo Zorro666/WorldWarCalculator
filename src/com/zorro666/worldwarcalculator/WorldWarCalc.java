@@ -854,13 +854,13 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		numOwnedView.setText(numOwnedString);
 		numOwnedView.setTag(profileEntry);
 		
-		Button minusButtonView = building.GetViewMinusButton();
+		ImageButton minusButtonView = building.GetViewMinusButton();
 		if (minusButtonView != null)
 		{
 			minusButtonView.setTag(profileEntry);
 		}
 		
-		Button plusButtonView = building.GetViewPlusButton();
+		ImageButton plusButtonView = building.GetViewPlusButton();
 		if (plusButtonView != null)
 		{
 			plusButtonView.setTag(profileEntry);
@@ -914,6 +914,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			{
 				// Special case for the minus & plus buttons
 				element.setBackgroundColor(0xFFA0A0A0);
+				element.setBackgroundColor(colour);
 			}
 			else if (id == 2468)
 			{
@@ -1175,9 +1176,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		minusImage.setImageResource(R.drawable.minus);
 		minusImage.setOnClickListener(this);
 		minusImage.setBackgroundColor(0xFFA0A0A0);
-		minusImage.setId(1234567);
+		minusImage.setId(123456);
+		building.SetViewMinusButton(minusImage);
 		row.addView(minusImage);
 		
+/*
 		Button minus = new Button(row.getContext());
 		minus.setTextSize(textSize);
 		minus.setMinWidth((int)(textSize*2.0f));
@@ -1195,6 +1198,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		minus.setId(123456);
 		building.SetViewMinusButton(minus);
 		row.addView(minus);
+*/
 		
 		EditText number = new EditText(row.getContext());
 		number.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -1230,9 +1234,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		plusImage.setImageResource(R.drawable.plus);
 		plusImage.setOnClickListener(this);
 		plusImage.setBackgroundColor(0xFFA0A0A0);
-		plusImage.setId(7654321);
+		plusImage.setId(654321);
+		building.SetViewPlusButton(plusImage);
 		row.addView(plusImage);
 		
+/*
 		Button plus = new Button(row.getContext());
 		plus.setTextSize(textSize);
 		plus.setMinWidth((int)(textSize*2.0f));
@@ -1249,6 +1255,7 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 		plus.setId(654321);
 		building.SetViewPlusButton(plus);
 		row.addView(plus);
+*/
 		
 		TextView buy = new TextView(row.getContext());
 		buy.setMinWidth((int)(3.0f*textSize));
