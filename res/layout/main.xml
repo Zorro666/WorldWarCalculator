@@ -173,17 +173,14 @@
 						android:background="@android:color/white"
 						android:padding="1dp">
 					</TextView>
-					<Button
+					<ImageButton
     					android:id="@+id/profileTestMinusButton"
     					android:enabled="true"
 						android:layout_width="wrap_content"
-						android:layout_height="fill_parent"
-						android:background="@drawable/minus"
-						android:minWidth="8dp"
-						android:maxWidth="8dp"
-						android:width="8dp"
+						android:layout_height="wrap_content"
+						android:src="@drawable/minus"
 						android:padding="1dp">
-					</Button>
+					</ImageButton>
 					<TextView
     	    			android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -196,10 +193,7 @@
     					android:enabled="true"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:background="@drawable/plus"
-						android:minWidth="2dp"
-						android:maxWidth="2dp"
-						android:width="2dp"
+						android:src="@drawable/plus"
 						android:padding="1dp">
 					</ImageButton>
 					<TextView

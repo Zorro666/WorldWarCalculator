@@ -28,6 +28,7 @@ import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup.LayoutParams;
 
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
@@ -913,8 +914,8 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 			if ((id == 123456) || (id == 654321))
 			{
 				// Special case for the minus & plus buttons
-				element.setBackgroundColor(0xFFA0A0A0);
-				element.setBackgroundColor(colour);
+				//element.setBackgroundColor(0xFFA0A0A0);
+				//element.setBackgroundColor(colour);
 			}
 			else if (id == 2468)
 			{
@@ -1171,11 +1172,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		ImageButton minusImage = new ImageButton(row.getContext());
 		minusImage.setPadding(0,0,0,0);
-		minusImage.setMinimumHeight(rowHeight);
-		minusImage.setMaxHeight(rowHeight);
+		minusImage.setMinimumHeight(rowHeight-20);
+		minusImage.setMaxHeight(rowHeight-20);
 		minusImage.setImageResource(R.drawable.minus);
 		minusImage.setOnClickListener(this);
-		minusImage.setBackgroundColor(0xFFA0A0A0);
+		//minusImage.setBackgroundColor(0xFFA0A0A0);
 		minusImage.setId(123456);
 		building.SetViewMinusButton(minusImage);
 		row.addView(minusImage);
@@ -1229,11 +1230,11 @@ public class WorldWarCalc extends Activity implements OnKeyListener, OnTouchList
 
 		ImageButton plusImage = new ImageButton(row.getContext());
 		plusImage.setPadding(0,0,0,0);
-		plusImage.setMinimumHeight(rowHeight);
-		plusImage.setMaxHeight(rowHeight);
+		plusImage.setMinimumHeight(rowHeight-3);
+		plusImage.setMaxHeight(rowHeight-3);
 		plusImage.setImageResource(R.drawable.plus);
 		plusImage.setOnClickListener(this);
-		plusImage.setBackgroundColor(0xFFA0A0A0);
+		//plusImage.setBackgroundColor(0xFFA0A0A0);
 		plusImage.setId(654321);
 		building.SetViewPlusButton(plusImage);
 		row.addView(plusImage);
